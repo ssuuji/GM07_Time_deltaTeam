@@ -5,11 +5,11 @@ using UnityEngine;
 public class StageEnemyInfo 
 {
     [Header("등장할 적 프리팹")]
-    [SerializeField] private GameObject emeyPrefab;
+    [SerializeField] private GameObject enemyPrefab;
 
     [Header("적이 등장할 배치 위치")]
     [SerializeField] private EnemySpawnSlot spawnSlot;
 
-    public GameObject EmeyPrefab => emeyPrefab;
+    public GameObject EnemyPrefab => enemyPrefab;
     public EnemySpawnSlot SpawnSlot => spawnSlot;
 }
