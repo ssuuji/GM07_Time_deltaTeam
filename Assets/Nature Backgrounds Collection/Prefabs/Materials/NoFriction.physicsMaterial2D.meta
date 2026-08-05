@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5e1b8534a74524c4fb5034d422251a96
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 6200000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 345062
+  packageName: 56 Nature Backgrounds Pixel Art
+  packageVersion: 1.2
+  assetPath: Assets/Nature Backgrounds Collection/Prefabs/Materials/NoFriction.physicsMaterial2D
+  uploadId: 850014
