@@ -16,33 +16,33 @@ public class HeroManager : MonoBehaviour
     {
         if (Instance == null)
         {
-            Instance = this; // 자신을 유일한 매니저로 등록함
-            DontDestroyOnLoad(gameObject); // 씬 전환 시 파괴되지 않도록 유지함
-            InitializeHeroes(); // 영웅 초기화 함수 실행함
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // 씬 전환 시 파괴되지 않도록 유지
+            InitializeHeroes(); // 영웅 초기화 함수 실행
         }
         else
         {
-            Destroy(gameObject); // 중복 생성 방지를 위해 파괴함
+            Destroy(gameObject); // 중복 생성 방지를 위해 파괴
         }
     }
 
     private void InitializeHeroes()
     {
-        foreach (var data in allHeroDataList) // 등록된 영웅 데이터를 순회함
+        foreach (var data in allHeroDataList) // 등록된 영웅 데이터를 순회
         {
-            if (data == null) continue; // 빈 데이터는 건너뜀
+            if (data == null) continue;
 
-            // ID 1~5번은 기본 지급 영웅으로 가정하여 해금(true) 처리함
+            // ID 1~5번은 기본 지급 영웅으로 가정하여 해금처리
             bool isDefaultUnlocked = data.HeroID <= 5;
 
-            // 딕셔너리에 영웅 인스턴스를 저장함.
+            // 딕셔너리에 영웅 인스턴스를 저장
             heroDictionary.Add(data.HeroID, new HeroInstance(data, isDefaultUnlocked));
         }
     }
 
-    // ==========================================
+    // ===============================
     // 영웅 해금 및 성장 로직
-    // ==========================================
+    // ===============================
 
     // 영웅 획득 시 호출함 (성공 true, 실패 false 반환)
     public bool UnlockHero(int heroID)
@@ -71,7 +71,7 @@ public class HeroManager : MonoBehaviour
     // 전체 영웅 리스트를 반환
     public List<HeroInstance> GetAllHeroes() => new List<HeroInstance>(heroDictionary.Values);
 
-    // 수지님용(Save): 저장할 핵심 데이터(레벨, 해금여부)만 추출함.
+    // 저장할 핵심 데이터(레벨, 해금여부)만 추출함.
     public Dictionary<int, (int level, bool isUnlocked)> GetSaveData()
     {
         var saveData = new Dictionary<int, (int, bool)>();
@@ -92,5 +92,14 @@ public class HeroManager : MonoBehaviour
                 hero.isUnlocked = kvp.Value.isUnlocked;
             }
         }
+    }
+    // 파티 매니저가 저장된 파티를 불러올 때 영웅 ID로 인스턴스를 찾아주는 함수
+    public HeroInstance GetHeroByID(int heroID)
+    {
+        if (heroDictionary.TryGetValue(heroID, out HeroInstance hero))
+        {
+            return hero;
+        }
+        return null;
     }
 }
