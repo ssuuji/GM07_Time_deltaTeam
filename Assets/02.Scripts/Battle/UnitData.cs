@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Battle
+namespace AFKHero.Battle
 {
     [CreateAssetMenu(
         fileName = "UnitData_",

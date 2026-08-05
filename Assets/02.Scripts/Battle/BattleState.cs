@@ -1,5 +1,5 @@
 
-namespace Battle
+namespace AFKHero.Battle
 {
     public enum BattleState
     {

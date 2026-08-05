@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 
-namespace Battle
+namespace AFKHero.Battle
 {
     public sealed class BattleManager : MonoBehaviour
     {
@@ -23,6 +23,9 @@ namespace Battle
 
         // 전투 상태 변경
         public event Action<BattleState> StateChanged;
+
+        // 죽음 상태 변경
+        public event Action<BattleUnit> UnitDied;
 
         private void Awake()
         {
@@ -69,6 +72,32 @@ namespace Battle
                 $"아군 [{allyUnits.Count}]명 / 적군 [{enemyUnits.Count}]명 ");
         }
 
+        public void NotifyUnitDied(BattleUnit deadunit)
+        {
+            if(deadunit == null)
+            {
+                return;
+            }
+
+            bool isRegistered = allyUnits.Contains(deadunit) || enemyUnits.Contains(deadunit);
+
+            if (!isRegistered)
+            {
+                Debug.LogWarning($"등록되지 않은 유닛 {deadunit.name}이 죽었습니다.",this);
+
+                return;
+            }
+
+            UnitDied?.Invoke(deadunit);
+
+            if(CurrentState != BattleState.Fighting)
+            {
+                return;
+            }
+
+            CheckBattleResult();
+        }
+
         // 새로운 전투 시작 시 유닛 재정비
         public void ClearRegisteredUnits()
         {
@@ -78,6 +107,46 @@ namespace Battle
             ChangeState(BattleState.Preparing);
         }
 
+        private bool HasLivingUnit(TeamType team)
+        {
+            IReadOnlyList<BattleUnit> units = team == TeamType.Ally ? allyUnits : enemyUnits;
+
+            for(int i = 0; i< units.Count; i++)
+            {
+                BattleUnit unit = units[i];
+
+                if (unit != null &&
+                    unit.IsInitialized &&
+                    unit.Stats != null &&
+                    unit.Stats.IsAlive)
+                {
+                    return true;
+                } 
+            }
+
+            return false;
+        }
+
+        private void CheckBattleResult()
+        {
+            bool hasLivingAlly = HasLivingUnit(TeamType.Ally);
+
+            bool hasLivingEnemy = HasLivingUnit(TeamType.Enemy);
+
+            if (!hasLivingEnemy)
+            {
+                ChangeState(BattleState.Victory);
+                Debug.Log("전투 승리!", this);
+                return;
+            }
+
+            if (!hasLivingAlly)
+            {
+                ChangeState(BattleState.Defeat);
+                Debug.Log("전투 패배...", this);
+            }
+        }
+        
         // 현재 전투 상태를 새로운 상태로 변경하고 이벤트 발생
         private void ChangeState(BattleState nextState)
         {

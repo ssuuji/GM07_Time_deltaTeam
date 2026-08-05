@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Battle
+namespace AFKHero.Battle
 {
     public sealed class BattleSpawner : MonoBehaviour
     {
@@ -98,7 +98,7 @@ namespace Battle
                     unitContainer);
 
                 // BattleUnit에 데이터, 진영, 슬롯 번호 전달
-                unit.Initialize(unitData, team, slotIndex);
+                unit.Initialize(unitData, team, slotIndex, battleManager);
 
                 // BattleManager 해당 진영 목록에 유닛 등록
                 battleManager.RegisterUnit(unit);
@@ -159,7 +159,7 @@ namespace Battle
 
 #if UNITY_EDITOR
         // 유닛 선택 시 기즈모
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             if(formationData == null)
             {

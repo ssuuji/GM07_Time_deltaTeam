@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Battle
+namespace AFKHero.Battle
 {
     [CreateAssetMenu(
         fileName = "FormationData_Default",
@@ -19,6 +19,7 @@ namespace Battle
         {
             new Vector2(-0.9f, -1.6f),
             new Vector2(0.9f, -1.6f),
+
             new Vector2(-1.6f, -3.0f),
             new Vector2(0f, -3.0f),
             new Vector2(1.6f, -3.0f),
@@ -29,11 +30,12 @@ namespace Battle
         [SerializeField]
         private List<Vector2> enemyPositions = new()
         {
-            new Vector2(-9.0f,1.6f),
             new Vector2(0.9f,1.6f),
-            new Vector2(-1.6f, 3.0f),
+            new Vector2(-0.9f,1.6f),
+
+            new Vector2(1.6f, 3.0f),
             new Vector2(0f,3.0f),
-            new Vector2(1.6f,3.0f)
+            new Vector2(-1.6f,3.0f)
         };
 
         // 슬롯 개수 반환

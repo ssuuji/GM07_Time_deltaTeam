@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06008f15625eb244e9081074b7c76812, type: 3}
+  m_Name: TestAllyUnitData 1
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitData
+  unitId: 12
+  displayName: ally
+  potrait: {fileID: 21300000, guid: 04310307c42ff4e7fa0eb91e7b35af84, type: 3}
+  battlePrefab: {fileID: 584630936369778458, guid: 54242e9fae9805e409c44df7694be0d0, type: 3}
+  maxHealth: 1000
+  attackPower: 50
+  defense: 2
+  attackRange: 2
+  attackInterval: 1
+  moveSpeed: 2
+  maxUltimateEnergy: 100
