@@ -209,7 +209,6 @@ GameObject:
   - component: {fileID: 1815320755}
   - component: {fileID: 1815320754}
   - component: {fileID: 1815320753}
-  - component: {fileID: 1815320752}
   m_Layer: 0
   m_Name: BattleTest
   m_TagString: Untagged
@@ -217,25 +216,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1815320752
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1815320751}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3feb95676787f894faee7aff22e48ff3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HeroIdleRPG.Battle.BattleFoundationTester
-  allyPrefab: {fileID: 2089662863368153599, guid: 54242e9fae9805e409c44df7694be0d0, type: 3}
-  enemyPrefab: {fileID: 969841853409754783, guid: 91469b76a94d9aa4e8752b9adc2bb0d6, type: 3}
-  unitCount: 5
-  frontUnitCount: 2
-  columnSpacing: 1.5
-  rowSpacing: 1.5
-  teamDistance: 5
 --- !u!114 &1815320753
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -248,12 +228,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 138cd7724d981614b8bff560ecd00134, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Battle.BattleSpawner
-  battleManager: {fileID: 0}
-  formationData: {fileID: 0}
-  battleOrigin: {fileID: 0}
-  unitContainer: {fileID: 0}
-  allyParty: []
-  enemyParty: []
+  battleManager: {fileID: 1815320754}
+  formationData: {fileID: 11400000, guid: 37aafa8ae0cb36e4990a140e390206b5, type: 2}
+  battleOrigin: {fileID: 1815320755}
+  unitContainer: {fileID: 1815320755}
+  allyParty:
+  - {fileID: 11400000, guid: 00a2658e526439d44a2cfda07f6567e8, type: 2}
+  - {fileID: 11400000, guid: 00a2658e526439d44a2cfda07f6567e8, type: 2}
+  - {fileID: 11400000, guid: 00a2658e526439d44a2cfda07f6567e8, type: 2}
+  - {fileID: 11400000, guid: 2d8629887264b674c8ff7975d70d9bf9, type: 2}
+  - {fileID: 11400000, guid: 2d8629887264b674c8ff7975d70d9bf9, type: 2}
+  enemyParty:
+  - {fileID: 11400000, guid: a94643face8334a46beae8e60e1ba63b, type: 2}
+  - {fileID: 11400000, guid: a94643face8334a46beae8e60e1ba63b, type: 2}
+  - {fileID: 11400000, guid: a94643face8334a46beae8e60e1ba63b, type: 2}
+  - {fileID: 11400000, guid: 977baa146147166408b60dfa916cf55d, type: 2}
+  - {fileID: 11400000, guid: 977baa146147166408b60dfa916cf55d, type: 2}
   spawnOnStart: 1
   startBattleAfterSpawn: 1
 --- !u!114 &1815320754

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Battle
+namespace AFKHero.Battle
 {
     public sealed class UnitStats
     {
@@ -32,7 +32,20 @@ namespace Battle
             MoveSpeed = source.MoveSpeed;
 
             MaxUltimateEnergy = source.MaxUltimateEnergy;
-            CurrentHealth = 0;
+            CurrentUltimateEnergy = 0;
+        }
+
+        public int ApplyDamage(int damage)
+        {
+            if(!IsAlive || damage <= 0)
+            {
+                return 0;
+            }
+
+            int previousHealth = CurrentHealth;
+
+            CurrentHealth = Mathf.Max(0, CurrentHealth - damage);
+            return previousHealth - CurrentHealth;
         }
     }
 }
