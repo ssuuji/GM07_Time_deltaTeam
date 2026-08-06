@@ -233,17 +233,15 @@ MonoBehaviour:
   battleOrigin: {fileID: 1815320755}
   unitContainer: {fileID: 1815320755}
   allyParty:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 11400000, guid: 00a2658e526439d44a2cfda07f6567e8, type: 2}
-  - {fileID: 11400000, guid: 00a2658e526439d44a2cfda07f6567e8, type: 2}
-  - {fileID: 11400000, guid: 00a2658e526439d44a2cfda07f6567e8, type: 2}
-  - {fileID: 11400000, guid: 2d8629887264b674c8ff7975d70d9bf9, type: 2}
-  - {fileID: 11400000, guid: 2d8629887264b674c8ff7975d70d9bf9, type: 2}
   enemyParty:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 11400000, guid: a94643face8334a46beae8e60e1ba63b, type: 2}
-  - {fileID: 11400000, guid: a94643face8334a46beae8e60e1ba63b, type: 2}
-  - {fileID: 11400000, guid: a94643face8334a46beae8e60e1ba63b, type: 2}
-  - {fileID: 11400000, guid: 977baa146147166408b60dfa916cf55d, type: 2}
-  - {fileID: 11400000, guid: 977baa146147166408b60dfa916cf55d, type: 2}
   spawnOnStart: 1
   startBattleAfterSpawn: 1
 --- !u!114 &1815320754
