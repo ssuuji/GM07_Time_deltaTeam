@@ -23,6 +23,7 @@ namespace AFKHero.UI
         private void Start()
         {
             OpenView(defaultView);          //메인탭
+            OpenHeroView(defaultHeroView);  //파티탭
         }
 
         #region 메인탭
@@ -35,14 +36,6 @@ namespace AFKHero.UI
 
             CurrentView = view;      //현재 화면 상태저장
             UpdateView(CurrentView); //현재 화면의 데이터 갱신
-        }
-
-        //패널 활성화 상태 변경용
-        private void SetPanelActive(GameObject panel, bool isActive)
-        {
-            if (panel == null) return;
-
-            panel.SetActive(isActive);
         }
 
         #region 메인 탭 화면 갱신
@@ -176,6 +169,14 @@ namespace AFKHero.UI
         #endregion
 
         #endregion
+
+        //패널 활성화 상태 변경용
+        private void SetPanelActive(GameObject panel, bool isActive)
+        {
+            if (panel == null) return;
+
+            panel.SetActive(isActive);
+        }
     }
 }
 
