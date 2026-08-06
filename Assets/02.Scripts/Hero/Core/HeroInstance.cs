@@ -15,7 +15,7 @@ public class HeroInstance
     }
 
     // ==========================
-    // 영웅 자체의 기본 스탯
+    // 영웅 자체 기본 스탯
     // ==========================
     public int MaxHP => data.GetJobStats().hp + (level - 1) * 20;
     public int Attack => data.GetJobStats().attack + (level - 1) * 5;
@@ -24,7 +24,7 @@ public class HeroInstance
     public float AttackRange => data.GetJobStats().attackRange;
 
     // =========================================
-    // 시너지가 적용된 인게임 최종 전투 스탯
+    // 시너지 적용 스탯
     // =========================================
 
     // 최종 체력 = 기본 체력 * (1 + 파티 체력 시너지 퍼센트)
@@ -52,8 +52,12 @@ public class HeroInstance
     }
 
     // ===================
-    // 영웅 성장 기능
+    // 레벨업
     // ===================
+
+    // 현재 레벨 비례 레벨업 필요 골드 계산
+    public int LevelUpCost => level * 100;
+
     public bool LevelUp()
     {
         if (level >= 50)

@@ -1,11 +1,11 @@
 using UnityEngine;
 
-[RequireComponent(typeof(HeroStats))]
 public class HeroBase : MonoBehaviour
 {
+    // 영웅 데이터 인스턴스
     public HeroInstance heroInstance { get; private set; }
 
-    // 내 전투 스탯 컴포넌트
+    // 만들 전투 스탯 클래스를 연동용으로 선언만
     public HeroStats stats { get; private set; }
 
     private void Awake()
@@ -13,81 +13,181 @@ public class HeroBase : MonoBehaviour
         stats = GetComponent<HeroStats>();
     }
 
-    // 영웅이 전투 필드에 처음 소환될 때 호출하는 초기화 함수
+    // 영웅 소환 시 초기화
     public void Init(HeroInstance instance)
     {
         this.heroInstance = instance;
-
-        // 내 스탯 컴포넌트에게 데이터를 넘겨주며 초기화 세팅
-        stats.Init(instance);
-
-        Debug.Log($"[HeroBase] {instance.data.HeroName} 소환 완료! / 체력: {stats.maxHP} / 공격력: {stats.attack}");
+        Debug.Log($"[HeroBase] {instance.data.HeroName} 궁극기 시스템 세팅 완료!");
     }
 
-    // ========================
-    // 전투 액션 로직
-    // ========================
 
-    // 기본 공격 실행
-    public void NormalAttack(HeroBase target)
+    // =========================
+    // 투사체 풀링
+    // =========================
+
+    // 원거리 영웅 기본 공격을 구현할 때 호출할 수 있는 투사체 생성 함수
+    public void SpawnProjectile(HeroBase target)
     {
-        if (target == null || target.stats.currentHP <= 0) return;
+        if (heroInstance.data.JobType == JobType.Archer || heroInstance.data.JobType == JobType.Mage)
+        {
+            if (heroInstance.data.ProjectilePrefab != null)
+            {
+                GameObject spawnedObj = PoolManager.Instance.SpawnFromPool
+                    (heroInstance.data.ProjectilePrefab, transform.position, Quaternion.identity);
 
-        // 근거리면 바로 데미지, 원거리면 투사체 풀링에서 꺼내서 발사
-        target.stats.TakeDamage(stats.attack);
-
-        // 공격 시 에너지를 획득한다 (예: 때릴 때마다 20 회복)
-        stats.AddEnergy(20);
+                Projectile projScript = spawnedObj.GetComponent<Projectile>();
+                if (projScript != null)
+                {
+                    // 타겟과 데미지 정보를 정상적으로 전달함
+                    projScript.Init(target, heroInstance.FinalAttack);
+                }
+            }
+        }
     }
 
-    // 궁극기 사용
-    public void UseUltimate()
+    // ===============================
+    // 궁극기 로직 관리
+    // ===============================
+
+    public void ExecuteUltimateEffect()
     {
-        if (!stats.IsReadyUltimate()) return;
+        Debug.Log($"[궁극기 효과 발동!] {heroInstance.data.HeroName} - {heroInstance.data.UltimateSkillName}");
 
-        Debug.Log($"[궁극기 발동!] {heroInstance.data.HeroName} - {heroInstance.data.UltimateSkillName}");
+        // 필드 내 모든 영웅 탐색
+        HeroBase[] allHeroesInField = FindObjectsByType<HeroBase>(FindObjectsSortMode.None);
 
-        // 직업별 궁극기 로직
+        // 계산해둔 시너지 적용 최종 스탯을 가져와 데미지를 계산함
+        int finalAttack = heroInstance.FinalAttack;
+        int finalMaxHp = heroInstance.FinalMaxHP;
+
+        // 직업별 궁극기 분기
         switch (heroInstance.data.JobType)
         {
             case JobType.Healer:
-                // 치유의 빛: 자신의 공격력의 200%만큼 살아있는 모든 아군 회복
-                int healAmount = stats.attack * 2;
-
-                // 씬에 존재하는 아군들을 찾아서 회복
-                HeroBase[] allHeroesInField = FindObjectsByType<HeroBase>(FindObjectsSortMode.None);
+                // 치유의 빛: 공격력의 200% 광역 힐
+                int healAmount = finalAttack * 2;
                 foreach (var hero in allHeroesInField)
                 {
-                    // 적이 아닌 아군이라면 회복
                     if (hero.CompareTag("Ally"))
                     {
-                        hero.stats.Heal(healAmount);
+                        hero.stats.Heal(healAmount); // 회복 함수 호출
 
-                        // 힐 이펙트 풀링에서 꺼내서 각 영웅 위치에 재생
-                        GameObject healEffect = PoolManager.Instance.SpawnFromPool(heroInstance.data.UltimateEffectPrefab, hero.transform.position, Quaternion.identity);
+                        // 힐 이펙트 풀링 및 해제
+                        GameObject healEffect = PoolManager.Instance.SpawnFromPool
+                            (heroInstance.data.UltimateEffectPrefab, hero.transform.position, Quaternion.identity);
                         healEffect.GetComponent<Poolable>().ReleaseAfter(1.5f);
                     }
                 }
                 break;
 
-            case JobType.Mage:
-                // 메테오 로직 (추후 구현)
+            case JobType.Warrior:
+                // 회전 공격: 반경 3f 내 적에게 공격력 150% 피해
+                int warriorDamage = Mathf.RoundToInt(finalAttack * 1.5f);
+
+                // 회전 이펙트 풀링 및 해제
+                GameObject spinEffect = PoolManager.Instance.SpawnFromPool
+                    (heroInstance.data.UltimateEffectPrefab, transform.position, Quaternion.identity);
+                spinEffect.GetComponent<Poolable>().ReleaseAfter(1.0f);
+
+                foreach (var hero in allHeroesInField)
+                {
+                    if (hero.CompareTag("Enemy"))
+                    {
+                        float distance = Vector3.Distance(transform.position, hero.transform.position);
+                        if (distance <= 3f)
+                        {
+                            hero.stats.TakeDamage(warriorDamage); //데미지 함수 호출
+                        }
+                    }
+                }
                 break;
 
-            case JobType.Warrior:
-                // 회전 공격 로직 (추후 구현)
+            case JobType.Mage:
+                // 메테오: 가장 가까운 적 주변 4f에 공격력 200% 피해
+                int mageDamage = finalAttack * 2;
+                HeroBase mageTarget = GetNearestEnemy(allHeroesInField);
+
+                if (mageTarget != null)
+                {
+                    GameObject meteorEffect = PoolManager.Instance.SpawnFromPool
+                        (heroInstance.data.UltimateEffectPrefab, mageTarget.transform.position, Quaternion.identity);
+                    meteorEffect.GetComponent<Poolable>().ReleaseAfter(2.0f);
+
+                    foreach (var hero in allHeroesInField)
+                    {
+                        if (hero.CompareTag("Enemy"))
+                        {
+                            float distToMeteor = Vector3.Distance(mageTarget.transform.position, hero.transform.position);
+                            if (distToMeteor <= 4f)
+                            {
+                                hero.stats.TakeDamage(mageDamage);
+                            }
+                        }
+                    }
+                }
                 break;
 
             case JobType.Archer:
-                // 집중 저격 로직 (추후 구현)
+                // 집중 저격: 가장 멀리 있는 적에게 공격력 300% 단일 피해
+                int archerDamage = finalAttack * 3;
+                HeroBase archerTarget = GetFurthestEnemy(allHeroesInField);
+
+                if (archerTarget != null)
+                {
+                    GameObject snipeEffect = PoolManager.Instance.SpawnFromPool
+                        (heroInstance.data.UltimateEffectPrefab, archerTarget.transform.position, Quaternion.identity);
+                    snipeEffect.GetComponent<Poolable>().ReleaseAfter(1.0f);
+
+                    archerTarget.stats.TakeDamage(archerDamage);
+                }
                 break;
 
             case JobType.Tank:
-                // 수호의 방패 로직 (추후 구현)
+                // 수호의 방패: 최대 체력 20% 보호막 생성
+                int shieldAmount = Mathf.RoundToInt(finalMaxHp * 0.2f);
+                GameObject shieldEffect = PoolManager.Instance.SpawnFromPool
+                    (heroInstance.data.UltimateEffectPrefab, transform.position, Quaternion.identity);
+                shieldEffect.GetComponent<Poolable>().ReleaseAfter(2.0f);
+
+                stats.AddShield(shieldAmount);
                 break;
         }
 
-        // 궁극기 사용 완료 후 에너지 0으로 초기화
-        stats.ResetEnergy();
+    }
+
+    // ===============================
+    // 타겟 탐색 로직
+    // ===============================
+
+    // 마법사용
+    private HeroBase GetNearestEnemy(HeroBase[] allHeroes)
+    {
+        HeroBase nearest = null;
+        float minDist = float.MaxValue;
+        foreach (var h in allHeroes)
+        {
+            if (h.CompareTag("Enemy")) 
+            {
+                float dist = Vector3.Distance(transform.position, h.transform.position);
+                if (dist < minDist) { minDist = dist; nearest = h; }
+            }
+        }
+        return nearest;
+    }
+
+    // 궁수용
+    private HeroBase GetFurthestEnemy(HeroBase[] allHeroes)
+    {
+        HeroBase furthest = null;
+        float maxDist = float.MinValue;
+        foreach (var h in allHeroes)
+        {
+            if (h.CompareTag("Enemy"))
+            {
+                float dist = Vector3.Distance(transform.position, h.transform.position);
+                if (dist > maxDist) { maxDist = dist; furthest = h; }
+            }
+        }
+        return furthest;
     }
 }
