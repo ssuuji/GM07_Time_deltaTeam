@@ -6,7 +6,7 @@ public class HeroManager : MonoBehaviour
 {
     public static HeroManager Instance { get; private set; }
 
-    [Header("영웅 원본 데이터 (ScriptableObject)")]
+    [Header("영웅 원본 데이터")]
     [SerializeField] private List<HeroData> allHeroDataList = new List<HeroData>();
 
     // 영웅 ID를 키로 사용하여 현재 상태를 빠르게 검색
@@ -40,11 +40,11 @@ public class HeroManager : MonoBehaviour
         }
     }
 
-    // ===============================
-    // 영웅 해금 및 성장 로직
-    // ===============================
+    // =============================
+    // 영웅 해금 및 레벨업
+    // =============================
 
-    // 영웅 획득 시 호출함 (성공 true, 실패 false 반환)
+    // 영웅 획득 시 호출함
     public bool UnlockHero(int heroID)
     {
         // ID 검색 및 미해금 상태 확인함
@@ -57,13 +57,38 @@ public class HeroManager : MonoBehaviour
         return false; // 이미 해금됐거나 없는 ID면 false 반환
     }
 
-    // 영웅 레벨업 시 호출
+    // 영웅 레벨업
     public bool LevelUpHero(int heroID)
     {
         // ID 검색 및 해금 상태 확인
         if (heroDictionary.TryGetValue(heroID, out HeroInstance hero) && hero.isUnlocked)
         {
-            return hero.LevelUp(); // 레벨업 로직 실행
+            // 이미 최고 레벨인지 먼저 확인
+            if (hero.level >= 50)
+            {
+                Debug.LogWarning($"{hero.data.HeroName}은(는) 이미 최고 레벨(50)입니다.");
+                return false;
+            }
+
+            // 현재 레벨업에 필요한 골드 확인
+            int cost = hero.LevelUpCost;
+
+            // CurrencyManager를 통해 골드 차감 시도
+            if (CurrencyManager.Instance != null && CurrencyManager.Instance.UseGold(cost))
+            {
+                // 골드 차감이 성공했다면 실제 레벨업 진행
+                bool success = hero.LevelUp();
+                if (success)
+                {
+                    Debug.Log($"[HeroManager] {hero.data.HeroName} 레벨업 완료! (LV.{hero.level}) / 소모 골드: {cost}");
+                }
+                return success;
+            }
+            else
+            {
+                // 돈이 부족해서 false를 반환한 경우 레벨업은 취소
+                return false;
+            }
         }
         return false;
     }
@@ -88,11 +113,13 @@ public class HeroManager : MonoBehaviour
         {
             if (heroDictionary.TryGetValue(kvp.Key, out HeroInstance hero))
             {
-                hero.level = kvp.Value.level;
+                // 데이터 변조 방지를 위해 최대 레벨 제한 적용
+                hero.level = Mathf.Clamp(kvp.Value.level, 1, 50);
                 hero.isUnlocked = kvp.Value.isUnlocked;
             }
         }
     }
+
     // 파티 매니저가 저장된 파티를 불러올 때 영웅 ID로 인스턴스를 찾아주는 함수
     public HeroInstance GetHeroByID(int heroID)
     {
