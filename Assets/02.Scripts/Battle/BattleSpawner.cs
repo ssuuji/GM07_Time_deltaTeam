@@ -100,6 +100,15 @@ namespace AFKHero.Battle
                 // BattleUnit에 데이터, 진영, 슬롯 번호 전달
                 unit.Initialize(unitData, team, slotIndex, battleManager);
 
+                // 초기화에 실패한 유닛은 등록하지 않고 정리
+                if (!unit.IsInitialized)
+                {
+                    Debug.LogError($"[{unitData.name}] 유닛 초기화에 실패하였습니다.",unit);
+
+                    DestroyUnitObject(unit);
+                    continue;
+                }
+
                 // BattleManager 해당 진영 목록에 유닛 등록
                 battleManager.RegisterUnit(unit);
 
@@ -133,6 +142,26 @@ namespace AFKHero.Battle
                 }
             }
             spawnedUnits.Clear();
+        }
+
+        private static void DestroyUnitObject(BattleUnit unit)
+        {
+            if(unit == null)
+            {
+                return;
+            }    
+
+            GameObject unitObject = unit.gameObject;
+            unitObject.SetActive(false);
+
+            if (Application.isPlaying)
+            {
+                UnityEngine.Object.Destroy(unitObject);
+            }
+            else
+            {
+                UnityEngine.Object.DestroyImmediate(unitObject);
+            }
         }
 
         // 유닛 생성에 필요한 BattleManager 와 FormationData 검사

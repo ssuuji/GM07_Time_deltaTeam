@@ -21,6 +21,9 @@ namespace AFKHero.Battle
         // 적군 유닛 목록
         public IReadOnlyList<BattleUnit> EnemyUnits => enemyUnits;
 
+        // 같은 프레임에 사망해도 승패 중복 방지
+        private bool isBattleResultConfirmed;
+
         // 전투 상태 변경
         public event Action<BattleState> StateChanged;
 
@@ -60,11 +63,19 @@ namespace AFKHero.Battle
         // 양 진영에 한 명 이상 등록되어 있다면 전투 시작
         public void StartBattle()
         {
-            if(allyUnits.Count == 0 || enemyUnits.Count == 0)
+            // 전투 중복 실행 방지
+            if (CurrentState == BattleState.Fighting)
+            {
+                Debug.LogWarning("이미 전투가 진행 중입니다.");
+            }
+
+            if(!HasLivingUnit(TeamType.Ally)||!HasLivingUnit(TeamType.Enemy))
             {
                 Debug.LogError("양 진영에 유닛이 한 명 이상 있어야 전투를 시작할 수 있습니다.", this);
                 return;
             }
+
+            isBattleResultConfirmed = false;
 
             ChangeState(BattleState.Fighting);
 
@@ -90,6 +101,9 @@ namespace AFKHero.Battle
 
             UnitDied?.Invoke(deadunit);
 
+            // 적이 죽으면 다음 적을 찾도록 알림
+            NotifyTargetInvalidated(deadunit);
+
             if(CurrentState != BattleState.Fighting)
             {
                 return;
@@ -104,7 +118,35 @@ namespace AFKHero.Battle
             allyUnits.Clear();
             enemyUnits.Clear();
 
+            // 재시작할 때 이전 전투의 승패 판정이 남지않게 초기화
+            isBattleResultConfirmed = false;
+
             ChangeState(BattleState.Preparing);
+        }
+
+        // 죽은 유닛을 바라보던 생존 유닛 갱신
+        private void NotifyTargetInvalidated(BattleUnit deadUnit)
+        {
+            NotifyTargetInvalidatedInList(allyUnits, deadUnit);
+            NotifyTargetInvalidatedInList(enemyUnits, deadUnit);
+        }
+
+        private static void NotifyTargetInvalidatedInList(IReadOnlyList<BattleUnit> units, BattleUnit deadUnit)
+        {
+            for(int i = 0;i< units.Count; i++)
+            {
+                BattleUnit unit = units[i];
+
+                if (unit == null ||
+                    !unit.IsInitialized ||
+                    unit.Stats == null ||
+                    !unit.Stats.IsAlive)
+                {
+                    continue;
+                }
+
+                unit.TargetFinder?.HandleTargetInvalidated(deadUnit);
+            }
         }
 
         private bool HasLivingUnit(TeamType team)
@@ -129,22 +171,29 @@ namespace AFKHero.Battle
 
         private void CheckBattleResult()
         {
+            if(isBattleResultConfirmed || CurrentState != BattleState.Fighting)
+            {
+                return;
+            }
+
             bool hasLivingAlly = HasLivingUnit(TeamType.Ally);
 
             bool hasLivingEnemy = HasLivingUnit(TeamType.Enemy);
 
-            if (!hasLivingEnemy)
+            // 양쪽 모두 생존자가 있으면 전투 지속
+            if(hasLivingAlly && hasLivingEnemy)
             {
-                ChangeState(BattleState.Victory);
-                Debug.Log("전투 승리!", this);
                 return;
             }
 
-            if (!hasLivingAlly)
-            {
-                ChangeState(BattleState.Defeat);
-                Debug.Log("전투 패배...", this);
-            }
+            isBattleResultConfirmed = true;
+
+            // 양쪽이 동시에 전멸하면 적이 다 죽었으므로 승리
+            BattleState resultState = hasLivingEnemy ? BattleState.Defeat : BattleState.Victory;
+
+            ChangeState(resultState);
+
+            Debug.Log(resultState == BattleState.Victory ? "전투 승리!" : "전투 패배...", this);
         }
         
         // 현재 전투 상태를 새로운 상태로 변경하고 이벤트 발생

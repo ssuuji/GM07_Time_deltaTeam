@@ -17,8 +17,8 @@ namespace AFKHero.Battle
         [SerializeField]
         private List<Vector2> allyPositions = new()
         {
-            new Vector2(-0.9f, -1.6f),
-            new Vector2(0.9f, -1.6f),
+            new Vector2(-0.8f, -1.3f),
+            new Vector2(0.8f, -1.6f),
 
             new Vector2(-1.6f, -3.0f),
             new Vector2(0f, -3.0f),
@@ -30,8 +30,8 @@ namespace AFKHero.Battle
         [SerializeField]
         private List<Vector2> enemyPositions = new()
         {
-            new Vector2(0.9f,1.6f),
-            new Vector2(-0.9f,1.6f),
+            new Vector2(0.8f,1.3f),
+            new Vector2(-0.8f,1.6f),
 
             new Vector2(1.6f, 3.0f),
             new Vector2(0f,3.0f),

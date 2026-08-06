@@ -33,16 +33,7 @@ namespace AFKHero.Battle
 
         private void Update()
         {
-            if (owner == null || 
-                owner.Stats == null ||
-                battleManager == null ||
-                !owner.Stats.IsAlive)
-            {
-                return;
-            }
-
-            // 전투 중일때만 탐색
-            if(battleManager.CurrentState != BattleState.Fighting)
+            if (!CanSearchTarget())
             {
                 return;
             }
@@ -68,6 +59,25 @@ namespace AFKHero.Battle
 
             FindClosestTarget();
         }
+
+        // 현재 타겟이 사망했다는 알림을 받으면 같은 프레임에 다음 적을 찾음
+        public void HandleTargetInvalidated(BattleUnit invalidTarget)
+        {
+            if(CurrentTarget != invalidTarget)
+            {
+                return;
+            }
+
+            ClearTarget();
+
+            if (!CanSearchTarget())
+            {
+                return;
+            }
+
+            SearchImmediately();
+        }
+
 
         // 가장 가까운 유닛 탐색
         public void FindClosestTarget()
@@ -113,6 +123,23 @@ namespace AFKHero.Battle
             nextSrearchTime = 0f;
         }
         
+        // 탐색 가능한 전투 상태 인지 검사
+        private bool CanSearchTarget()
+        {
+            return owner != null &&
+                owner.Stats != null &&
+                owner.Stats.IsAlive &&
+                battleManager != null &&
+                battleManager.CurrentState == BattleState.Fighting;
+        }
+        
+        private void SearchImmediately()
+        {
+            FindClosestTarget();
+
+            nextSrearchTime = HasValidTarget ? 0f : Time.time + searchInterval;
+        }
+
         // 공격 가능한 유효 타깃인지 검사
         private bool IsValidTarget(BattleUnit target)
         {
