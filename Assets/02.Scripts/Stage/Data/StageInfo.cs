@@ -26,6 +26,7 @@ public class StageInfo
 
 
 
+
     public int StageNumber => stageNumber;
     public int SectionNumber => sectionNumber;
     public bool IsBossStage => isBossStage;
