@@ -12,4 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acd6ad234cbe12545a2abc4ef1e4a18b, type: 3}
   m_Name: TempStageData
   m_EditorClassIdentifier: Assembly-CSharp::StageData
-  stages: []
+  stages:
+  - stageNumber: 0
+    sectionNumber: 0
+    isBossStage: 0
+    timeLimit: 0
+    enemies: []
+    clearGold: 0
+  - stageNumber: 0
+    sectionNumber: 0
+    isBossStage: 0
+    timeLimit: 0
+    enemies: []
+    clearGold: 0
+  - stageNumber: 0
+    sectionNumber: 0
+    isBossStage: 0
+    timeLimit: 0
+    enemies: []
+    clearGold: 0
