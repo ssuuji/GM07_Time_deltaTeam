@@ -256,6 +256,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2881c8f4881e19941b3774b59596b634, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Battle.BattleManager
+  battleTimeLimit: 30
 --- !u!4 &1815320755
 Transform:
   m_ObjectHideFlags: 0
