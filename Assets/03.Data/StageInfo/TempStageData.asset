@@ -13,21 +13,7 @@ MonoBehaviour:
   m_Name: TempStageData
   m_EditorClassIdentifier: Assembly-CSharp::StageData
   stages:
-  - stageNumber: 0
-    sectionNumber: 0
-    isBossStage: 0
-    timeLimit: 0
-    enemies: []
-    clearGold: 0
-  - stageNumber: 0
-    sectionNumber: 0
-    isBossStage: 0
-    timeLimit: 0
-    enemies: []
-    clearGold: 0
-  - stageNumber: 0
-    sectionNumber: 0
-    isBossStage: 0
-    timeLimit: 0
-    enemies: []
-    clearGold: 0
+  - {fileID: 11400000, guid: 1cd7548d8685740468f3b91eca632436, type: 2}
+  - {fileID: 11400000, guid: 3de71878c66dd844ba15326a231f3dab, type: 2}
+  - {fileID: 11400000, guid: a756d15972608894e8b6c61d3cb8818f, type: 2}
+  - {fileID: 11400000, guid: 56ffb605aa6e7bf4ba15cd763755300e, type: 2}
