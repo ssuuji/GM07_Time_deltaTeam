@@ -7,22 +7,41 @@ namespace AFKHero.Battle
 {
     public sealed class BattleManager : MonoBehaviour
     {
+        // 0초 이하의 제한시간이 설정되지 않게
+        private const float MinimumBattleTimeLimit = 1f;
+
+        [Header("전투 시간")]
+        [SerializeField, Min(MinimumBattleTimeLimit)]
+        private float battleTimeLimit = 90f;
+
         // 현재 전투에 등록된 아군 유닛
         private readonly List<BattleUnit> allyUnits = new();
 
         // 현재 전투에 등록된 적군 유닛
         private readonly List<BattleUnit> enemyUnits = new();
 
+        // 같은 프레임에 사망해도 승패 중복 방지
+        private bool isBattleResultConfirmed;
+
+        // 남은 시간
+        private float remainingBattleTime;
+
         // 현재 전투의 진행 상태
         public BattleState CurrentState { get; private set; } = BattleState.None;
 
         // 아군 유닛 목록
         public IReadOnlyList<BattleUnit> AllyUnits => allyUnits;
+
         // 적군 유닛 목록
         public IReadOnlyList<BattleUnit> EnemyUnits => enemyUnits;
 
-        // 같은 프레임에 사망해도 승패 중복 방지
-        private bool isBattleResultConfirmed;
+        // 최소한 보정
+        public float BattleTimeLimit => Mathf.Max(MinimumBattleTimeLimit, battleTimeLimit);
+
+        public float RemainingBattleTime => remainingBattleTime;
+
+        // UI에서 활용(0 또는 1로 진행률로 사용)
+        public float RemainingBattleTimeNormalized => BattleTimeLimit > 0f ? remainingBattleTime / BattleTimeLimit : 0f;
 
         // 전투 상태 변경
         public event Action<BattleState> StateChanged;
@@ -30,11 +49,21 @@ namespace AFKHero.Battle
         // 죽음 상태 변경
         public event Action<BattleUnit> UnitDied;
 
+        // 첫 번째 값은 남은 시간, 두 번째 값은 전체 제한시간
+        public event Action<float, float> BattleTimeChanged;
+
         private void Awake()
         {
+            ResetBattleTimer();
             ChangeState(BattleState.Preparing);
         }
-        
+
+        private void LateUpdate()
+        {
+            // 제한시간이 끝나는 마지막 프레임에 공격 결과 판정 반영
+            UpdateBattleTimer();
+        }
+
         // 해당 진영 목록에 유닛 등록
         public void RegisterUnit(BattleUnit unit)
         {
@@ -64,9 +93,10 @@ namespace AFKHero.Battle
         public void StartBattle()
         {
             // 전투 중복 실행 방지
-            if (CurrentState == BattleState.Fighting)
+            if (CurrentState == BattleState.Fighting || CurrentState == BattleState.UltimateSequence)
             {
                 Debug.LogWarning("이미 전투가 진행 중입니다.");
+                return;
             }
 
             if(!HasLivingUnit(TeamType.Ally)||!HasLivingUnit(TeamType.Enemy))
@@ -76,6 +106,8 @@ namespace AFKHero.Battle
             }
 
             isBattleResultConfirmed = false;
+
+            ResetBattleTimer();
 
             ChangeState(BattleState.Fighting);
 
@@ -104,7 +136,7 @@ namespace AFKHero.Battle
             // 적이 죽으면 다음 적을 찾도록 알림
             NotifyTargetInvalidated(deadunit);
 
-            if(CurrentState != BattleState.Fighting)
+            if(CurrentState != BattleState.Fighting || isBattleResultConfirmed)
             {
                 return;
             }
@@ -120,6 +152,8 @@ namespace AFKHero.Battle
 
             // 재시작할 때 이전 전투의 승패 판정이 남지않게 초기화
             isBattleResultConfirmed = false;
+
+            ResetBattleTimer();
 
             ChangeState(BattleState.Preparing);
         }
@@ -186,16 +220,67 @@ namespace AFKHero.Battle
                 return;
             }
 
-            isBattleResultConfirmed = true;
+            // 양쪽이 동시에 전멸하면 아군 패배
+            BattleState resultState = hasLivingAlly ? BattleState.Victory : BattleState.Defeat;
 
-            // 양쪽이 동시에 전멸하면 적이 다 죽었으므로 승리
-            BattleState resultState = hasLivingEnemy ? BattleState.Defeat : BattleState.Victory;
-
-            ChangeState(resultState);
-
-            Debug.Log(resultState == BattleState.Victory ? "전투 승리!" : "전투 패배...", this);
+            ConfirmBattleResult(resultState, resultState == BattleState.Victory ? "전투 승리!" : "전투 패배...");
         }
         
+        private void UpdateBattleTimer()
+        {
+            if(CurrentState != BattleState.Fighting || isBattleResultConfirmed)
+            {
+                return;
+            }
+
+            float previousTime = remainingBattleTime;
+
+            remainingBattleTime = Mathf.Max(0f, remainingBattleTime - Time.deltaTime);
+
+            if(!Mathf.Approximately(previousTime, remainingBattleTime))
+            {
+                NotifyBattleTimeChanged();
+            }
+
+            if(remainingBattleTime > 0f)
+            {
+                return;
+            }
+
+            ConfirmBattleResult(BattleState.Defeat, "전투 제한시간 종료 - 패배...");
+        }
+
+        private void ResetBattleTimer()
+        {
+            remainingBattleTime = BattleTimeLimit;
+            NotifyBattleTimeChanged();
+        }
+
+        private void NotifyBattleTimeChanged()
+        {
+            BattleTimeChanged?.Invoke(remainingBattleTime, BattleTimeLimit);
+        }
+
+        private void ConfirmBattleResult(BattleState resultState, string resultLog)
+        {
+            if(isBattleResultConfirmed || CurrentState != BattleState.Fighting)
+            {
+                return;
+            }
+
+            if(resultState != BattleState.Victory && resultState != BattleState.Defeat)
+            {
+                Debug.LogError($"{resultState}는 전투 결과 상태가 아닙니다.", this);
+
+                return;
+            }
+
+            isBattleResultConfirmed = true;
+
+            ChangeState(resultState);
+            Debug.Log(resultLog,this);
+        }
+
         // 현재 전투 상태를 새로운 상태로 변경하고 이벤트 발생
         private void ChangeState(BattleState nextState)
         {

@@ -21,9 +21,14 @@ namespace AFKHero.Battle
                 return 0;
             }
 
-            int damamgeBeforeMinimum = attackerStats.AttackPower - defenderStats.Defense;
+            if(attackerStats.AttackPower <= 0)
+            {
+                return 0;
+            }
 
-            return Mathf.Max(MinimunDamage, damamgeBeforeMinimum);
+            int damageBeforeMinimum = attackerStats.AttackPower - defenderStats.Defense;
+
+            return Mathf.Max(MinimunDamage, damageBeforeMinimum);
         }
     }
 }

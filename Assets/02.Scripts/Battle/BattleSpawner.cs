@@ -131,15 +131,8 @@ namespace AFKHero.Battle
                 {
                     continue;
                 }
-
-                if (Application.isPlaying)
-                {
-                    Destroy(spawnedUnits[i].gameObject);
-                }
-                else
-                {
-                    DestroyImmediate(spawnedUnits[i].gameObject);
-                }
+                DestroyUnitObject(spawnedUnits[i]);
+                
             }
             spawnedUnits.Clear();
         }
@@ -219,7 +212,5 @@ namespace AFKHero.Battle
             }
         }
 #endif
-
-
-        }
+    }
 }
