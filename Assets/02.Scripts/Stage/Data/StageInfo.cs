@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class StageInfo
+[CreateAssetMenu(fileName = "StageInfo", menuName = "Game Data / Stage Info")]
+public class StageInfo : ScriptableObject
 {
     [Header("스테이지 정보")]
 
@@ -23,6 +23,7 @@ public class StageInfo
 
     [Header("클리어 보상")]
     [SerializeField] private int clearGold;
+
 
 
 

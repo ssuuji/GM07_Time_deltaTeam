@@ -5,10 +5,10 @@ using UnityEngine;
 public class StageData : ScriptableObject
 {
     [Header("스테이지 목록")]
-    [SerializeField] private List<StageInfo> stages = new List<StageInfo>();
+    [SerializeField] private List<StageInfo> stages = new();
 
 
-    public List<StageInfo> Stages => stages;
+    public IReadOnlyList<StageInfo> Stages => stages;
 
 
     public StageInfo GetStage(int stageNumber, int sectionNumber) // 스테이지 번호랑 구간 번호가 일치하는 데이터 찾기
