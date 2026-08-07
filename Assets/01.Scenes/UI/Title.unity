@@ -832,7 +832,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 773562201}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1984244908}
+        m_TargetAssemblyTypeName: AFKHero.UI.TitleSceneController, Assembly-CSharp
+        m_MethodName: OnClickedStart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &773562201
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1376,6 +1388,7 @@ MonoBehaviour:
   - {fileID: 222274292}
   - {fileID: 1313654283}
   - {fileID: 1333349572}
+  fadeImage: {fileID: 773114859}
 --- !u!4 &1984244909
 Transform:
   m_ObjectHideFlags: 0
