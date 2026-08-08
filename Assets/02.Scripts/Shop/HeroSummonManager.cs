@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AFKHero.Shop
@@ -13,6 +14,20 @@ namespace AFKHero.Shop
         
         [SerializeField] private List<SummonLevelData> levelData; //레벨별 설정 데이터
         [SerializeField] private List<HeroData> heroList;         //영웅리스트
+
+        public event Action OnSummonInfoChanged; //제단정보 변경 이벤트
+
+        //프로퍼티
+        public int SummonLevel => summonLevel;
+        public int SummonExp => summonExp;
+        public int MaxSummonExp
+        {
+            get
+            {
+                SummonLevelData data = GetCurrentLevelData();
+                return data.maxExp;
+            }
+        }
 
         //현재 소환제단 레벨에 해당하는 데이터 가져오기
         private SummonLevelData GetCurrentLevelData()
@@ -32,7 +47,7 @@ namespace AFKHero.Shop
         private HeroGrade GetHeroGrade()
         {
             SummonLevelData currentData = GetCurrentLevelData(); //소환레벨 가져오고
-            float random = Random.Range(0f, 100f);
+            float random = UnityEngine.Random.Range(0f, 100f);
 
             // 0 ~ 에픽 구간이면 Epic
             if (random < currentData.epicRate)
@@ -61,8 +76,8 @@ namespace AFKHero.Shop
                 }
             }
 
-            int randomIndex = Random.Range(0, gradeHeroes.Count); //랜덤 뽑기
-            return gradeHeroes[randomIndex];                      //영웅 반환
+            int randomIndex = UnityEngine.Random.Range(0, gradeHeroes.Count); //랜덤 뽑기
+            return gradeHeroes[randomIndex];                                  //영웅 반환
         }
 
         //소환
@@ -79,6 +94,7 @@ namespace AFKHero.Shop
                 CheckLevelUp();   //레벨 체크
             }
 
+            OnSummonInfoChanged?.Invoke(); //소환후 제단정보 변경 이벤트
             return result;
         }
 
@@ -96,7 +112,7 @@ namespace AFKHero.Shop
             }
 
             summonExp -= currentData.maxExp; //남은 게이지는 다음레벨로 넘기기
-            summonExp++; //제단 레벨업
+            summonLevel++;                   //제단 레벨업
         }
     }
 }
