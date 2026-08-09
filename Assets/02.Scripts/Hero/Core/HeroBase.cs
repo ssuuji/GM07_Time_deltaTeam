@@ -5,8 +5,12 @@ public class HeroBase : MonoBehaviour
     // 영웅 데이터 인스턴스
     public HeroInstance heroInstance { get; private set; }
 
-    // 만들 전투 스탯 클래스를 연동용으로 선언만
+    // 전투 스탯 클래스 연동용으로 선언
     public HeroStats stats { get; private set; }
+
+    public bool isEnemy { get; private set; }
+    public bool isNormalMob { get; private set; }
+    private string targetTag; // 피아식별용 태그
 
     private void Awake()
     {
@@ -14,10 +18,17 @@ public class HeroBase : MonoBehaviour
     }
 
     // 영웅 소환 시 초기화
-    public void Init(HeroInstance instance)
+    public void Init(HeroInstance instance, bool isEnemyTeam = false, bool isNormalMob = false)
     {
         this.heroInstance = instance;
-        Debug.Log($"[HeroBase] {instance.data.HeroName} 궁극기 시스템 세팅 완료!");
+        this.isEnemy = isEnemyTeam;
+        this.isNormalMob = isNormalMob;
+
+        // 적군/아군 여부에 따라 본인의 Tag와 목표물의 targetTag를 자동 할당함
+        gameObject.tag = isEnemyTeam ? "Enemy" : "Ally";
+        targetTag = isEnemyTeam ? "Ally" : "Enemy";
+
+        Debug.Log($"[HeroBase] {instance.data.HeroName} 세팅 완료! (적군: {isEnemyTeam}, 일반몹: {isNormalMob})");
     }
 
 
