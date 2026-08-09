@@ -38,7 +38,8 @@ public class StageManager : MonoBehaviour
         //TODO : HeroBase(예정)에 구현될 레벨 창구를 통해 해당 값을 전달하여, 적의 레벨을 변경하고 그에 따라 스탯 변화
         //HeroBase가 아니라 Stage쪽 스크립트에서 레벨을 설정할 수 있도록 구현할 것. 주말 정도에 작업하신다고 하시니 충돌 안 나게 관리하기.
 
-        enemySpawner.SpawnEnemies(currentStageInfo.Enemies); // 현재 구간의 적 목록을 enemySpawner에 전달
+        // [수정한 부분: 적 목록(Enemies)과 방금 계산한 레벨(enemyLevel)을 같이 넘겨줍니다]
+        enemySpawner.SpawnEnemies(currentStageInfo.Enemies, enemyLevel);
     }
 
     //여기에서 다음 스테이지로 넘기는 public 메서드가 하나 있어야 할 듯

@@ -10,24 +10,39 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private Transform backCenter;
     [SerializeField] private Transform backRight;
 
-    public void SpawnEnemies(List<StageEnemyInfo> enemies)
+    // 수정한 부분: StageInfo 전체가 아니라, 적 목록 리스트와 몬스터 레벨을 매개변수로 받기
+    public void SpawnEnemies(List<StageEnemyInfo> enemies, int enemyLevel)
     {
-        foreach (StageEnemyInfo enemyInfo in enemies) // 목록을 순회 하면서 한명씩 생성
+        foreach (StageEnemyInfo enemyInfo in enemies)
         {
-            SpawnEnemy(enemyInfo);
+            SpawnEnemy(enemyInfo, enemyLevel); // 받아온 레벨 전달
         }
     }
 
-    private void SpawnEnemy(StageEnemyInfo enemyInfo) // 적 한명을 지정한 슬롯 위치에 생성
+    private void SpawnEnemy(StageEnemyInfo enemyInfo, int enemyLevel)
     {
         Transform spawnPoint = GetSpawnPoint(enemyInfo.SpawnSlot);
 
-        if (enemyInfo.EnemyPrefab == null || spawnPoint == null)
-        {
-            return;
-        }
+        if (enemyInfo.EnemyPrefab == null || spawnPoint == null) return;
 
-        CreateEnemy(enemyInfo, spawnPoint);
+        GameObject spawnedEnemy = CreateEnemy(enemyInfo, spawnPoint);
+
+        // [추가된 부분: 생성된 적의 스크립트를 찾아 레벨과 적군 상태를 세팅해 줌]
+        HeroBase enemyScript = spawnedEnemy.GetComponent<HeroBase>();
+        if (enemyScript != null)
+        {
+            // 몬스터 전용 임시 데이터를 만들고 레벨을 덮어씌움
+            // (HeroData가 연결되어 있다는 가정)
+            HeroData data = enemyScript.heroInstance?.data;
+            if (data != null)
+            {
+                HeroInstance monsterInstance = new HeroInstance(data, true);
+                monsterInstance.level = enemyLevel; // 스테이지 레벨 적용
+
+                // 적군(true), 일반몹(true)으로 Init 호출
+                enemyScript.Init(monsterInstance, true, true);
+            }
+        }
     }
 
     private GameObject CreateEnemy(StageEnemyInfo enemyInfo, Transform spawnPoint) // 적 생성 부분  추후에 풀 매니저 생겼을 때 수정 
