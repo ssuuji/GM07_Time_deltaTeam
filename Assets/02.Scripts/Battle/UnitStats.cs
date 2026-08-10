@@ -12,6 +12,7 @@ namespace AFKHero.Battle
         public float AttackRange { get; private set; }
         public float AttackInterval { get; private set; }
         public float MoveSpeed { get; private set; }
+
         public int MaxUltimateEnergy { get; private set; }
         public int CurrentUltimateEnergy { get; private set; }
         public bool IsAlive => CurrentHealth > 0;
@@ -46,6 +47,36 @@ namespace AFKHero.Battle
 
             CurrentHealth = Mathf.Max(0, CurrentHealth - damage);
             return previousHealth - CurrentHealth;
+        }
+
+        public int AddUltimateEnergy(int amount)
+        {
+            if(!IsAlive || amount <= 0)
+            {
+                return 0;
+            }
+
+            int previousEnergy = CurrentUltimateEnergy;
+
+            CurrentUltimateEnergy = Mathf.Min(MaxUltimateEnergy, CurrentUltimateEnergy + amount);
+
+            return CurrentUltimateEnergy - previousEnergy;
+        }
+
+        public void ResetUltimateEnergy()
+        {
+            CurrentUltimateEnergy = 0;
+        }
+
+        public bool TryComsumeUltimateEnergy()
+        {
+            if(!IsAlive || CurrentUltimateEnergy < MaxUltimateEnergy)
+            {
+                return false;
+            }
+
+            CurrentUltimateEnergy = 0;
+            return true;
         }
     }
 }

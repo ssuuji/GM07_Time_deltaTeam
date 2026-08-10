@@ -41,6 +41,12 @@ namespace AFKHero.Battle
         // 궁극기 에너지
         [Min(1)]
         [SerializeField] private int maxUltimateEnergy = 100;
+        // 기본 공격 시 공격자가 얻는 에너지
+        [Min(0)]
+        [SerializeField] private int basicAttackEnergyGain = 10;
+        // 피해를 받았을 때 방어자가 얻는 에너지
+        [Min(0)]
+        [SerializeField] private int damageTakenEnergyGain = 5;
 
         public string UnitId=> unitId;
         public string DisplayName => displayName;
@@ -54,6 +60,8 @@ namespace AFKHero.Battle
         public float AttackInterval => attackInterval;
         public float MoveSpeed => moveSpeed;
         public int MaxUltimateEnergy => maxUltimateEnergy;
+        public int BasicAttackEnergyGain => basicAttackEnergyGain;
+        public int DamageTakenEnergyGain => damageTakenEnergyGain;
 
 #if UNITY_EDITOR
         // 데이터 누락 확인

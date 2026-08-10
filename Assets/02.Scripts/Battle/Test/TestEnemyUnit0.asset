@@ -17,9 +17,11 @@ MonoBehaviour:
   potrait: {fileID: 21300000, guid: a24a5791db8ac4e9f8cd2586d72f586d, type: 3}
   battlePrefab: {fileID: 3097641259860501999, guid: 91469b76a94d9aa4e8752b9adc2bb0d6, type: 3}
   maxHealth: 100
-  attackPower: 0
+  attackPower: 5
   defense: 2
-  attackRange: 1.2
+  attackRange: 0.5
   attackInterval: 1
   moveSpeed: 2
   maxUltimateEnergy: 100
+  basicAttackEnergyGain: 20
+  damageTakenEnergyGain: 5

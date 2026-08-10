@@ -13,8 +13,9 @@ GameObject:
   - component: {fileID: 584630936369778458}
   - component: {fileID: -8199612681670896102}
   - component: {fileID: -2948329862938769425}
-  - component: {fileID: 3647474540241427885}
   - component: {fileID: 7881791461528291206}
+  - component: {fileID: 5926151878042191358}
+  - component: {fileID: -7721135876721070593}
   m_Layer: 0
   m_Name: Ally
   m_TagString: Untagged
@@ -31,7 +32,7 @@ Transform:
   m_GameObject: {fileID: 2089662863368153599}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.36725, y: 0.65754, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -110,8 +111,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.BattleUnit
   targetFinder: {fileID: -8199612681670896102}
   unitMovemnet: {fileID: -2948329862938769425}
-  attackController: {fileID: 3647474540241427885}
+  attackController: {fileID: -7721135876721070593}
   unitHealth: {fileID: 7881791461528291206}
+  unitEnergy: {fileID: 5926151878042191358}
   spriteRenderers:
   - {fileID: 4646195705583189505}
   sortingBaseOrder: 1000
@@ -141,18 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1eebdf4b7af6b8f44b5ff6f35cabb903, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitMovement
---- !u!114 &3647474540241427885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2089662863368153599}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 852adcd2e317e794898d9e9cdb7f8fbd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitAttackController
 --- !u!114 &7881791461528291206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,4 +156,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitHealth
   deactivateOnDeath: 1
-  logDamage: 1
+  logDamage: 0
+--- !u!114 &5926151878042191358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089662863368153599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10341939aa853344a874564be7b28b6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitEnergy
+  logEnergyChanges: 1
+--- !u!114 &-7721135876721070593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089662863368153599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f33d3258bf60f2446a7dcf9e23397fff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitAttackController
