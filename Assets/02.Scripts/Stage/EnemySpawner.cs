@@ -31,9 +31,8 @@ public class EnemySpawner : MonoBehaviour
         HeroBase enemyScript = spawnedEnemy.GetComponent<HeroBase>();
         if (enemyScript != null)
         {
-            // 몬스터 전용 임시 데이터를 만들고 레벨을 덮어씌움
-            // (HeroData가 연결되어 있다는 가정)
-            HeroData data = enemyScript.heroInstance?.data;
+            // 수정된 부분: 인스펙터에 등록해둔 몬스터 원본 데이터를 가져오기
+            HeroData data = enemyScript.defaultEnemyData;
             if (data != null)
             {
                 HeroInstance monsterInstance = new HeroInstance(data, true);

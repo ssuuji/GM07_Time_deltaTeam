@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class HeroBase : MonoBehaviour
 {
+    [Header("몬스터 전용 데이터")]
+    public HeroData defaultEnemyData;
+
     // 영웅 데이터 인스턴스
     public HeroInstance heroInstance { get; private set; }
 
