@@ -22,8 +22,8 @@ namespace AFKHero.UI
 
         private void Start()
         {
-            OpenView(defaultView);          //메인탭
-            OpenHeroView(defaultHeroView);  //파티탭
+            CurrentHeroView = defaultHeroView; //영웅탭
+            OpenView(defaultView);             //메인탭
         }
 
         #region 메인탭
@@ -62,7 +62,7 @@ namespace AFKHero.UI
         //영웅탭 화면 갱신
         private void UpdateHeroView()
         {
-
+            OpenHeroView(CurrentHeroView);
         }
 
         //전투탭 화면 갱신
@@ -135,6 +135,7 @@ namespace AFKHero.UI
         private void UpdatePartyView()
         {
             heroTitletxt.text = "파티";
+            UIPartyManager.Instance.UpdateHeroList(); //영웅리스트 조회
         }
 
         //성장탭 화면 갱신
