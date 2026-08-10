@@ -33,18 +33,18 @@ namespace AFKHero.Battle
                 owner.Stats == null ||
                 !owner.Stats.IsAlive;
         }
-        public void TakeDamage(int finalDamage, BattleUnit attacker)
+        public int TakeDamage(int finalDamage, BattleUnit attacker)
         {
             if (isDead || owner == null || owner.Stats == null || !owner.Stats.IsAlive)
             {
-                return;
+                return 0;
             }
 
             int appliedDamage = owner.Stats.ApplyDamage(finalDamage);
 
             if(appliedDamage <= 0)
             {
-                return;
+                return 0;
             }
 
             // ÄÚµå È®ÀÎ¿ë
@@ -58,11 +58,15 @@ namespace AFKHero.Battle
                     $"[HP] [{owner.Stats.CurrentHealth}]/[{owner.Stats.MaxHealth}]",owner);
             }
 
-            if (!owner.Stats.IsAlive)
+            if (owner.Stats.IsAlive)
+            {
+                owner.Energy?.GainFromDamageTake();
+            }
+            else
             {
                 Die(attacker);
             }
-
+            return appliedDamage;
         }
 
         // À¯´Ö Á×À½

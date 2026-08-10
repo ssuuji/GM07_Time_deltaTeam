@@ -15,11 +15,13 @@ MonoBehaviour:
   unitId: 10
   displayName: ally0
   potrait: {fileID: 21300000, guid: 04310307c42ff4e7fa0eb91e7b35af84, type: 3}
-  battlePrefab: {fileID: 0}
+  battlePrefab: {fileID: 584630936369778458, guid: 54242e9fae9805e409c44df7694be0d0, type: 3}
   maxHealth: 100
-  attackPower: 0
+  attackPower: 5
   defense: 2
-  attackRange: 1.2
+  attackRange: 0.5
   attackInterval: 1
   moveSpeed: 2
   maxUltimateEnergy: 100
+  basicAttackEnergyGain: 20
+  damageTakenEnergyGain: 5

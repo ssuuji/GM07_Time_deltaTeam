@@ -20,6 +20,9 @@ namespace AFKHero.Battle
         // 현재 전투에 등록된 적군 유닛
         private readonly List<BattleUnit> enemyUnits = new();
 
+        // 궁극기 대기 큐
+        private readonly UltimateQueue ultimateQueue = new();
+
         // 같은 프레임에 사망해도 승패 중복 방지
         private bool isBattleResultConfirmed;
 
@@ -34,6 +37,9 @@ namespace AFKHero.Battle
 
         // 적군 유닛 목록
         public IReadOnlyList<BattleUnit> EnemyUnits => enemyUnits;
+
+        // 궁극기 큐
+        public UltimateQueue UltimateQueue => ultimateQueue;
 
         // 최소한 보정
         public float BattleTimeLimit => Mathf.Max(MinimumBattleTimeLimit, battleTimeLimit);
@@ -80,6 +86,7 @@ namespace AFKHero.Battle
             if (!targetList.Contains(unit))
             {
                 targetList.Add(unit);
+                unit.Energy.UltimateReady += HandleUltimateReady;
             }
         }
 
@@ -109,6 +116,8 @@ namespace AFKHero.Battle
 
             ResetBattleTimer();
 
+            ultimateQueue.Clear();
+
             ChangeState(BattleState.Fighting);
 
             Debug.Log($"전투 시작!\n" +
@@ -131,6 +140,13 @@ namespace AFKHero.Battle
                 return;
             }
 
+            ultimateQueue.Remove(deadunit);
+
+            if(deadunit.Energy != null)
+            {
+                deadunit.Energy.UltimateReady -= HandleUltimateReady;
+            }
+
             UnitDied?.Invoke(deadunit);
 
             // 적이 죽으면 다음 적을 찾도록 알림
@@ -147,6 +163,11 @@ namespace AFKHero.Battle
         // 새로운 전투 시작 시 유닛 재정비
         public void ClearRegisteredUnits()
         {
+            UnsubscribeUltimateReadyInList(allyUnits);
+            UnsubscribeUltimateReadyInList(enemyUnits);
+
+            ultimateQueue.Clear();
+
             allyUnits.Clear();
             enemyUnits.Clear();
 
@@ -279,6 +300,69 @@ namespace AFKHero.Battle
 
             ChangeState(resultState);
             Debug.Log(resultLog,this);
+        }
+
+        // 유닛 대기열 등록
+        private void HandleUltimateReady(BattleUnit readyUnit)
+        {
+            if(CurrentState != BattleState.Fighting || !IsRegisterUnit(readyUnit))
+            {
+                return;
+            }
+
+            if (!ultimateQueue.TryEnqueue(readyUnit, Time.frameCount))
+            {
+                return;
+            }
+
+            Debug.Log($"궁극기 큐 등록 - {readyUnit.name} | 현재 대기 {ultimateQueue.Count}명", readyUnit);
+
+            LogUltimateQueueOrder();
+        }
+
+        // 전투에 등록 되어있는지 검사
+        private bool IsRegisterUnit(BattleUnit unit)
+        {
+            return unit != null && (allyUnits.Contains(unit) || enemyUnits.Contains(unit));
+        }
+
+        // 로그 확인용
+        private void LogUltimateQueueOrder()
+        {
+            IReadOnlyList<BattleUnit> waitingUnits = ultimateQueue.WaitingUnits;
+            string queueOrder = string.Empty;
+
+            for(int i = 0; i < waitingUnits.Count; i++)
+            {
+                if (i > 0)
+                {
+                    queueOrder += " -> ";
+                }
+                queueOrder += waitingUnits[i].name;
+            }
+            Debug.Log($"[궁극기 대기 순서] {queueOrder}",this);
+        }
+
+        // 구독 해제
+        private void UnsubscribeUltimateReadyInList(IReadOnlyList<BattleUnit> units)
+        {
+            for(int i = 0; i< units.Count; i++)
+            {
+                BattleUnit unit = units[i];
+
+                if (unit == null || unit.Energy == null)
+                {
+                    continue;
+                }
+
+                unit.Energy.UltimateReady -= HandleUltimateReady;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            UnsubscribeUltimateReadyInList(AllyUnits);
+            UnsubscribeUltimateReadyInList(EnemyUnits);
         }
 
         // 현재 전투 상태를 새로운 상태로 변경하고 이벤트 발생

@@ -10,6 +10,7 @@ namespace AFKHero.Battle
         [SerializeField] private UnitMovement unitMovemnet;
         [SerializeField] private UnitAttackController attackController;
         [SerializeField] private UnitHealth unitHealth;
+        [SerializeField] private UnitEnergy unitEnergy;
 
         [Header("2D Depth")]
         [SerializeField] private SpriteRenderer[] spriteRenderers;
@@ -36,6 +37,7 @@ namespace AFKHero.Battle
         public UnitMovement Movement => unitMovemnet;
         public UnitAttackController AttackController => attackController;
         public UnitHealth Health => unitHealth;
+        public UnitEnergy Energy => unitEnergy;
 
         public void Initialize(
             UnitData data,
@@ -71,6 +73,8 @@ namespace AFKHero.Battle
             targetFinder.Initialize(this, battleManager);
             unitMovemnet.Initialize(this, battleManager, targetFinder);
             unitHealth.Initialize(this, battleManager);
+            unitEnergy.Initialize(this, battleManager);
+
             attackController.Initialize(this, battleManager, targetFinder, unitMovemnet);
 
             gameObject.name = $"{team}_{data.DisplayName}_{formationSlotIndex}";
@@ -107,6 +111,11 @@ namespace AFKHero.Battle
             if(unitHealth == null)
             {
                 unitHealth = GetComponent<UnitHealth>();
+            }
+
+            if(unitEnergy == null)
+            {
+                unitEnergy = GetComponent<UnitEnergy>();
             }
 
             if (spriteRenderers == null || spriteRenderers.Length == 0)
@@ -147,6 +156,13 @@ namespace AFKHero.Battle
                 isValid = false;
             }
 
+            if(unitEnergy == null)
+            {
+                Debug.LogError($"{name}에 UnitEnergy가 비어있습니다.", this);
+
+                isValid = false;
+            }
+
             return isValid;
         }
 
@@ -170,11 +186,15 @@ namespace AFKHero.Battle
         }
 
 #if UNITY_EDITOR
-        // 컴포넌트를 처음 추가할 때 SpriteRenderer 자동 연결
+        // 컴포넌트를 처음 추가할 때 자동 연결
         private void Reset()
         {
             targetFinder = GetComponent<UnitTargetFinder>();
             unitMovemnet = GetComponent<UnitMovement>();
+            attackController = GetComponent<UnitAttackController>();
+            unitHealth = GetComponent<UnitHealth>();
+            unitEnergy = GetComponent<UnitEnergy>();
+
             spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
         }
 #endif
