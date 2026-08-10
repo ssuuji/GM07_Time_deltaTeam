@@ -17,4 +17,4 @@ MonoBehaviour:
   isBossStage: 1
   timeLimit: 120
   enemies: []
-  clearGold: 300
+  clearGold: 500
