@@ -5,7 +5,8 @@ public class PartyManager : MonoBehaviour
 {
     public static PartyManager Instance { get; private set; }
 
-    [Header("파티 슬롯 (0~1: 전열 / 2~4: 후열)")]
+    // 수정된 부분: 전/후열 구분을 지우고 순수 출전 명단으로만 사용
+    [Header("출전 명단 (최대 5명)")]
     public HeroInstance[] partySlots = new HeroInstance[5];
 
     [Header("활성화된 시너지 보너스")]
@@ -27,7 +28,7 @@ public class PartyManager : MonoBehaviour
     }
 
     // ============================
-    // 파티 슬롯 배치 로직
+    // 파티 슬롯 명단 등록 로직
     // ============================
     public void PlaceHero(int slotIndex, HeroInstance hero)
     {
@@ -41,6 +42,20 @@ public class PartyManager : MonoBehaviour
 
         partySlots[slotIndex] = hero;
         UpdateSynergy();
+    }
+
+    // =========================================
+    // 추가된 부분: 영웅이 현재 파티에 포함되어 있는지 검사
+    // =========================================
+    public bool IsHeroInParty(HeroInstance hero)
+    {
+        if (hero == null) return false;
+
+        for (int i = 0; i < partySlots.Length; i++)
+        {
+            if (partySlots[i] == hero) return true;
+        }
+        return false;
     }
 
     // ==========================
@@ -85,7 +100,6 @@ public class PartyManager : MonoBehaviour
     // =========================================
     // 세이브 데이터를 위한 데이터 연동 함수
     // =========================================
-
     public int[] GetPartySaveData()
     {
         int[] savedIDs = new int[5];
