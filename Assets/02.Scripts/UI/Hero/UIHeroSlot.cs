@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace AFKHero.UI
@@ -13,12 +12,15 @@ namespace AFKHero.UI
         [Header("등급 배경색")]
         [SerializeField] private Image gradeImage;
 
+        private UIHeroInfoPopup heroInfoPopup;
+
         public HeroInstance Hero { get; private set; } //영웅
 
         //슬롯 설정
-        public void SetHero(HeroInstance hero)
+        public void SetHero(HeroInstance hero, UIHeroInfoPopup info)
         {
             Hero = hero; //영웅 저장
+            heroInfoPopup = info; //영웅정보창
             
             if (Hero == null)
             {
@@ -28,29 +30,16 @@ namespace AFKHero.UI
 
             gameObject.SetActive(true);
             heroIcon.sprite = Hero.data.HeroIcon; //영웅아이콘
-            SetGradeColor();                      //등급별 배경색 설정
+            gradeImage.color = HeroGradeColor.GetColor(Hero.data.HeroGrade); //등급별 배경색 설정
         }
 
-        private void SetGradeColor()
+        //영웅 정보창 여는 버튼
+        public void OnClickedHeroInfo()
         {
-            switch (Hero.data.HeroGrade)
-            {
-                //노멀
-                case HeroGrade.Normal:
-                case HeroGrade.NormalPlus:
-                    gradeImage.color = new Color32(160, 160, 160, 255);
-                    break;
-                //레어
-                case HeroGrade.Rare:
-                case HeroGrade.RarePlus:
-                    gradeImage.color = new Color32(61, 141, 255, 255);
-                    break;
-                //에픽
-                case HeroGrade.Epic:
-                case HeroGrade.EpicPlus:
-                    gradeImage.color = new Color32(176, 76, 255, 255);
-                    break;
-            }
+            if (Hero == null) return;
+            if (heroInfoPopup == null) return;
+
+            heroInfoPopup.InfoOpen(Hero); //열기
         }
     }
 

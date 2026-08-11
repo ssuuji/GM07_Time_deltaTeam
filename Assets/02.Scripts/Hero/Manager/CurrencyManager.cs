@@ -1,12 +1,12 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System;
 
 public class CurrencyManager : MonoBehaviour
 {
     public static CurrencyManager Instance { get; private set; }
 
-    [Header("º¸À¯ ÀçÈ­")]
-    public int currentGold = 1000;  // Å×½ºÆ®¸¦ À§ÇØ ÃÊ±â °ñµå 1000 Áö±Þ
+    [Header("ë³´ìœ  ìž¬í™”")]
+    public int currentGold = 1000;  // í…ŒìŠ¤íŠ¸ë¥¼ ìœ„í•´ ì´ˆê¸° ê³¨ë“œ 1000 ì§€ê¸‰
     public int currentDiamond = 0;
     public int drawTicket = 0;
 
@@ -25,29 +25,29 @@ public class CurrencyManager : MonoBehaviour
         }
     }
 
-    // °ñµå È¹µæ
+    // ê³¨ë“œ íšë“
     public void AddGold(int amount)
     {
         currentGold += amount;
         OnGoldChanged?.Invoke(currentGold);
-        Debug.Log($"[ÀçÈ­] °ñµå È¹µæ: +{amount} / ÇöÀç °ñµå: {currentGold}");
+        Debug.Log($"[ìž¬í™”] ê³¨ë“œ íšë“: +{amount} / í˜„ìž¬ ê³¨ë“œ: {currentGold}");
     }
 
-    // °ñµå ¼Ò¸ð
+    // ê³¨ë“œ ì†Œëª¨
     public bool UseGold(int amount)
     {
-        // º¸À¯ °ñµå°¡ ¿ä±¸ ºñ¿ëº¸´Ù ¸¹°Å³ª °°ÀºÁö Ã¼Å©
+        // ë³´ìœ  ê³¨ë“œê°€ ìš”êµ¬ ë¹„ìš©ë³´ë‹¤ ë§Žê±°ë‚˜ ê°™ì€ì§€ ì²´í¬
         if (currentGold >= amount)
         {
             currentGold -= amount;
             OnGoldChanged?.Invoke(currentGold);
-            return true; // ¼Òºñ ¼º°ø
+            return true; // ì†Œë¹„ ì„±ê³µ
         }
         else
         {
-            // ÀçÈ­ ºÎÁ· Ã³¸®
-            Debug.LogWarning($"[½Ã½ºÅÛ] °ñµå°¡ ºÎÁ·ÇÕ´Ï´Ù! (ÇÊ¿ä °ñµå: {amount} / º¸À¯ °ñµå: {currentGold})");
-            return false; // ¼Òºñ ½ÇÆÐ
+            // ìž¬í™” ë¶€ì¡± ì²˜ë¦¬
+            Debug.LogWarning($"[ì‹œìŠ¤í…œ] ê³¨ë“œê°€ ë¶€ì¡±í•©ë‹ˆë‹¤! (í•„ìš” ê³¨ë“œ: {amount} / ë³´ìœ  ê³¨ë“œ: {currentGold})");
+            return false; // ì†Œë¹„ ì‹¤íŒ¨
         }
     }
 }

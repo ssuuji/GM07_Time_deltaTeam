@@ -8,6 +8,9 @@ namespace AFKHero.UI
         [Header("영웅 슬롯")]
         [SerializeField] private UIHeroSlot heroSlotPrefab;
 
+        [Header("영웅 정보 팝업")]
+        [SerializeField] private UIHeroInfoPopup heroInfoPopup;
+
         //영웅 리스트 갱신
         public void UpdateList(Transform content, UIHeroSlotType type,  HeroInstance selectHero = null)
         {
@@ -40,7 +43,7 @@ namespace AFKHero.UI
         private void CreateSlot(Transform content, HeroInstance hero)
         {
             UIHeroSlot slot = Instantiate(heroSlotPrefab, content);
-            slot.SetHero(hero);
+            slot.SetHero(hero, heroInfoPopup);
         }
 
         //슬롯 제거

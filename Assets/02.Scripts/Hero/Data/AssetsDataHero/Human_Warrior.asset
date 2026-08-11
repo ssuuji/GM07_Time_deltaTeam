@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Human_Warrior
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
   heroID: 0
-  heroName: 
+  heroName: "\uC601\uC6C51"
   heroGrade: 0
   raceType: 0
   jobType: 0
-  ultimateSkillName: 
+  ultimateSkillName: "\uD68C\uC804 \uACF5\uACA9"
   ultimateEffectPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}
-  heroImage: {fileID: 0}
+  heroImage: {fileID: 9161565011638993919, guid: 93b0cc4956530974289f8be1a2c03e84, type: 3}
   heroPrefab: {fileID: 0}
