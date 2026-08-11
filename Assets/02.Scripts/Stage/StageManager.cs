@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class StageManager : MonoBehaviour
 {
+    public static StageManager Instance;
+
     [Header("스테이지 데이터")]
     [SerializeField] private StageData stageData;
 
@@ -38,6 +40,17 @@ public class StageManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(Instance.gameObject);
+        }
+        DontDestroyOnLoad(this.gameObject);
+
+
         victoryPanel.gameObject.SetActive(false);
         defeatPanel.gameObject.SetActive(false);
     }
@@ -93,14 +106,15 @@ public class StageManager : MonoBehaviour
     //승리 시 호출될 메서드
     private void HandleVictory()
     {
-        //승리했으니 현 스테이지의 보상에 해당하는 골드를 매니저를 통해 지급
+        //승리 패널부터 우선 활성화
+        victoryPanel.gameObject.SetActive(true);
+
+        //승리했으니 현 스테이지의 보상에 해당하는 골드를 매니저를 통해 지급 => PlayerManager를 활용하는 것으로 변경
         //CurrencyManager.Instance.AddGold(currentStageInfo.ClearGold);
 
         //마지막으로 클리어한 스테이지와 섹션의 값을 저장 => 방치 전투에서 활용.
         lastStageNumber = currentStageNumber;
         lastSectionNumber = currentSectionNumber;
-
-        //TODO : SaveManager를 호출하여 값 저장
 
         //보스 스테이지가 아닌 상태에서 승리 시 섹션의 숫자만 증가시킨다.
         if (!currentStageInfo.IsBossStage)
@@ -114,8 +128,8 @@ public class StageManager : MonoBehaviour
             currentSectionNumber = 1;
         }
 
-        //반영된 결과를 바탕으로 다음 스테이지 시작. 승리 패널이 있다면 승리 패널 띄우는 부분으로 변경될 것
-        victoryPanel.gameObject.SetActive(true);
+        //TODO : SaveManager를 호출하여 값 저장
+        TempSaveManager.Instance.SaveStage();
 
     }
 
@@ -123,5 +137,25 @@ public class StageManager : MonoBehaviour
     {
         defeatPanel.gameObject.SetActive(true);
         //
+        TempSaveManager.Instance.SaveStage();
+    }
+
+    public StageSaveData CreateStageSaveData()
+    {
+        StageSaveData saveData = new();
+        saveData.currentStageNumber = currentStageNumber;
+        saveData.currentSectionNumber = currentSectionNumber;
+        saveData.lastStageNumber = lastStageNumber;
+        saveData.lastSectionNumber = lastSectionNumber;
+
+        return saveData;
+    }
+
+    public void LoadStageSaveData(StageSaveData saveData)
+    {
+        currentStageNumber = saveData.currentStageNumber;
+        currentSectionNumber = saveData.currentSectionNumber;
+        lastStageNumber = saveData.lastStageNumber;
+        lastSectionNumber = saveData.lastSectionNumber;
     }
 }
