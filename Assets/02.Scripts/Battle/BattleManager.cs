@@ -29,6 +29,9 @@ namespace AFKHero.Battle
         // 남은 시간
         private float remainingBattleTime;
 
+        // 궁극기가 동시에 실행 방지용
+        private BattleUnit currentUltimateUnit;
+
         // 현재 전투의 진행 상태
         public BattleState CurrentState { get; private set; } = BattleState.None;
 
@@ -40,6 +43,13 @@ namespace AFKHero.Battle
 
         // 궁극기 큐
         public UltimateQueue UltimateQueue => ultimateQueue;
+
+        // 궁극기 실행 상태
+        public BattleUnit CurrentUltimateUnit => currentUltimateUnit;
+        public bool IsUltimatePlaying => currentUltimateUnit != null;
+
+        // 궁극기 실행 상태일때 데미지 반영 멈춤
+        public bool IsDamageApplicationPaused => IsUltimatePlaying;
 
         // 최소한 보정
         public float BattleTimeLimit => Mathf.Max(MinimumBattleTimeLimit, battleTimeLimit);
@@ -58,6 +68,10 @@ namespace AFKHero.Battle
         // 첫 번째 값은 남은 시간, 두 번째 값은 전체 제한시간
         public event Action<float, float> BattleTimeChanged;
 
+        // UI, 카메라, 연출용
+        public event Action<BattleUnit> UltimateStarted;
+        public event Action<BattleUnit> UltimateFinished;
+
         private void Awake()
         {
             ResetBattleTimer();
@@ -66,6 +80,10 @@ namespace AFKHero.Battle
 
         private void LateUpdate()
         {
+            if(CurrentState == BattleState.Fighting && currentUltimateUnit == null)
+            {
+                TryStartNextUltimate();
+            }
             // 제한시간이 끝나는 마지막 프레임에 공격 결과 판정 반영
             UpdateBattleTimer();
         }
@@ -113,11 +131,12 @@ namespace AFKHero.Battle
             }
 
             isBattleResultConfirmed = false;
-
-            ResetBattleTimer();
-
+            currentUltimateUnit = null;
             ultimateQueue.Clear();
 
+            ResetAllUnitEnergy();
+
+            ResetBattleTimer();
             ChangeState(BattleState.Fighting);
 
             Debug.Log($"전투 시작!\n" +
@@ -147,14 +166,33 @@ namespace AFKHero.Battle
                 deadunit.Energy.UltimateReady -= HandleUltimateReady;
             }
 
+            // 궁극기 실행 중 사망 처리
+            bool wasCurrentUltimateUnit = deadunit == currentUltimateUnit;
+
+            if (wasCurrentUltimateUnit)
+            {
+                deadunit.UltimateController?.CancelUltimate();
+                currentUltimateUnit = null;
+            }
+
             UnitDied?.Invoke(deadunit);
 
             // 적이 죽으면 다음 적을 찾도록 알림
             NotifyTargetInvalidated(deadunit);
 
-            if(CurrentState != BattleState.Fighting || isBattleResultConfirmed)
+            if(IsBattleRunning() && !isBattleResultConfirmed)
+            {
+                CheckBattleResult();
+            }
+
+            if(isBattleResultConfirmed)
             {
                 return;
+            }
+
+            if (wasCurrentUltimateUnit)
+            {
+                TryStartNextUltimate();
             }
 
             CheckBattleResult();
@@ -224,9 +262,15 @@ namespace AFKHero.Battle
             return false;
         }
 
+        private bool IsBattleRunning()
+        {
+            return CurrentState == BattleState.Fighting ||
+                CurrentState == BattleState.UltimateSequence;
+        }
+
         private void CheckBattleResult()
         {
-            if(isBattleResultConfirmed || CurrentState != BattleState.Fighting)
+            if(isBattleResultConfirmed || !IsBattleRunning() || currentUltimateUnit != null)
             {
                 return;
             }
@@ -284,7 +328,7 @@ namespace AFKHero.Battle
 
         private void ConfirmBattleResult(BattleState resultState, string resultLog)
         {
-            if(isBattleResultConfirmed || CurrentState != BattleState.Fighting)
+            if(isBattleResultConfirmed || !IsBattleRunning())
             {
                 return;
             }
@@ -297,6 +341,9 @@ namespace AFKHero.Battle
             }
 
             isBattleResultConfirmed = true;
+
+            CancelCurrentUltimate();
+            ultimateQueue.Clear();
 
             ChangeState(resultState);
             Debug.Log(resultLog,this);
@@ -320,6 +367,99 @@ namespace AFKHero.Battle
             LogUltimateQueueOrder();
         }
 
+        // 궁극기 순차 실행
+        private void TryStartNextUltimate()
+        {
+            if(isBattleResultConfirmed||
+                currentUltimateUnit != null ||
+                !IsBattleRunning())
+            {
+                return;
+            }
+
+            while(ultimateQueue.TryDequeue(out BattleUnit nextUnit))
+            {
+                if (!CanExecuteUltimate(nextUnit))
+                {
+                    continue;
+                }
+
+                if (!nextUnit.Energy.TryConsumeUltimateEnergy())
+                {
+                    continue;
+                }
+
+                currentUltimateUnit = nextUnit;
+
+                if (CurrentState != BattleState.UltimateSequence)
+                {
+                    ChangeState(BattleState.UltimateSequence);
+                }
+
+                if (!nextUnit.UltimateController.TryExecute(HandleUltimateCompleted))
+                {
+                    currentUltimateUnit = null;
+                    continue;
+                }
+
+                UltimateStarted?.Invoke(nextUnit);
+                Debug.Log($"[궁극기 시작] {nextUnit.name}", nextUnit);
+                return;
+            }
+
+            // 더 실행할 궁극기가 없으면 일반 전투로 돌아감
+            if(CurrentState == BattleState.UltimateSequence)
+            {
+                ChangeState(BattleState.Fighting);
+            }
+        }
+
+        private bool CanExecuteUltimate(BattleUnit unit)
+        {
+            return IsRegisterUnit(unit) &&
+                unit.Stats != null &&
+                unit.Stats.IsAlive &&
+                unit.Energy != null &&
+                unit.Energy.IsUltimateReady &&
+                unit.UltimateController != null &&
+                !unit.UltimateController.IsExecuting;
+        }
+
+        private void HandleUltimateCompleted(BattleUnit completeUnit)
+        {
+            if(completeUnit == null || completeUnit != currentUltimateUnit)
+            {
+                return;
+            }
+
+            currentUltimateUnit = null;
+            UltimateFinished?.Invoke(completeUnit);
+            Debug.Log($"[궁극기 종료] {completeUnit}", completeUnit);
+
+            if (isBattleResultConfirmed)
+            {
+                return;
+            }
+
+            CheckBattleResult();
+
+            if (!isBattleResultConfirmed)
+            {
+                TryStartNextUltimate();
+            }
+        }
+
+        private void CancelCurrentUltimate()
+        {
+            if(currentUltimateUnit == null)
+            {
+                return;
+            }
+
+            currentUltimateUnit.UltimateController?.CancelUltimate();
+            currentUltimateUnit = null;
+        }
+
         // 전투에 등록 되어있는지 검사
         private bool IsRegisterUnit(BattleUnit unit)
         {
@@ -341,6 +481,26 @@ namespace AFKHero.Battle
                 queueOrder += waitingUnits[i].name;
             }
             Debug.Log($"[궁극기 대기 순서] {queueOrder}",this);
+        }
+
+        // 새 전투용 에너지 초기화
+        private void ResetAllUnitEnergy()
+        {
+            ResetEnergyInList(allyUnits);
+            ResetEnergyInList(enemyUnits);
+        }
+
+        private static void ResetEnergyInList(IReadOnlyList<BattleUnit> units)
+        {
+            for(int i = 0; i < units.Count; i++)
+            {
+                BattleUnit unit = units[i];
+
+                if(unit != null && unit.Energy != null)
+                {
+                    unit.Energy.ResetEnergy();
+                } 
+            }
         }
 
         // 구독 해제

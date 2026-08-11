@@ -23,5 +23,5 @@ MonoBehaviour:
   attackInterval: 1
   moveSpeed: 2
   maxUltimateEnergy: 100
-  basicAttackEnergyGain: 20
-  damageTakenEnergyGain: 5
+  basicAttackEnergyGain: 10
+  damageTakenEnergyGain: 10

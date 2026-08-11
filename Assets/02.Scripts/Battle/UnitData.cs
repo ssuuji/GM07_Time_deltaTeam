@@ -38,6 +38,8 @@ namespace AFKHero.Battle
         // 이동 속도
         [Min(0f)]
         [SerializeField] private float moveSpeed = 2f;
+
+        [Header("궁극기 에너지")]
         // 궁극기 에너지
         [Min(1)]
         [SerializeField] private int maxUltimateEnergy = 100;

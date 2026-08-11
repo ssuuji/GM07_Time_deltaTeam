@@ -12,6 +12,8 @@ namespace AFKHero.Battle
         [SerializeField] private UnitHealth unitHealth;
         [SerializeField] private UnitEnergy unitEnergy;
 
+        [SerializeField] private UnitUltimateController ultimateController;
+
         [Header("2D Depth")]
         [SerializeField] private SpriteRenderer[] spriteRenderers;
 
@@ -38,6 +40,7 @@ namespace AFKHero.Battle
         public UnitAttackController AttackController => attackController;
         public UnitHealth Health => unitHealth;
         public UnitEnergy Energy => unitEnergy;
+        public UnitUltimateController UltimateController => ultimateController;
 
         public void Initialize(
             UnitData data,
@@ -77,6 +80,8 @@ namespace AFKHero.Battle
 
             attackController.Initialize(this, battleManager, targetFinder, unitMovemnet);
 
+            ultimateController.Initialized(this);
+
             gameObject.name = $"{team}_{data.DisplayName}_{formationSlotIndex}";
             
             // 생성 직후 올바른 SortingOrder로 표시되도록 계산
@@ -113,10 +118,16 @@ namespace AFKHero.Battle
                 unitHealth = GetComponent<UnitHealth>();
             }
 
-            if(unitEnergy == null)
+            if (unitEnergy == null)
             {
                 unitEnergy = GetComponent<UnitEnergy>();
             }
+
+            if(ultimateController == null)
+            {
+                ultimateController = GetComponent<UnitUltimateController>();
+            }
+
 
             if (spriteRenderers == null || spriteRenderers.Length == 0)
             {
@@ -163,6 +174,13 @@ namespace AFKHero.Battle
                 isValid = false;
             }
 
+            if(ultimateController == null)
+            {
+                Debug.LogError($"{name}에 UnitUltimateController가 비어있습니다.", this);
+
+                isValid = false;
+            }
+
             return isValid;
         }
 
@@ -194,6 +212,7 @@ namespace AFKHero.Battle
             attackController = GetComponent<UnitAttackController>();
             unitHealth = GetComponent<UnitHealth>();
             unitEnergy = GetComponent<UnitEnergy>();
+            ultimateController = GetComponent<UnitUltimateController>();
 
             spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
         }
