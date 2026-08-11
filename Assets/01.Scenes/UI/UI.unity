@@ -851,7 +851,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 10}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &61987872
 MonoBehaviour:
@@ -1225,7 +1225,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &84201788
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2608,7 +2608,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 40}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &159858507
 MonoBehaviour:
@@ -3904,7 +3904,7 @@ GameObject:
   - component: {fileID: 210250097}
   - component: {fileID: 210250096}
   m_Layer: 5
-  m_Name: Hero_selected_img
+  m_Name: Hero_selected2_img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5052,7 +5052,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &289760556
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5129,7 +5129,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &301395868
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12563,7 +12563,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -196.1, y: -34.99996}
+  m_AnchoredPosition: {x: 3, y: -34.99996}
   m_SizeDelta: {x: 130, y: 130}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &759806694
@@ -16448,7 +16448,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 40}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1025555414
 MonoBehaviour:
@@ -17093,7 +17093,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 192.1, y: 11.999954}
+  m_AnchoredPosition: {x: -4, y: 11.999954}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1068073875
@@ -18129,7 +18129,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -200, y: 12}
+  m_AnchoredPosition: {x: -4, y: 12}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1129461322
@@ -18759,13 +18759,17 @@ MonoBehaviour:
   heroLevelText: {fileID: 1416764717}
   heroAttackText: {fileID: 17290581}
   heroDefenseText: {fileID: 1158474450}
+  levelUpCostText: {fileID: 978356142}
   backButton: {fileID: 2087497962}
   upgradePopup: {fileID: 289760555}
   materialContent: {fileID: 61987871}
-  upgradeHeroImage: {fileID: 0}
-  upgradeResultImage: {fileID: 0}
-  materialImages: []
-  materialCountText: {fileID: 0}
+  upgradeHeroBefore: {fileID: 920403572}
+  upgradeHeroAfter: {fileID: 1254430100}
+  materialImages:
+  - {fileID: 1595250031}
+  - {fileID: 210250096}
+  - {fileID: 1883599224}
+  materialCountText: {fileID: 1349648412}
 --- !u!1 &1158474448
 GameObject:
   m_ObjectHideFlags: 0
@@ -26229,7 +26233,7 @@ GameObject:
   - component: {fileID: 1595250032}
   - component: {fileID: 1595250031}
   m_Layer: 5
-  m_Name: Hero_selected_img
+  m_Name: Hero_selected1_img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26976,7 +26980,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -35}
+  m_AnchoredPosition: {x: -199, y: -35}
   m_SizeDelta: {x: 130, y: 130}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1620633740
@@ -30710,7 +30714,7 @@ GameObject:
   - component: {fileID: 1883599225}
   - component: {fileID: 1883599224}
   m_Layer: 5
-  m_Name: Hero_selected_img
+  m_Name: Hero_selected3_img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
