@@ -1,15 +1,16 @@
+ï»¿using AFKHeroPlayerManager = AFKHero.Player.PlayerManager;
 using System.Collections.Generic;
 using UnityEngine;
 
-// ¸ğµç ¿µ¿õÀÇ È¹µæ »óÅÂ¿Í ¼ºÀåÀ» ÃÑ°ıÇÔ.
+// ëª¨ë“  ì˜ì›…ì˜ íšë“ ìƒíƒœì™€ ì„±ì¥ì„ ì´ê´„í•¨.
 public class HeroManager : MonoBehaviour
 {
     public static HeroManager Instance { get; private set; }
 
-    [Header("¿µ¿õ ¿øº» µ¥ÀÌÅÍ")]
+    [Header("ì˜ì›… ì›ë³¸ ë°ì´í„°")]
     [SerializeField] private List<HeroData> allHeroDataList = new List<HeroData>();
 
-    // ¿µ¿õ ID¸¦ Å°·Î »ç¿ëÇÏ¿© ÇöÀç »óÅÂ¸¦ ºü¸£°Ô °Ë»ö
+    // ì˜ì›… IDë¥¼ í‚¤ë¡œ ì‚¬ìš©í•˜ì—¬ í˜„ì¬ ìƒíƒœë¥¼ ë¹ ë¥´ê²Œ ê²€ìƒ‰
     private Dictionary<int, HeroInstance> heroDictionary = new Dictionary<int, HeroInstance>();
 
     private void Awake()
@@ -17,86 +18,86 @@ public class HeroManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // ¾À ÀüÈ¯ ½Ã ÆÄ±«µÇÁö ¾Êµµ·Ï À¯Áö
-            InitializeHeroes(); // ¿µ¿õ ÃÊ±âÈ­ ÇÔ¼ö ½ÇÇà
+            DontDestroyOnLoad(gameObject); // ì”¬ ì „í™˜ ì‹œ íŒŒê´´ë˜ì§€ ì•Šë„ë¡ ìœ ì§€
+            InitializeHeroes(); // ì˜ì›… ì´ˆê¸°í™” í•¨ìˆ˜ ì‹¤í–‰
         }
         else
         {
-            Destroy(gameObject); // Áßº¹ »ı¼º ¹æÁö¸¦ À§ÇØ ÆÄ±«
+            Destroy(gameObject); // ì¤‘ë³µ ìƒì„± ë°©ì§€ë¥¼ ìœ„í•´ íŒŒê´´
         }
     }
 
     private void InitializeHeroes()
     {
-        foreach (var data in allHeroDataList) // µî·ÏµÈ ¿µ¿õ µ¥ÀÌÅÍ¸¦ ¼øÈ¸
+        foreach (var data in allHeroDataList) // ë“±ë¡ëœ ì˜ì›… ë°ì´í„°ë¥¼ ìˆœíšŒ
         {
             if (data == null) continue;
 
-            // ID 1~5¹øÀº ±âº» Áö±Ş ¿µ¿õÀ¸·Î °¡Á¤ÇÏ¿© ÇØ±İÃ³¸®
+            // ID 1~5ë²ˆì€ ê¸°ë³¸ ì§€ê¸‰ ì˜ì›…ìœ¼ë¡œ ê°€ì •í•˜ì—¬ í•´ê¸ˆì²˜ë¦¬
             bool isDefaultUnlocked = data.HeroID <= 5;
 
-            // µñ¼Å³Ê¸®¿¡ ¿µ¿õ ÀÎ½ºÅÏ½º¸¦ ÀúÀå
+            // ë”•ì…”ë„ˆë¦¬ì— ì˜ì›… ì¸ìŠ¤í„´ìŠ¤ë¥¼ ì €ì¥
             heroDictionary.Add(data.HeroID, new HeroInstance(data, isDefaultUnlocked));
         }
     }
 
     // =============================
-    // ¿µ¿õ ÇØ±İ ¹× ·¹º§¾÷
+    // ì˜ì›… í•´ê¸ˆ ë° ë ˆë²¨ì—…
     // =============================
 
-    // ¿µ¿õ È¹µæ ½Ã È£ÃâÇÔ
+    // ì˜ì›… íšë“ ì‹œ í˜¸ì¶œí•¨
     public bool UnlockHero(int heroID)
     {
-        // ID °Ë»ö ¹× ¹ÌÇØ±İ »óÅÂ È®ÀÎÇÔ
+        // ID ê²€ìƒ‰ ë° ë¯¸í•´ê¸ˆ ìƒíƒœ í™•ì¸í•¨
         if (heroDictionary.TryGetValue(heroID, out HeroInstance hero) && !hero.isUnlocked)
         {
-            hero.isUnlocked = true; // ÇØ±İ »óÅÂ·Î º¯°æÇÔ
-            Debug.Log($"[HeroManager] {hero.data.HeroName} ÇØ±İ ¿Ï·á!");
+            hero.isUnlocked = true; // í•´ê¸ˆ ìƒíƒœë¡œ ë³€ê²½í•¨
+            Debug.Log($"[HeroManager] {hero.data.HeroName} í•´ê¸ˆ ì™„ë£Œ!");
             return true;
         }
-        return false; // ÀÌ¹Ì ÇØ±İµÆ°Å³ª ¾ø´Â ID¸é false ¹İÈ¯
+        return false; // ì´ë¯¸ í•´ê¸ˆëê±°ë‚˜ ì—†ëŠ” IDë©´ false ë°˜í™˜
     }
 
-    // ¿µ¿õ ·¹º§¾÷
+    // ì˜ì›… ë ˆë²¨ì—…
     public bool LevelUpHero(int heroID)
     {
-        // ID °Ë»ö ¹× ÇØ±İ »óÅÂ È®ÀÎ
+        // ID ê²€ìƒ‰ ë° í•´ê¸ˆ ìƒíƒœ í™•ì¸
         if (heroDictionary.TryGetValue(heroID, out HeroInstance hero) && hero.isUnlocked)
         {
-            // ÀÌ¹Ì ÃÖ°í ·¹º§ÀÎÁö ¸ÕÀú È®ÀÎ
+            // ì´ë¯¸ ìµœê³  ë ˆë²¨ì¸ì§€ ë¨¼ì € í™•ì¸
             if (hero.level >= 50)
             {
-                Debug.LogWarning($"{hero.data.HeroName}Àº(´Â) ÀÌ¹Ì ÃÖ°í ·¹º§(50)ÀÔ´Ï´Ù.");
+                Debug.LogWarning($"{hero.data.HeroName}ì€(ëŠ”) ì´ë¯¸ ìµœê³  ë ˆë²¨(50)ì…ë‹ˆë‹¤.");
                 return false;
             }
 
-            // ÇöÀç ·¹º§¾÷¿¡ ÇÊ¿äÇÑ °ñµå È®ÀÎ
+            // í˜„ì¬ ë ˆë²¨ì—…ì— í•„ìš”í•œ ê³¨ë“œ í™•ì¸
             int cost = hero.LevelUpCost;
 
-            // CurrencyManager¸¦ ÅëÇØ °ñµå Â÷°¨ ½Ãµµ
-            if (CurrencyManager.Instance != null && CurrencyManager.Instance.UseGold(cost))
+            // AFKHeroPlayerManager í†µí•´ ê³¨ë“œ ì°¨ê° ì‹œë„
+            if (AFKHeroPlayerManager.Instance != null && AFKHeroPlayerManager.Instance.TryUseGold(cost))
             {
-                // °ñµå Â÷°¨ÀÌ ¼º°øÇß´Ù¸é ½ÇÁ¦ ·¹º§¾÷ ÁøÇà
+                // ê³¨ë“œ ì°¨ê°ì´ ì„±ê³µí–ˆë‹¤ë©´ ì‹¤ì œ ë ˆë²¨ì—… ì§„í–‰
                 bool success = hero.LevelUp();
                 if (success)
                 {
-                    Debug.Log($"[HeroManager] {hero.data.HeroName} ·¹º§¾÷ ¿Ï·á! (LV.{hero.level}) / ¼Ò¸ğ °ñµå: {cost}");
+                    Debug.Log($"[HeroManager] {hero.data.HeroName} ë ˆë²¨ì—… ì™„ë£Œ! (LV.{hero.level}) / ì†Œëª¨ ê³¨ë“œ: {cost}");
                 }
                 return success;
             }
             else
             {
-                // µ·ÀÌ ºÎÁ·ÇØ¼­ false¸¦ ¹İÈ¯ÇÑ °æ¿ì ·¹º§¾÷Àº Ãë¼Ò
+                // ëˆì´ ë¶€ì¡±í•´ì„œ falseë¥¼ ë°˜í™˜í•œ ê²½ìš° ë ˆë²¨ì—…ì€ ì·¨ì†Œ
                 return false;
             }
         }
         return false;
     }
 
-    // ÀüÃ¼ ¿µ¿õ ¸®½ºÆ®¸¦ ¹İÈ¯
+    // ì „ì²´ ì˜ì›… ë¦¬ìŠ¤íŠ¸ë¥¼ ë°˜í™˜
     public List<HeroInstance> GetAllHeroes() => new List<HeroInstance>(heroDictionary.Values);
 
-    // ÀúÀåÇÒ ÇÙ½É µ¥ÀÌÅÍ(·¹º§, ÇØ±İ¿©ºÎ)¸¸ ÃßÃâÇÔ.
+    // ì €ì¥í•  í•µì‹¬ ë°ì´í„°(ë ˆë²¨, í•´ê¸ˆì—¬ë¶€)ë§Œ ì¶”ì¶œí•¨.
     public Dictionary<int, (int level, bool isUnlocked)> GetSaveData()
     {
         var saveData = new Dictionary<int, (int, bool)>();
@@ -113,14 +114,14 @@ public class HeroManager : MonoBehaviour
         {
             if (heroDictionary.TryGetValue(kvp.Key, out HeroInstance hero))
             {
-                // µ¥ÀÌÅÍ º¯Á¶ ¹æÁö¸¦ À§ÇØ ÃÖ´ë ·¹º§ Á¦ÇÑ Àû¿ë
+                // ë°ì´í„° ë³€ì¡° ë°©ì§€ë¥¼ ìœ„í•´ ìµœëŒ€ ë ˆë²¨ ì œí•œ ì ìš©
                 hero.level = Mathf.Clamp(kvp.Value.level, 1, 50);
                 hero.isUnlocked = kvp.Value.isUnlocked;
             }
         }
     }
 
-    // ÆÄÆ¼ ¸Å´ÏÀú°¡ ÀúÀåµÈ ÆÄÆ¼¸¦ ºÒ·¯¿Ã ¶§ ¿µ¿õ ID·Î ÀÎ½ºÅÏ½º¸¦ Ã£¾ÆÁÖ´Â ÇÔ¼ö
+    // íŒŒí‹° ë§¤ë‹ˆì €ê°€ ì €ì¥ëœ íŒŒí‹°ë¥¼ ë¶ˆëŸ¬ì˜¬ ë•Œ ì˜ì›… IDë¡œ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ì°¾ì•„ì£¼ëŠ” í•¨ìˆ˜
     public HeroInstance GetHeroByID(int heroID)
     {
         if (heroDictionary.TryGetValue(heroID, out HeroInstance hero))
