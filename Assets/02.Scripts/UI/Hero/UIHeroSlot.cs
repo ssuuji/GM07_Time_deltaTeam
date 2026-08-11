@@ -54,12 +54,14 @@ namespace AFKHero.UI
 
                 //성장탭 
                 case UIHeroSlotMode.Upgrade:
-                    //UIUpgradeManager.Instance.SelectHero(Hero); //상단 영웅 표시
+                    if (UIUpgradeManager.Instance == null) return;
+                    UIUpgradeManager.Instance.SelectHero(Hero); //상단 영웅 표시
                     break;
 
                 //성장탭 - 영웅합성
                 case UIHeroSlotMode.UpgradeMaterial:
-                    //재료로 사용할 영웅카드 선택
+                    if (UIUpgradeManager.Instance == null) return;
+                    UIUpgradeManager.Instance.SelectMaterial(Hero); //재료로 사용할 영웅카드 선택
                     break;
 
                 //공명탭

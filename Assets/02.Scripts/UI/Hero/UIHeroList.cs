@@ -27,12 +27,12 @@ namespace AFKHero.UI
                     break;
                 //선택한 영웅과 같은 등급 표시
                 case UIHeroSlotType.SameGrade:
-                    if (selectHero == null) return;
+                    if (selectHero == null || selectHero.data == null) return;
                     CreateSameGrade(content, selectHero, mode);
                     break;
                 //선택한 영웅과 같은 영웅 표시
                 case UIHeroSlotType.SameHero:
-                    if (selectHero == null) return;
+                    if (selectHero == null || selectHero.data == null) return;
                     CreateSameHero(content, selectHero, mode);
                     break;
             }
@@ -62,38 +62,43 @@ namespace AFKHero.UI
 
             foreach (HeroInstance hero in heroes)
             {
-                if (hero == null) continue;           //영웅값이 없으면 제외
-                if (!hero.isUnlocked) continue;       //획득하지 않은 영웅 제외
-                CreateSlot(content, hero, mode);      //슬롯생성
+                if (hero == null || hero.data == null) continue; //영웅값이 없으면 제외
+                if (!hero.isUnlocked) continue;                  //획득하지 않은 영웅 제외
+                CreateSlot(content, hero, mode);                 //슬롯생성
             }
 
         }
 
+        //선택한 영웅과 같은 등급 표시
         private void CreateSameGrade(Transform content, HeroInstance selectHero, UIHeroSlotMode mode)
         {
             List<HeroInstance> heroes = HeroManager.Instance.GetAllHeroes(); //전체 영웅 목록
 
             foreach (HeroInstance hero in heroes)
             {
-                if (hero == null) continue;           //영웅값이 없으면 제외
+                if (hero == null || hero.data == null) continue;                //영웅값이 없으면 제외
                 if (!hero.isUnlocked) continue;       //획득하지 않은 영웅 제외
-
+                if (hero == selectHero) continue;     //본인 제외
                 if (hero.data.HeroGrade != selectHero.data.HeroGrade) continue; //HeroGrade가 같은지 체크
+
                 CreateSlot(content, hero, mode);      //슬롯생성
             }
 
         }
 
+        //선택한 영웅과 같은 영웅 표시
         private void CreateSameHero(Transform content, HeroInstance selectHero, UIHeroSlotMode mode)
         {
             List<HeroInstance> heroes = HeroManager.Instance.GetAllHeroes(); //전체 영웅 목록
 
             foreach (HeroInstance hero in heroes)
             {
-                if (hero == null) continue;           //영웅값이 없으면 제외
-                if (!hero.isUnlocked) continue;       //획득하지 않은 영웅 제외
+                if (hero == null || hero.data == null) continue;                //영웅값이 없으면 제외
+                if (!hero.isUnlocked) continue;                                 //획득하지 않은 영웅 제외
+                if (hero == selectHero) continue;                               //본인 제외
+                if (hero.data.HeroID != selectHero.data.HeroID) continue;       //HeroID가 같은지 체크
+                if (hero.data.HeroGrade != selectHero.data.HeroGrade) continue; //등급확인
 
-                if (hero.data.HeroID != selectHero.data.HeroID) continue; //HeroID가 같은지 체크
                 CreateSlot(content, hero, mode);      //슬롯생성
             }
         }

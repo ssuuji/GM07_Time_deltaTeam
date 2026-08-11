@@ -7,6 +7,8 @@ namespace AFKHero.Player
     //화면 상단에 아이콘, 이름, 파티 공격력, 골드, 다이아 를 표시함 ( + 무료뽑기권 까지..? )
     public class PlayerManager : MonoBehaviour
     {
+        public static PlayerManager Instance { get; private set; }
+
         [Header("Profile")]
         [SerializeField] private Sprite playerIcon; //플레이어 아이콘 //추후에.. 플레이어설정 같은 창을 따로 만들어서 프로필아이콘을 설정 할 수 있도록 확장해볼계획
         [SerializeField] private string playerName; //이름           // + 이름도 직접 정해서 저장할 수 있도록
@@ -29,6 +31,18 @@ namespace AFKHero.Player
         public int FreeTicket => freeTicket;
         public int PartyPower => partyPower;
 
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
 
         #region 다이아
 
