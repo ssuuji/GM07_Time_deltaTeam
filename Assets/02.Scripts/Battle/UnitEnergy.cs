@@ -37,13 +37,11 @@ namespace AFKHero.Battle
                 return;
             }
 
-            if(battleManager == null)
+            if(manager == null)
             {
                 Debug.LogError("BattleManager가 비어 있습니다.", this);
                 return;
             }
-
-            battleManager.StateChanged += HandleBattleStateChanged;
 
             ResetEnergy();
         }

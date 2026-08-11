@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7881791461528291206}
   - component: {fileID: 5926151878042191358}
   - component: {fileID: -7721135876721070593}
+  - component: {fileID: -970669846284450959}
   m_Layer: 0
   m_Name: Ally
   m_TagString: Untagged
@@ -114,6 +115,7 @@ MonoBehaviour:
   attackController: {fileID: -7721135876721070593}
   unitHealth: {fileID: 7881791461528291206}
   unitEnergy: {fileID: 5926151878042191358}
+  ultimateController: {fileID: 0}
   spriteRenderers:
   - {fileID: 4646195705583189505}
   sortingBaseOrder: 1000
@@ -182,3 +184,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f33d3258bf60f2446a7dcf9e23397fff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitAttackController
+--- !u!114 &-970669846284450959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089662863368153599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66726e4303706774787644a4be1aa4d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitUltimateController
+  ultimateDuration: 3
+  animator: {fileID: 0}
+  animationTrigger: Ultimate
