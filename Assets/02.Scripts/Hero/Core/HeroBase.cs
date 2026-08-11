@@ -87,9 +87,12 @@ public class HeroBase : MonoBehaviour
                         hero.stats.Heal(healAmount); // 회복 함수 호출
 
                         // 힐 이펙트 풀링 및 해제
-                        GameObject healEffect = PoolManager.Instance.SpawnFromPool
-                            (heroInstance.data.UltimateEffectPrefab, hero.transform.position, Quaternion.identity);
-                        healEffect.GetComponent<Poolable>().ReleaseAfter(1.5f);
+                        if (heroInstance.data.UltimateEffectPrefab != null)
+                        {
+                            GameObject healEffect = PoolManager.Instance.SpawnFromPool
+                                (heroInstance.data.UltimateEffectPrefab, hero.transform.position, Quaternion.identity);
+                            healEffect.GetComponent<Poolable>().ReleaseAfter(1.5f);
+                        }
                     }
                 }
                 break;
@@ -99,9 +102,12 @@ public class HeroBase : MonoBehaviour
                 int warriorDamage = Mathf.RoundToInt(finalAttack * 1.5f);
 
                 // 회전 이펙트 풀링 및 해제
-                GameObject spinEffect = PoolManager.Instance.SpawnFromPool
-                    (heroInstance.data.UltimateEffectPrefab, transform.position, Quaternion.identity);
-                spinEffect.GetComponent<Poolable>().ReleaseAfter(1.0f);
+                if (heroInstance.data.UltimateEffectPrefab != null)
+                {
+                    GameObject spinEffect = PoolManager.Instance.SpawnFromPool
+                        (heroInstance.data.UltimateEffectPrefab, transform.position, Quaternion.identity);
+                    spinEffect.GetComponent<Poolable>().ReleaseAfter(1.0f);
+                }
 
                 foreach (var hero in allHeroesInField)
                 {
@@ -123,9 +129,12 @@ public class HeroBase : MonoBehaviour
 
                 if (mageTarget != null)
                 {
-                    GameObject meteorEffect = PoolManager.Instance.SpawnFromPool
-                        (heroInstance.data.UltimateEffectPrefab, mageTarget.transform.position, Quaternion.identity);
-                    meteorEffect.GetComponent<Poolable>().ReleaseAfter(2.0f);
+                    if (heroInstance.data.UltimateEffectPrefab != null)
+                    {
+                        GameObject meteorEffect = PoolManager.Instance.SpawnFromPool
+                            (heroInstance.data.UltimateEffectPrefab, mageTarget.transform.position, Quaternion.identity);
+                        meteorEffect.GetComponent<Poolable>().ReleaseAfter(2.0f);
+                    }
 
                     foreach (var hero in allHeroesInField)
                     {
@@ -148,9 +157,12 @@ public class HeroBase : MonoBehaviour
 
                 if (archerTarget != null)
                 {
-                    GameObject snipeEffect = PoolManager.Instance.SpawnFromPool
-                        (heroInstance.data.UltimateEffectPrefab, archerTarget.transform.position, Quaternion.identity);
-                    snipeEffect.GetComponent<Poolable>().ReleaseAfter(1.0f);
+                    if (heroInstance.data.UltimateEffectPrefab != null)
+                    {
+                        GameObject snipeEffect = PoolManager.Instance.SpawnFromPool
+                            (heroInstance.data.UltimateEffectPrefab, archerTarget.transform.position, Quaternion.identity);
+                        snipeEffect.GetComponent<Poolable>().ReleaseAfter(1.0f);
+                    }
 
                     archerTarget.stats.TakeDamage(archerDamage);
                 }
@@ -159,9 +171,12 @@ public class HeroBase : MonoBehaviour
             case JobType.Tank:
                 // 수호의 방패: 최대 체력 20% 보호막 생성
                 int shieldAmount = Mathf.RoundToInt(finalMaxHp * 0.2f);
-                GameObject shieldEffect = PoolManager.Instance.SpawnFromPool
-                    (heroInstance.data.UltimateEffectPrefab, transform.position, Quaternion.identity);
-                shieldEffect.GetComponent<Poolable>().ReleaseAfter(2.0f);
+                if (heroInstance.data.UltimateEffectPrefab != null)
+                {
+                    GameObject shieldEffect = PoolManager.Instance.SpawnFromPool
+                        (heroInstance.data.UltimateEffectPrefab, transform.position, Quaternion.identity);
+                    shieldEffect.GetComponent<Poolable>().ReleaseAfter(2.0f);
+                }
 
                 stats.AddShield(shieldAmount);
                 break;
