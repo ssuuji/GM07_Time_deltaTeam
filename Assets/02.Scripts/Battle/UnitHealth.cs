@@ -40,6 +40,48 @@ namespace AFKHero.Battle
                 return 0;
             }
 
+            if(attacker != null && attacker.Team == owner.Team)
+            {
+                return 0;
+            }
+
+            // 궁극기 중 피해 처리 정지
+            if(battleManager != null && battleManager.IsDamageApplicationPaused)
+            {
+                return 0;
+            }
+
+            return ApplyDamageImmediately(finalDamage,attacker);
+        }
+
+        public int TakeUltimateDamage(int finalDamage, BattleUnit attacker)
+        {
+            if(isDead ||
+                owner == null ||
+                owner.Stats == null ||
+                !owner.Stats.IsAlive ||
+                attacker == null||
+                attacker.Team == owner.Team ||
+                battleManager == null ||
+                battleManager.CurrentUltimateUnit != attacker ||
+                finalDamage <= 0)
+            {
+                return 0;
+            }
+            return ApplyDamageImmediately(finalDamage,attacker);
+        }
+
+        private int ApplyDamageImmediately(int finalDamage, BattleUnit attacker)
+        {
+            if(isDead ||
+                owner == null ||
+                owner.Stats == null ||
+                !owner.Stats.IsAlive ||
+                finalDamage <= 0)
+            {
+                return 0;
+            }
+
             int appliedDamage = owner.Stats.ApplyDamage(finalDamage);
 
             if(appliedDamage <= 0)
@@ -47,30 +89,27 @@ namespace AFKHero.Battle
                 return 0;
             }
 
-            // 코드 확인용
             if (logDamage)
             {
                 string attackName = attacker != null ? attacker.name : "Unknown";
 
-                Debug.Log(
-                    $"[기본 공격] {attackName} -> {owner.name} / " +
-                    $"[피해] {appliedDamage} / " +
-                    $"[HP] [{owner.Stats.CurrentHealth}]/[{owner.Stats.MaxHealth}]",owner);
+                Debug.Log($"[피해] {attackName} -> {owner.name} / [데미지] {appliedDamage} / " +
+                    $"[HP] ({owner.Stats.CurrentHealth})/({owner.Stats.MaxHealth})");
             }
 
-            if (owner.Stats.IsAlive)
+            if(owner.Stats.IsAlive)
             {
                 owner.Energy?.GainFromDamageTake();
             }
             else
             {
-                Die(attacker);
+                Die();
             }
             return appliedDamage;
         }
 
         // 유닛 죽음
-        private void Die(BattleUnit attacker)
+        private void Die()
         {
             if (isDead)
             {

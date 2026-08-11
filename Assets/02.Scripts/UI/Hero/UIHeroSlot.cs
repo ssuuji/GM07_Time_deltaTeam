@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace AFKHero.UI
@@ -12,13 +11,22 @@ namespace AFKHero.UI
 
         [Header("등급 배경색")]
         [SerializeField] private Image gradeImage;
+        
+        private UIHeroInfoPopup heroInfoPopup;
+        private UIHeroSlotMode slotMode;
 
         public HeroInstance Hero { get; private set; } //영웅
 
+        public void SetMode(UIHeroSlotMode mode)
+        {
+            slotMode = mode;
+        }
+
         //슬롯 설정
-        public void SetHero(HeroInstance hero)
+        public void SetHero(HeroInstance hero, UIHeroInfoPopup info)
         {
             Hero = hero; //영웅 저장
+            heroInfoPopup = info; //영웅정보창
             
             if (Hero == null)
             {
@@ -28,29 +36,41 @@ namespace AFKHero.UI
 
             gameObject.SetActive(true);
             heroIcon.sprite = Hero.data.HeroIcon; //영웅아이콘
-            SetGradeColor();                      //등급별 배경색 설정
+            gradeImage.color = HeroGradeColor.GetColor(Hero.data.HeroGrade); //등급별 배경색 설정
         }
 
-        private void SetGradeColor()
+        //영웅슬롯 클릭버튼
+        public void OnClickedSlot()
         {
-            switch (Hero.data.HeroGrade)
+            if (Hero == null) return;
+            
+            switch (slotMode)
             {
-                //노멀
-                case HeroGrade.Normal:
-                case HeroGrade.NormalPlus:
-                    gradeImage.color = new Color32(160, 160, 160, 255);
+                //파티탭
+                case UIHeroSlotMode.Party:
+                    if (heroInfoPopup == null) return;
+                    heroInfoPopup.InfoOpen(Hero, UIHeroSlotMode.Party); //정보 팝업창 열기 (배치하기 버튼)
                     break;
-                //레어
-                case HeroGrade.Rare:
-                case HeroGrade.RarePlus:
-                    gradeImage.color = new Color32(61, 141, 255, 255);
+
+                //성장탭 
+                case UIHeroSlotMode.Upgrade:
+                    if (UIUpgradeManager.Instance == null) return;
+                    UIUpgradeManager.Instance.SelectHero(Hero); //상단 영웅 표시
                     break;
-                //에픽
-                case HeroGrade.Epic:
-                case HeroGrade.EpicPlus:
-                    gradeImage.color = new Color32(176, 76, 255, 255);
+
+                //성장탭 - 영웅합성
+                case UIHeroSlotMode.UpgradeMaterial:
+                    if (UIUpgradeManager.Instance == null) return;
+                    UIUpgradeManager.Instance.SelectMaterial(Hero); //재료로 사용할 영웅카드 선택
+                    break;
+
+                //공명탭
+                case UIHeroSlotMode.Share:
+                    if (heroInfoPopup == null) return;
+                    heroInfoPopup.InfoOpen(Hero, UIHeroSlotMode.Share); //정보 팝업창 열기 (레벨업 버튼)
                     break;
             }
+            
         }
     }
 

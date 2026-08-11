@@ -41,5 +41,14 @@ namespace AFKHero.UI
         SameGrade,  //같은등급 영웅표시
         SameHero    //같은영웅만 표시
     }
+
+    //슬롯 클릭 모드 : 어디에서 눌렀는지 확인용
+    public enum UIHeroSlotMode
+    {
+        Party,           //파티탭 : 정보창 -> 배치
+        Upgrade,         //성장탭 : 상단 영웅 선택
+        UpgradeMaterial, //성장탭 합성버튼 : 영웅카드 재료 선택
+        Share            //공명탭 : 정보창 -> 레벨업
+    }
 }
 /////////////////////////////////

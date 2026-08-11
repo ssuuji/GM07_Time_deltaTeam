@@ -43,6 +43,24 @@ namespace AFKHero.Battle
             return true;
         }
 
+        // 큐에서 제거
+        public bool TryDequeue(out BattleUnit unit)
+        {
+            if(waitingUnits.Count == 0)
+            {
+                unit = null;
+                return false;
+            }
+
+            unit = waitingUnits[0];
+
+            waitingUnits.RemoveAt(0);
+            queueUnits.Remove(unit);
+            queueFrames.Remove(unit);
+
+            return true;
+        }
+
         // 지정한 유닛이 이미 궁극기 대기열에 있는지 확인
         public bool Contains(BattleUnit unit)
         {
