@@ -8,6 +8,9 @@ public class HeroInstance
     public int level;
     public bool isUnlocked;
 
+    // 추가된 부분: 승급 재료로 사용할 중복 카드 수량
+    public int duplicateCount;
+
     // 장비 슬롯 변수 - 장비 할때 추가하기
     //public EquipmentData equippedWeapon { get; private set; }
     //public EquipmentData equippedArmor { get; private set; }
@@ -50,6 +53,8 @@ public class HeroInstance
         data = heroData;
         level = 1;
         isUnlocked = defaultUnlocked;
+
+        duplicateCount = 0; //초기화
     }
 
     // ==========================

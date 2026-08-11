@@ -44,8 +44,29 @@ public class PartyManager : MonoBehaviour
         UpdateSynergy();
     }
 
+    // ============================
+    // 추가된 부분 : 파티 슬롯 명단 해제 로직
+    // ============================
+
+    // 특정 영웅을 지정해서 파티에서 뺄 때 사용
+    public void RemoveHero(HeroInstance heroToRemove)
+    {
+        if (heroToRemove == null) return;
+
+        for (int i = 0; i < 5; i++)
+        {
+            if (partySlots[i] == heroToRemove)
+            {
+                Debug.Log($"[PartyManager] {heroToRemove.data.HeroName} 파티에서 해제됨.");
+                partySlots[i] = null;
+                UpdateSynergy(); // 인원이 빠졌으므로 시너지 즉시 재계산
+                break; // 영웅을 찾아서 뺐으므로 반복문 종료
+            }
+        }
+    }
+
     // =========================================
-    // 추가된 부분: 영웅이 현재 파티에 포함되어 있는지 검사
+    // 영웅이 현재 파티에 포함되어 있는지 검사
     // =========================================
     public bool IsHeroInParty(HeroInstance hero)
     {

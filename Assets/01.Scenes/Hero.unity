@@ -259,18 +259,23 @@ MonoBehaviour:
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
+    duplicateCount: 0
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
+    duplicateCount: 0
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
+    duplicateCount: 0
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
+    duplicateCount: 0
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
+    duplicateCount: 0
   totalBonusAttackRate: 0
   totalBonusHpRate: 0
   activeSynergyDescriptions: []

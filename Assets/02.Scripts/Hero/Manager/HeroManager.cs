@@ -33,8 +33,8 @@ public class HeroManager : MonoBehaviour
         {
             if (data == null) continue;
 
-            // ID 1~5번은 기본 지급 영웅으로 가정하여 해금처리
-            bool isDefaultUnlocked = data.HeroID <= 5;
+            // ID 1001�� ���� �� 1���� �⺻���� �����ϵ��� ����
+            bool isDefaultUnlocked = data.HeroID == 1001;
 
             // 딕셔너리에 영웅 인스턴스를 저장
             heroDictionary.Add(data.HeroID, new HeroInstance(data, isDefaultUnlocked));
@@ -48,14 +48,24 @@ public class HeroManager : MonoBehaviour
     // 영웅 획득 시 호출함
     public bool UnlockHero(int heroID)
     {
-        // ID 검색 및 미해금 상태 확인함
-        if (heroDictionary.TryGetValue(heroID, out HeroInstance hero) && !hero.isUnlocked)
+        if (heroDictionary.TryGetValue(heroID, out HeroInstance hero))
         {
-            hero.isUnlocked = true; // 해금 상태로 변경함
-            Debug.Log($"[HeroManager] {hero.data.HeroName} 해금 완료!");
-            return true;
+            if (!hero.isUnlocked)
+            {
+                // ���� ȹ�� ��
+                hero.isUnlocked = true;
+                Debug.Log($"[HeroManager] {hero.data.HeroName} ���� �ر� �Ϸ�!");
+                return true;
+            }
+            else
+            {
+                // �̹� �رݵ� ������ ��� (�ߺ� ȹ��)
+                hero.duplicateCount++;
+                Debug.Log($"[HeroManager] {hero.data.HeroName} �ߺ� ȹ��! (���� �ߺ� ī��: {hero.duplicateCount}��)");
+                return true;
+            }
         }
-        return false; // 이미 해금됐거나 없는 ID면 false 반환
+        return false;
     }
 
     // 영웅 레벨업
@@ -71,25 +81,13 @@ public class HeroManager : MonoBehaviour
                 return false;
             }
 
-            // 현재 레벨업에 필요한 골드 확인
-            int cost = hero.LevelUpCost;
-
-            // AFKHeroPlayerManager 통해 골드 차감 시도
-            if (AFKHeroPlayerManager.Instance != null && AFKHeroPlayerManager.Instance.TryUseGold(cost))
+            //  �������� ����
+            bool success = hero.LevelUp();
+            if (success)
             {
-                // 골드 차감이 성공했다면 실제 레벨업 진행
-                bool success = hero.LevelUp();
-                if (success)
-                {
-                    Debug.Log($"[HeroManager] {hero.data.HeroName} 레벨업 완료! (LV.{hero.level}) / 소모 골드: {cost}");
-                }
-                return success;
+                Debug.Log($"[HeroManager] {hero.data.HeroName} ������ �Ϸ�! (���� LV.{hero.level})");
             }
-            else
-            {
-                // 돈이 부족해서 false를 반환한 경우 레벨업은 취소
-                return false;
-            }
+            return success;
         }
         return false;
     }
@@ -97,18 +95,23 @@ public class HeroManager : MonoBehaviour
     // 전체 영웅 리스트를 반환
     public List<HeroInstance> GetAllHeroes() => new List<HeroInstance>(heroDictionary.Values);
 
-    // 저장할 핵심 데이터(레벨, 해금여부)만 추출함.
-    public Dictionary<int, (int level, bool isUnlocked)> GetSaveData()
+    // =============================
+    // ������ ��ȸ �� ���̺�/�ε�
+    // =============================
+
+    // ������ �ٽ� �����Ϳ� duplicateCount �߰�
+    public Dictionary<int, (int level, bool isUnlocked, int duplicateCount)> GetSaveData()
     {
-        var saveData = new Dictionary<int, (int, bool)>();
+        var saveData = new Dictionary<int, (int, bool, int)>();
         foreach (var kvp in heroDictionary)
         {
-            saveData.Add(kvp.Key, (kvp.Value.level, kvp.Value.isUnlocked));
+            saveData.Add(kvp.Key, (kvp.Value.level, kvp.Value.isUnlocked, kvp.Value.duplicateCount));
         }
         return saveData;
     }
 
-    public void LoadSaveData(Dictionary<int, (int level, bool isUnlocked)> savedData)
+    // �ҷ��� �ٽ� �����Ϳ� duplicateCount �߰�
+    public void LoadSaveData(Dictionary<int, (int level, bool isUnlocked, int duplicateCount)> savedData)
     {
         foreach (var kvp in savedData)
         {
@@ -117,6 +120,7 @@ public class HeroManager : MonoBehaviour
                 // 데이터 변조 방지를 위해 최대 레벨 제한 적용
                 hero.level = Mathf.Clamp(kvp.Value.level, 1, 50);
                 hero.isUnlocked = kvp.Value.isUnlocked;
+                hero.duplicateCount = kvp.Value.duplicateCount; // �ߺ� ī�� ���� �ε� ����
             }
         }
     }
