@@ -27,10 +27,9 @@ namespace AFKHero.UI
 
         private void Start()
         {
-            UpdatePartySet();     //파티 UI갱신
-            synergyUI.UpdateUI(); //시너지 UI갱신
+            UpdatePartySet();     //파티 UI 갱신
+            synergyUI.UpdateUI(); //시너지 UI 갱신
         }
-
 
         //영웅리스트 갱신
         public void UpdateHeroList()
@@ -39,7 +38,7 @@ namespace AFKHero.UI
             if (partyContent == null) return;
 
             // 현재 보유 중인 모든 영웅 표시
-            heroList.UpdateList(partyContent, UIHeroSlotType.All);
+            heroList.UpdateList(partyContent, UIHeroSlotType.All, null, UIHeroSlotMode.Party);
         }
 
         #region 파티 배치

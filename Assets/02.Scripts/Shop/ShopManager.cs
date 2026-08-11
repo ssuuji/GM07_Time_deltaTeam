@@ -22,6 +22,14 @@ namespace AFKHero.Shop
         private void Summon(int count)
         {
             List<HeroData> result = heroSummonManager.Summon(count); //소환요청 보내기
+                                                                     
+            foreach (HeroData hero in result)                        //소환한 영웅 획득 처리
+            {
+                if (hero == null) continue;
+
+                HeroManager.Instance.UnlockHero(hero.HeroID);
+            }
+
             summonResult.ShowResult(result);                         //결과 UI에게 전달
         }
         

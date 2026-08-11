@@ -1225,7 +1225,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &84201788
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2608,7 +2608,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 40}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &159858507
 MonoBehaviour:
@@ -5129,7 +5129,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &301395868
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8840,18 +8840,23 @@ MonoBehaviour:
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
+    duplicateCount: 0
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
+    duplicateCount: 0
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
+    duplicateCount: 0
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
+    duplicateCount: 0
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
+    duplicateCount: 0
   totalBonusAttackRate: 0
   totalBonusHpRate: 0
   activeSynergyDescriptions: []
@@ -16448,7 +16453,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 40}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1025555414
 MonoBehaviour:
@@ -17259,8 +17264,8 @@ MonoBehaviour:
   levelData:
   - level: 1
     maxExp: 100
-    normalRate: 100
-    rareRate: 0
+    normalRate: 0
+    rareRate: 100
     epicRate: 0
   - level: 2
     maxExp: 200
@@ -17273,7 +17278,9 @@ MonoBehaviour:
     rareRate: 27
     epicRate: 3
   heroList:
-  - {fileID: 11400000, guid: 70ab1537ef2c9104ab77e66f7c5668a7, type: 2}
+  - {fileID: 11400000, guid: 52cedf96ddb33d749bbeb1c1764db086, type: 2}
+  - {fileID: 11400000, guid: 283b00437eb4ef34497d345fe6f66339, type: 2}
+  - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
 --- !u!114 &1080743446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18764,7 +18771,9 @@ MonoBehaviour:
   upgradePopup: {fileID: 289760555}
   materialContent: {fileID: 61987871}
   upgradeHeroBefore: {fileID: 920403572}
+  upgradeGradeBefore: {fileID: 0}
   upgradeHeroAfter: {fileID: 1254430100}
+  upgradeGradeAfter: {fileID: 0}
   materialImages:
   - {fileID: 1595250031}
   - {fileID: 210250096}
@@ -25723,8 +25732,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HeroManager
   allHeroDataList:
-  - {fileID: 11400000, guid: 70ab1537ef2c9104ab77e66f7c5668a7, type: 2}
-  - {fileID: 11400000, guid: 8ed4df78b59bfc144a47fa2406668ac2, type: 2}
+  - {fileID: 11400000, guid: 52cedf96ddb33d749bbeb1c1764db086, type: 2}
+  - {fileID: 11400000, guid: 283b00437eb4ef34497d345fe6f66339, type: 2}
+  - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
 --- !u!114 &1558391857
 MonoBehaviour:
   m_ObjectHideFlags: 0

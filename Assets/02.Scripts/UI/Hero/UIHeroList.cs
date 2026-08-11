@@ -16,7 +16,7 @@ namespace AFKHero.UI
         {
             if (content == null) return;
             if (heroSlotPrefab == null) return;
-            
+
             ClearList(content); //기존에 생성되어 있던 슬롯 제거
 
             switch (type)
