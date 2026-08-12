@@ -40,8 +40,7 @@ namespace AFKHero.UI
         {
             if (heroSummonManager == null) return;
 
-            levelText.text = $"Lv. {heroSummonManager.SummonLevel}"; //레벨
-            
+            levelText.text = $"Lv. {heroSummonManager.SummonLevel}";    //레벨
             expSlider.maxValue = heroSummonManager.MaxSummonExp;        //게이지 최대값
             expSlider.value = heroSummonManager.SummonExp;              //게이지 값
             expText.text = $"{expSlider.value} / {expSlider.maxValue}"; //게이지 텍스트

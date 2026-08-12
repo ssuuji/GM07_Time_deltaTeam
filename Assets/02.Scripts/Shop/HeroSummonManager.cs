@@ -9,13 +9,13 @@ namespace AFKHero.Shop
     //제단의 레벨에 따라 등장 가능한 영웅등급과 확률이 달라진다.
     public class HeroSummonManager : MonoBehaviour
     {
-        private int summonLevel = 1; //제단의 레벨
-        private int summonExp = 0;   //현재 누적된 게이지
+        private int summonLevel = 1;                              //제단의 레벨
+        private int summonExp = 0;                                //현재 누적된 게이지
         
         [SerializeField] private List<SummonLevelData> levelData; //레벨별 설정 데이터
         [SerializeField] private List<HeroData> heroList;         //영웅리스트
 
-        public event Action OnSummonInfoChanged; //제단정보 변경 이벤트
+        public event Action OnSummonInfoChanged;                  //제단정보 변경 이벤트
 
         //프로퍼티
         public int SummonLevel => summonLevel;
@@ -29,7 +29,8 @@ namespace AFKHero.Shop
             }
         }
 
-        //현재 소환제단 레벨에 해당하는 데이터 가져오기
+
+        //현재 소환제단 레벨에 해당하는 데이터 반환
         private SummonLevelData GetCurrentLevelData()
         {
             foreach (SummonLevelData data in levelData)
@@ -43,36 +44,34 @@ namespace AFKHero.Shop
             return null;
         }
 
-        //영웅 등급 결정하기
+        //소환할 영웅의 등급 결정
         private HeroGrade GetHeroGrade()
         {
-            SummonLevelData currentData = GetCurrentLevelData(); //소환레벨 가져오고
+            SummonLevelData currentData = GetCurrentLevelData();     //소환제단 데이터 가져오기
             float random = UnityEngine.Random.Range(0f, 100f);
 
-            // 0 ~ 에픽 구간이면 Epic
-            if (random < currentData.epicRate)
+            
+            if (random < currentData.epicRate)                        // 0 ~ 에픽 구간이면 Epic
             {
                 return HeroGrade.Epic;
             }
-            //에픽 ~ 레어 구간이면 레어
-            if (random < currentData.epicRate + currentData.rareRate)
+            if (random < currentData.epicRate + currentData.rareRate) //에픽 ~ 레어 구간이면 레어
             {
                 return HeroGrade.Rare;
             }
-            //레어 ~ 노멀 구간이면 노멀
-            return HeroGrade.Normal;
+            return HeroGrade.Normal;                                  //레어 ~ 노멀 구간이면 노멀
         }
 
         //결정된 등급에서 영웅 1명 뽑기
         private HeroData GetRandomHero(HeroGrade grade)
         {
-            List<HeroData> gradeHeroes = new List<HeroData>(); //영웅 리스트 
-
-            foreach (HeroData hero in heroList)
-            {
-                if (hero.HeroGrade == grade)
+            List<HeroData> gradeHeroes = new List<HeroData>();                //영웅 리스트 
+                                                                              
+            foreach (HeroData hero in heroList)                               
+            {                                                                 
+                if (hero.HeroGrade == grade)                                  //해당 등급의 영웅이면 리스트에 추가
                 {
-                    gradeHeroes.Add(hero);  //영웅의 등급이 결정된 등급과 같으면 추가
+                    gradeHeroes.Add(hero);  
                 }
             }
 
@@ -80,39 +79,39 @@ namespace AFKHero.Shop
             return gradeHeroes[randomIndex];                                  //영웅 반환
         }
 
-        //소환
+        //영웅 소환
         public List<HeroData> Summon(int count)
         {
             List<HeroData> result = new List<HeroData>(); //소환된 영웅리스트
 
             for (int i = 0; i < count; i++)
             {
-                HeroGrade grade = GetHeroGrade();     //영웅의 등급을 결정하고
-                HeroData hero = GetRandomHero(grade); //결정된 등급에서 영웅 1명 소환
-                result.Add(hero); //추가
-                summonExp++;      //게이지 증가
-                CheckLevelUp();   //레벨 체크
+                HeroGrade grade = GetHeroGrade();        //영웅의 등급을 결정하고
+                HeroData hero = GetRandomHero(grade);    //결정된 등급에서 영웅 1명 소환
+                result.Add(hero);                        //추가
+                summonExp++;                             //소환제단의 레벨 게이지 증가
+                CheckLevelUp();                          //소환제단의 레벨 체크
             }
 
-            OnSummonInfoChanged?.Invoke(); //소환후 제단정보 변경 이벤트
+            OnSummonInfoChanged?.Invoke();               //소환후 제단정보 변경 이벤트
             return result;
         }
 
-        //레벨 체크
+        //소환제단 레벨 체크
         private void CheckLevelUp()
         {
-            SummonLevelData currentData = GetCurrentLevelData(); //제단의 레벨데이터 가져오기
+            SummonLevelData currentData = GetCurrentLevelData(); //소환제단 데이터 가져오기
 
             if (summonExp < currentData.maxExp) return;
 
-            if (summonLevel >= levelData.Count)
+            if (summonLevel >= levelData.Count)                 //마지막 레벨이면 레벨과 게이지 고정
             {
-                summonExp = currentData.maxExp; //마지막 레벨이면 레벨과 게이지 고정
+                summonExp = currentData.maxExp; 
                 return;
             }
 
-            summonExp -= currentData.maxExp; //남은 게이지는 다음레벨로 넘기기
-            summonLevel++;                   //제단 레벨업
+            summonExp -= currentData.maxExp;                    //남은 게이지는 다음레벨로 넘기기
+            summonLevel++;                                      //제단 레벨업
         }
     }
 }
