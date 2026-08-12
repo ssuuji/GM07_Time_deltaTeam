@@ -1,5 +1,4 @@
-﻿using AFKHeroPlayerManager = AFKHero.Player.PlayerManager;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 // 모든 영웅의 획득 상태와 성장을 총괄함.
@@ -33,7 +32,7 @@ public class HeroManager : MonoBehaviour
         {
             if (data == null) continue;
 
-            // ID 1001�� ���� �� 1���� �⺻���� �����ϵ��� ����
+            // ID 1001번 영웅 딱 1명만 기본으로 지급하도록 변경
             bool isDefaultUnlocked = data.HeroID == 1001;
 
             // 딕셔너리에 영웅 인스턴스를 저장
@@ -52,16 +51,16 @@ public class HeroManager : MonoBehaviour
         {
             if (!hero.isUnlocked)
             {
-                // ���� ȹ�� ��
+                // 최초 획득 시
                 hero.isUnlocked = true;
-                Debug.Log($"[HeroManager] {hero.data.HeroName} ���� �ر� �Ϸ�!");
+                Debug.Log($"[HeroManager] {hero.data.HeroName} 최초 해금 완료!");
                 return true;
             }
             else
             {
-                // �̹� �رݵ� ������ ��� (�ߺ� ȹ��)
+                // 이미 해금된 영웅일 경우 (중복 획득)
                 hero.duplicateCount++;
-                Debug.Log($"[HeroManager] {hero.data.HeroName} �ߺ� ȹ��! (���� �ߺ� ī��: {hero.duplicateCount}��)");
+                Debug.Log($"[HeroManager] {hero.data.HeroName} 중복 획득! (보유 중복 카드: {hero.duplicateCount}장)");
                 return true;
             }
         }
@@ -81,11 +80,11 @@ public class HeroManager : MonoBehaviour
                 return false;
             }
 
-            //  �������� ����
+            //  레벨업만 진행
             bool success = hero.LevelUp();
             if (success)
             {
-                Debug.Log($"[HeroManager] {hero.data.HeroName} ������ �Ϸ�! (���� LV.{hero.level})");
+                Debug.Log($"[HeroManager] {hero.data.HeroName} 레벨업 완료! (현재 LV.{hero.level})");
             }
             return success;
         }
@@ -96,10 +95,10 @@ public class HeroManager : MonoBehaviour
     public List<HeroInstance> GetAllHeroes() => new List<HeroInstance>(heroDictionary.Values);
 
     // =============================
-    // ������ ��ȸ �� ���̺�/�ε�
+    // 데이터 조회 및 세이브/로드
     // =============================
 
-    // ������ �ٽ� �����Ϳ� duplicateCount �߰�
+    // 저장할 핵심 데이터에 duplicateCount 추가
     public Dictionary<int, (int level, bool isUnlocked, int duplicateCount)> GetSaveData()
     {
         var saveData = new Dictionary<int, (int, bool, int)>();
@@ -110,7 +109,7 @@ public class HeroManager : MonoBehaviour
         return saveData;
     }
 
-    // �ҷ��� �ٽ� �����Ϳ� duplicateCount �߰�
+    // 불러올 핵심 데이터에 duplicateCount 추가
     public void LoadSaveData(Dictionary<int, (int level, bool isUnlocked, int duplicateCount)> savedData)
     {
         foreach (var kvp in savedData)
@@ -120,7 +119,7 @@ public class HeroManager : MonoBehaviour
                 // 데이터 변조 방지를 위해 최대 레벨 제한 적용
                 hero.level = Mathf.Clamp(kvp.Value.level, 1, 50);
                 hero.isUnlocked = kvp.Value.isUnlocked;
-                hero.duplicateCount = kvp.Value.duplicateCount; // �ߺ� ī�� ���� �ε� ����
+                hero.duplicateCount = kvp.Value.duplicateCount; // 중복 카드 수량 로드 연동
             }
         }
     }
