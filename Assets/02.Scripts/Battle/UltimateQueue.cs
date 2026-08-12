@@ -24,6 +24,8 @@ namespace AFKHero.Battle
         // 유닛이 대기열에 정상 등록되면 알림
         public event Action<BattleUnit> UnitEnqueue;
 
+        public event Action QueueChanged;
+
         // 궁극기 준비된 유닛 대기열에 한번만 등록
         public bool TryEnqueue(BattleUnit unit, int queueFrame)
         {
@@ -38,12 +40,13 @@ namespace AFKHero.Battle
             int insertIndex = FindInsertIndex(unit, queueFrame);
 
             waitingUnits.Insert(insertIndex, unit);
-
             UnitEnqueue?.Invoke(unit);
+            QueueChanged?.Invoke();
+
             return true;
         }
 
-        // 큐에서 제거
+        // 큐에서 우선순위가 가장 높은 유닛을 큐에서 제거
         public bool TryDequeue(out BattleUnit unit)
         {
             if(waitingUnits.Count == 0)
@@ -54,11 +57,58 @@ namespace AFKHero.Battle
 
             unit = waitingUnits[0];
 
-            waitingUnits.RemoveAt(0);
-            queueUnits.Remove(unit);
-            queueFrames.Remove(unit);
+            return AllRemoveAt(0, out unit);
+        }
 
-            return true;
+        // 사용자가 선택한 궁극기를 대기열에서 찾아 제거
+        public bool TryDequeue(BattleUnit requestUnit, out BattleUnit unit)
+        {
+            int index = waitingUnits.IndexOf(requestUnit);
+
+            if(index < 0)
+            {
+                unit = null;
+                return false;
+            }
+
+            return AllRemoveAt(index, out unit);
+        }
+
+        // 현재 우선순위가 가장 높은 유닛을 꺼냄 수동모드에서는 적 궁극기는 자동 실행할 때 사용
+        public bool TryDequeueFirst(TeamType team, out BattleUnit unit)
+        {
+            for(int i = 0; i < waitingUnits.Count; i++)
+            {
+                if (waitingUnits[i] != null && waitingUnits[i].Team == team)
+                {
+                    return AllRemoveAt(i, out unit);
+                }
+            }
+
+            unit = null;
+            return false;
+        }
+
+        public bool TryGetFirst(Predicate<BattleUnit> condition, out BattleUnit unit)
+        {
+            if(condition == null)
+            {
+                unit = null;
+                return false;
+            }
+
+            for(int i = 0; i < waitingUnits.Count; i++)
+            {
+                BattleUnit watingUnit = waitingUnits[i];
+
+                if(watingUnit != null && condition(watingUnit))
+                {
+                    unit = watingUnit;
+                    return true;
+                }
+            }
+            unit = null;
+            return false;
         }
 
         // 지정한 유닛이 이미 궁극기 대기열에 있는지 확인
@@ -77,15 +127,40 @@ namespace AFKHero.Battle
 
             queueFrames.Remove(unit);
             waitingUnits.Remove(unit);
+            QueueChanged?.Invoke();
             return true;
         }
 
         // 큐 비우기
         public void Clear()
         {
+            bool hadWatingUnit = waitingUnits.Count > 0;
+
             waitingUnits.Clear();
             queueUnits.Clear();
             queueFrames.Clear();
+
+            if (hadWatingUnit)
+            {
+                QueueChanged?.Invoke();
+            }
+        }
+
+        private bool AllRemoveAt(int index, out BattleUnit unit)
+        {
+            if(index < 0 || index >= waitingUnits.Count)
+            {
+                unit = null;
+                return false;
+            }
+
+            unit = waitingUnits[index];
+            waitingUnits.RemoveAt(index);
+            queueUnits.Remove(unit);
+            queueFrames.Remove(unit);
+
+            QueueChanged?.Invoke();
+            return true;
         }
         
         private static bool CanEnqueue(BattleUnit unit)
@@ -118,7 +193,8 @@ namespace AFKHero.Battle
         }
 
         // 궁극기 우선순위 비교
-        private static bool PriorityUltimate(BattleUnit newUnit, 
+        private static bool PriorityUltimate(
+            BattleUnit newUnit, 
             int newQueueFrame, 
             BattleUnit waitingUnit, 
             int waitingQueueFrame)
@@ -130,7 +206,7 @@ namespace AFKHero.Battle
 
             if(newUnit.Team != waitingUnit.Team)
             {
-                return (int)newUnit.Team < (int)waitingUnit.Team;
+                return newUnit.Team == TeamType.Ally;
             }
 
             return newUnit.FormationSlotIndex < waitingUnit.FormationSlotIndex;
