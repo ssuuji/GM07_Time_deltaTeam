@@ -72,7 +72,7 @@ namespace AFKHero.UI
         {
             if (UIBattleManager.Instance == null) return;
 
-            UIBattleManager.Instance.UpdatePartyUI();
+            UIBattleManager.Instance.UpdateBattleUI();
         }
 
         //상점탭 화면 갱신

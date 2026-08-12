@@ -34,7 +34,7 @@ namespace AFKHero.UI
             heroNameText.text = hero.data.HeroName;  //이름
             SetHP(1f, 1f);                           //HP 초기화
             SetUltimate(0f, 1f);                     //궁극기게이지 초기화
-            SetHeroGrade(hero.CurrentGrade);         //등급 테두리 적용
+            SetHeroGrade(hero.currentGrade);         //등급 테두리 적용
         }
 
         //등급 테두리 설정
