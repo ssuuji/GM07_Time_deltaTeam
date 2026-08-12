@@ -386,7 +386,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1373122690}
         m_TargetAssemblyTypeName: StageManager, Assembly-CSharp
-        m_MethodName: StartStage
+        m_MethodName: NextStage
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -857,7 +857,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1373122688}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b27a101cf69953f4a9dc4d21956b9f78, type: 3}
   m_Name: 
@@ -882,6 +882,7 @@ MonoBehaviour:
   stageData: {fileID: 11400000, guid: b48beeb15d2f91c4f9b2f26ec9e55ce1, type: 2}
   enemySpawner: {fileID: 1373122689}
   battleManager: {fileID: 1787319763}
+  battleSpawner: {fileID: 1787319762}
   victoryPanel: {fileID: 385115466}
   defeatPanel: {fileID: 363549963}
   currentStageNumber: 1
@@ -1044,12 +1045,14 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 11400000, guid: 00a2658e526439d44a2cfda07f6567e8, type: 2}
   enemyParty:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 11400000, guid: a94643face8334a46beae8e60e1ba63b, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
   spawnOnStart: 1
   startBattleAfterSpawn: 1
 --- !u!114 &1787319763
@@ -1065,6 +1068,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Battle.BattleManager
   battleTimeLimit: 30
+  ultimateUseMode: 0
 --- !u!4 &1787319764
 Transform:
   m_ObjectHideFlags: 0
