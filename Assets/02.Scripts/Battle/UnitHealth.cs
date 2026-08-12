@@ -51,7 +51,7 @@ namespace AFKHero.Battle
                 return 0;
             }
 
-            return ApplyDamageImmediately(finalDamage,attacker);
+            return ApplyDamageImmediately(finalDamage, attacker);
         }
 
         public int TakeUltimateDamage(int finalDamage, BattleUnit attacker)
@@ -120,6 +120,9 @@ namespace AFKHero.Battle
 
             // 타겟 참조 clear
             owner.TargetFinder?.ClearTarget();
+
+            // 죽으면 군중제어 해제
+            owner.StatusEffects?.ClearAllStatusEffects();
 
             Debug.Log($"[죽음] {owner.name}", owner);
 

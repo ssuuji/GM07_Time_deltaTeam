@@ -26,13 +26,13 @@ namespace AFKHero.Battle
         public event Action<BattleUnit> ExecutionStarted;
         public event Action<BattleUnit> ExecutionCompleted;
 
-        public void Initialized(BattleUnit UnitOwner)
+        public void Initialize(BattleUnit UnitOwner)
         {
             owner = UnitOwner;
 
             if(owner == null)
             {
-                Debug.LogError("궁극기 실행자의 BattleUnit이 없습니다.", this);
+                Debug.LogError("궁극기 컨트롤러에 BattleUnit이 비어있습니다.", this);
             }
         }
 
@@ -41,6 +41,8 @@ namespace AFKHero.Battle
             if (owner == null ||
                 owner.Stats == null ||
                 !owner.Stats.IsAlive ||
+                (owner.StatusEffects != null &&
+                !owner.StatusEffects.CanUseUltimate) ||
                 IsExecuting ||
                 onCompleted == null)
             {
