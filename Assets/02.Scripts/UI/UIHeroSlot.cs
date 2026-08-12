@@ -37,7 +37,7 @@ namespace AFKHero.UI
 
             gameObject.SetActive(true);
             heroIcon.sprite = Hero.data.HeroIcon;                           //아이콘
-            gradeImage.color = HeroGradeColor.GetColor(Hero.CurrentGrade);  //등급(색) 설정
+            gradeImage.color = HeroGradeColor.GetColor(Hero.currentGrade);  //등급(색) 설정
         }
 
         //영웅슬롯 클릭버튼

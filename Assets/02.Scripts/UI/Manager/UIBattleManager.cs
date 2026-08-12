@@ -24,6 +24,23 @@ namespace AFKHero.UI
             CreateHeroSlots();
         }
 
+        //전투탭 UI 갱신
+        public void UpdateBattleUI()
+        {
+            UpdateStageUI(); //현재 스테이지 갱신
+            UpdatePartyUI(); //현재 파티 갱신
+        }
+
+        //현재 진행 스테이지 UI 갱신
+        public void UpdateStageUI()
+        {
+            if (StageManager.Instance == null) return;
+            if (currentStageText == null) return;
+
+            currentStageText.text = $"STAGE {StageManager.Instance.CurrentStageNumber}-{StageManager.Instance.CurrentSectionNumber}";
+        }
+
+
         //하단 영웅 슬롯 생성
         private void CreateHeroSlots()
         {

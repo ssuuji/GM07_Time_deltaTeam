@@ -1,4 +1,5 @@
 ﻿using AFKHero.Battle;
+using AFKHero.UI;
 using System.Collections;
 using UnityEngine;
 
@@ -94,6 +95,9 @@ public class StageManager : MonoBehaviour
             print("스테이지 데이터 null");
             return;
         }
+
+        //현재 스테이지 UI 갱신
+        UIBattleManager.Instance?.UpdateStageUI();
 
         //적의 레벨을 스테이지 기반으로 계산
         int enemyLevel = EnemyLevelCalculator.CalculateEnemyLevel(currentStageNumber, currentSectionNumber);
