@@ -8,12 +8,10 @@ public class HeroInstance
     public int level;
     public bool isUnlocked;
 
-    // 승급 재료로 사용할 중복 카드 수량
-    public int duplicateCount;
-
-    // 추가된 부분 : 현재 등급을 관리하는 변수 추가
+    // 수정된 부분 : 승급 재료로 사용하던 중복 카드 duplicateCount 삭제
     public HeroGrade currentGrade;
 
+    
     // 장비 슬롯 변수 - 장비 할때 추가하기
     //public EquipmentData equippedWeapon { get; private set; }
     //public EquipmentData equippedArmor { get; private set; }
@@ -50,14 +48,11 @@ public class HeroInstance
     //    (equippedArmor?.bonusHP ?? 0) + (equippedAccessory?.bonusHP ?? 0);
     //private int EquipmentBonusDefense => (equippedWeapon?.bonusDefense ?? 0) + 
     //    (equippedArmor?.bonusDefense ?? 0) + (equippedAccessory?.bonusDefense ?? 0);
-
     public HeroInstance(HeroData heroData, bool defaultUnlocked = false)
     {
         data = heroData;
         level = 1;
         isUnlocked = defaultUnlocked;
-
-        duplicateCount = 0; //초기화
 
         // 추가된 부분 : 처음 생성 시 처음 등급으로 초기화
         currentGrade = data.HeroGrade;
@@ -72,10 +67,10 @@ public class HeroInstance
     public float AttackSpeed => data.GetJobStats().attackSpeed;
     public float AttackRange => data.GetJobStats().attackRange;
 
-  
+
     // 장비를 추가한다면 수정할 내용: 최종 스탯 프로퍼티 덮어쓰기 - 아래 시너지 적용 스탯과 교체
     // 장비 스탯을 먼저 더한 뒤에 파티 시너지 뻥튀기를 적용
- 
+
     //public int FinalMaxHP
     //{
     //    get
@@ -110,7 +105,7 @@ public class HeroInstance
 
 
 
-    
+
     // =========================================
     // 시너지 적용 스탯
     // =========================================
@@ -156,6 +151,28 @@ public class HeroInstance
 
         level++;
         return true;
+    }
+
+    // 추가된 부분 : 현재 등급에서 다음 등급으로 갈대 필요한 조각 반환
+    public HeroGrade GetRequiredShardGrade()
+    {
+        if (currentGrade == HeroGrade.Normal || currentGrade == HeroGrade.NormalPlus) return HeroGrade.Normal;
+        if (currentGrade == HeroGrade.Rare || currentGrade == HeroGrade.RarePlus) return HeroGrade.Rare;
+        return HeroGrade.Epic;
+    }
+
+    // 추가된 부분 : 승급 필요 조각 개수 반환
+    public int GetRequiredShardCount()
+    {
+        switch (currentGrade)
+        {
+            case HeroGrade.Normal: return 5;   // Normal -> Normal+ (노말 조각 5개)
+            case HeroGrade.NormalPlus: return 10;  // Normal+ -> Rare (노말 조각 10개)
+            case HeroGrade.Rare: return 5;   // Rare -> Rare+ (레어 조각 5개)
+            case HeroGrade.RarePlus: return 10;  // Rare+ -> Epic (레어 조각 10개)
+            case HeroGrade.Epic: return 10;  // Epic -> Epic+ (에픽 조각 10개)
+            default: return 9999;
+        }
     }
 
     // 추가된 부분 : 영웅 승급 함수
