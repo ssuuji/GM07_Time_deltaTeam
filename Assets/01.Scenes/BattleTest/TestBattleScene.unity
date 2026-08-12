@@ -27924,6 +27924,7 @@ GameObject:
   - component: {fileID: 1815320755}
   - component: {fileID: 1815320754}
   - component: {fileID: 1815320753}
+  - component: {fileID: 1815320756}
   m_Layer: 0
   m_Name: BattleTest
   m_TagString: Untagged
@@ -27952,7 +27953,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 27a1aa8d23446574ebd483e05ccecc07, type: 2}
   enemyParty:
   - {fileID: 11400000, guid: ea68a20e3ee09434b8f6cc921c208df4, type: 2}
   - {fileID: 0}
@@ -27974,6 +27975,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Battle.BattleManager
   battleTimeLimit: 60
+  ultimateUseMode: 0
 --- !u!4 &1815320755
 Transform:
   m_ObjectHideFlags: 0
@@ -27989,6 +27991,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1815320756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1815320751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8927cd5977b2bab40b08bd8985c4041c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UltimateController
+  battleManager: {fileID: 1815320754}
+  showPanel: 1
+  panelWidth: 360
 --- !u!1 &1820951565
 GameObject:
   m_ObjectHideFlags: 0

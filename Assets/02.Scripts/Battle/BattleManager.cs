@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.XR;
 
 namespace AFKHero.Battle
@@ -13,6 +14,9 @@ namespace AFKHero.Battle
         [Header("전투 시간")]
         [SerializeField, Min(MinimumBattleTimeLimit)]
         private float battleTimeLimit = 90f;
+
+        [Header("궁극기 자동/수동 모드")]
+        [SerializeField] private UltimateUseMode ultimateUseMode = UltimateUseMode.Auto;
 
         // 현재 전투에 등록된 아군 유닛
         private readonly List<BattleUnit> allyUnits = new();
@@ -32,6 +36,9 @@ namespace AFKHero.Battle
         // 궁극기가 동시에 실행 방지용
         private BattleUnit currentUltimateUnit;
 
+        // 다른 궁극기가 실행 중일 때 종료 직후 선택한 궁극기 먼저 저장
+        private BattleUnit manualSelectUltimateUnit;
+
         // 현재 전투의 진행 상태
         public BattleState CurrentState { get; private set; } = BattleState.None;
 
@@ -50,6 +57,10 @@ namespace AFKHero.Battle
 
         // 궁극기 실행 상태일때 데미지 반영 멈춤
         public bool IsDamageApplicationPaused => IsUltimatePlaying;
+
+        // 궁극기 제어 상태
+        public UltimateUseMode UltimateMode => ultimateUseMode;
+        public BattleUnit ManualSelectUltimateUnit => manualSelectUltimateUnit;
 
         // 최소한 보정
         public float BattleTimeLimit => Mathf.Max(MinimumBattleTimeLimit, battleTimeLimit);
@@ -71,6 +82,10 @@ namespace AFKHero.Battle
         // UI, 카메라, 연출용
         public event Action<BattleUnit> UltimateStarted;
         public event Action<BattleUnit> UltimateFinished;
+
+        // 궁극기 모드, 수동 선택
+        public event Action<UltimateUseMode> UltimateUseModeChanged;
+        public event Action<BattleUnit> UltimateManualSelected;
 
         private void Awake()
         {
@@ -132,6 +147,9 @@ namespace AFKHero.Battle
 
             isBattleResultConfirmed = false;
             currentUltimateUnit = null;
+
+            manualSelectUltimateUnit = null;
+
             ultimateQueue.Clear();
 
             ResetAllUnitEnergy();
@@ -160,6 +178,11 @@ namespace AFKHero.Battle
             }
 
             ultimateQueue.Remove(deadunit);
+
+            if(manualSelectUltimateUnit == deadunit)
+            {
+                manualSelectUltimateUnit = null;
+            }
 
             if(deadunit.Energy != null)
             {
@@ -194,8 +217,6 @@ namespace AFKHero.Battle
             {
                 TryStartNextUltimate();
             }
-
-            CheckBattleResult();
         }
 
         // 새로운 전투 시작 시 유닛 재정비
@@ -205,6 +226,8 @@ namespace AFKHero.Battle
             UnsubscribeUltimateReadyInList(enemyUnits);
 
             ultimateQueue.Clear();
+
+            manualSelectUltimateUnit = null;
 
             allyUnits.Clear();
             enemyUnits.Clear();
@@ -341,8 +364,9 @@ namespace AFKHero.Battle
             }
 
             isBattleResultConfirmed = true;
-
             CancelCurrentUltimate();
+            manualSelectUltimateUnit = null;
+            
             ultimateQueue.Clear();
 
             ChangeState(resultState);
@@ -367,6 +391,54 @@ namespace AFKHero.Battle
             LogUltimateQueueOrder();
         }
 
+        public void SetUltimateUseMode(UltimateUseMode nextMode)
+        {
+            if(ultimateUseMode == nextMode)
+            {
+                return;
+            }
+
+            ultimateUseMode = nextMode;
+            UltimateUseModeChanged?.Invoke(ultimateUseMode);
+            Debug.Log($"[궁극기 자동/수동 변경] {ultimateUseMode}", this);
+        }
+
+        public void ToggleUltimateUseMode()
+        {
+            SetUltimateUseMode(ultimateUseMode == UltimateUseMode.Auto ? UltimateUseMode.Manual : UltimateUseMode.Auto);
+        }
+
+        // 토글 값 자동/수동 조정
+        public void SetAutomaticUltimateUse(bool useAuto)
+        {
+            SetUltimateUseMode(useAuto ? UltimateUseMode.Auto : UltimateUseMode.Manual);
+        }
+
+        // 대기중인 궁극기를 다음 실행 대상으로 지정
+        public bool TrySelectQueueUltimate(BattleUnit selectUnit)
+        {
+            if (!IsBattleRunning() ||
+                selectUnit == null||
+                selectUnit.Team != TeamType.Ally ||
+                !ultimateQueue.Contains(selectUnit)||
+                !CanExecuteUltimate(selectUnit))
+            {
+                return false;
+            }
+
+            manualSelectUltimateUnit = selectUnit;
+            UltimateManualSelected?.Invoke(selectUnit);
+
+            Debug.Log($"[궁극기 수동 선택] {selectUnit.name}", selectUnit);
+
+            if(currentUltimateUnit == null)
+            {
+                TryStartNextUltimate();
+            }
+
+            return true;
+        }
+
         // 궁극기 순차 실행
         private void TryStartNextUltimate()
         {
@@ -377,41 +449,86 @@ namespace AFKHero.Battle
                 return;
             }
 
-            while(ultimateQueue.TryDequeue(out BattleUnit nextUnit))
+            if(!TryFindNextUltimate(out BattleUnit nextUnit))
             {
-                if (!CanExecuteUltimate(nextUnit))
+                if(CurrentState == BattleState.UltimateSequence)
                 {
-                    continue;
+                    ChangeState(BattleState.Fighting);
                 }
 
-                if (!nextUnit.Energy.TryConsumeUltimateEnergy())
-                {
-                    continue;
-                }
-
-                currentUltimateUnit = nextUnit;
-
-                if (CurrentState != BattleState.UltimateSequence)
-                {
-                    ChangeState(BattleState.UltimateSequence);
-                }
-
-                if (!nextUnit.UltimateController.TryExecute(HandleUltimateCompleted))
-                {
-                    currentUltimateUnit = null;
-                    continue;
-                }
-
-                UltimateStarted?.Invoke(nextUnit);
-                Debug.Log($"[궁극기 시작] {nextUnit.name}", nextUnit);
                 return;
             }
 
-            // 더 실행할 궁극기가 없으면 일반 전투로 돌아감
-            if(CurrentState == BattleState.UltimateSequence)
+            currentUltimateUnit = nextUnit;
+
+            if(CurrentState != BattleState.UltimateSequence)
             {
-                ChangeState(BattleState.Fighting);
+                ChangeState(BattleState.UltimateSequence);
             }
+
+            if (!nextUnit.UltimateController.TryExecute(HandleUltimateCompleted))
+            {
+                currentUltimateUnit = null;
+
+                if(CurrentState == BattleState.UltimateSequence)
+                {
+                    ChangeState(BattleState.Fighting);
+                }
+                Debug.LogWarning($"[궁극기 실행 실패] {nextUnit.name}의 에너지와 대기열을 유지",nextUnit);
+                return;
+            }
+
+            if (!nextUnit.Energy.TryConsumeUltimateEnergy())
+            {
+                nextUnit.UltimateController.CancelUltimate();
+                currentUltimateUnit = null;
+
+                if(CurrentState == BattleState.UltimateSequence)
+                {
+                    ChangeState(BattleState.Fighting);
+                }
+                Debug.LogWarning($"[궁극기 에너지 소비 실패] {nextUnit.name}의 궁극기 실행을 취소",nextUnit);
+                return;
+            }
+
+            ultimateQueue.Remove(nextUnit);
+            if(manualSelectUltimateUnit == nextUnit)
+            {
+                manualSelectUltimateUnit = null;
+            }
+
+            UltimateStarted?.Invoke(nextUnit);
+            Debug.Log($"[궁극기 시작] {nextUnit.name}", nextUnit);
+        }
+
+        // 수동 선택 모드 처리
+        private bool TryFindNextUltimate(out BattleUnit nextUnit)
+        {
+            // 사용자가 직접 선택한 궁극기가 있으면 가장 먼저 검사
+            if(manualSelectUltimateUnit != null)
+            {
+                if (!ultimateQueue.Contains(manualSelectUltimateUnit))
+                {
+                    manualSelectUltimateUnit = null;
+                }
+                else if (CanExecuteUltimate(manualSelectUltimateUnit))
+                {
+                    nextUnit = manualSelectUltimateUnit;
+                    return true;
+                }
+            }
+
+            if (ultimateUseMode == UltimateUseMode.Auto) 
+            {
+                return ultimateQueue.TryGetFirst(CanExecuteUltimate, out nextUnit);
+            }
+
+            return ultimateQueue.TryGetFirst(IsExecutableEnemyUltimate, out nextUnit);
+        }
+
+        public bool IsExecutableEnemyUltimate(BattleUnit unit)
+        {
+            return unit != null && unit.Team == TeamType.Enemy && CanExecuteUltimate(unit);
         }
 
         private bool CanExecuteUltimate(BattleUnit unit)
