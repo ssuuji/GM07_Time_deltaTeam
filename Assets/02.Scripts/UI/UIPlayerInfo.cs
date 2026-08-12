@@ -26,8 +26,7 @@ namespace AFKHero.UI
         {
             if (playerManager == null) return;
 
-            //플레이어 정보변경 이벤트 구독
-            playerManager.OnPlayerInfoChanged += UpdatePlayerUI;
+            playerManager.OnPlayerInfoChanged += UpdatePlayerUI; //플레이어 정보변경 이벤트 구독
         }
 
         private void Start()

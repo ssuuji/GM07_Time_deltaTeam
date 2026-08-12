@@ -9,23 +9,23 @@ namespace AFKHero.UI
     public class UISummonCard : MonoBehaviour
     {
         [Header("Card")]
-        [SerializeField] private Image cardImage;       //등급별 카드 테두리
-        [SerializeField] private GameObject cardClose;  //카드 뒷면
-
-        [Header("Hero")]
-        [SerializeField] private Image heroImage;       //영웅 이미지
-        [SerializeField] private TMP_Text heroNameText; //영웅 이름
-        [SerializeField] private TMP_Text gradeText;    //영웅 등급
+        [SerializeField] private Image cardImage;        //등급별 카드 테두리
+        [SerializeField] private GameObject cardClose;   //카드 뒷면
+                                                         
+        [Header("Hero")]                                 
+        [SerializeField] private Image heroImage;        //영웅 이미지
+        [SerializeField] private TMP_Text heroNameText;  //영웅 이름
+        [SerializeField] private TMP_Text gradeText;     //영웅 등급
 
         [Header("Grade")]
         [SerializeField] private Sprite normalImage;     //노멀
         [SerializeField] private Sprite rareImage;       //레어
         [SerializeField] private Sprite epicImage;       //에픽
 
-        private Vector3 originScale;        //카드 원래크기 저장
-        private float flipDuration = 0.2f;  //카드 뒤집기 시간
-        private bool isFlip = false;        //뒤집는 중인지 확인여부
-        private bool isOpen = false;        //오픈된 상태인지 확인여부
+        private Vector3 originScale;                     //카드 원래크기 저장
+        private float flipDuration = 0.2f;               //카드 뒤집기 시간
+        private bool isFlip = false;                     //뒤집는 중인지 확인여부
+        private bool isOpen = false;                     //오픈된 상태인지 확인여부
 
         private void Awake()
         {
@@ -37,14 +37,14 @@ namespace AFKHero.UI
         //영웅 데이터 적용
         public void SetHeroData(HeroData hero)
         {
-            heroImage.sprite = hero.HeroIcon;           //영웅 이미지 적용
-            heroNameText.text = hero.HeroName;          //영웅 이름 적용
-            SetGrade(hero.HeroGrade);                   //등급 테두리 적용
+            heroImage.sprite = hero.HeroIcon;   //영웅 이미지 적용
+            heroNameText.text = hero.HeroName;  //영웅 이름 적용
+            SetGrade(hero.HeroGrade);           //등급 테두리 적용
 
-            isOpen = false; //새로운 카드니까 오픈전
-            isFlip = false; //새로운 카드니까 뒤집기전
+            isOpen = false;                     //새로운 카드니까 오픈전
+            isFlip = false;                     //새로운 카드니까 뒤집기전
 
-            ShowBack();                                 //카드 뒷면 먼저 보여주기
+            ShowBack();                         //카드 뒷면 먼저 보여주기
         }
 
         //등급 테두리 설정
@@ -52,17 +52,14 @@ namespace AFKHero.UI
         {
             switch (grade)
             {
-                //노멀
                 case HeroGrade.Normal:
                     cardImage.sprite = normalImage;
                     gradeText.text = "노멀";
                     break;
-                //레어
                 case HeroGrade.Rare:
                     cardImage.sprite = rareImage;
                     gradeText.text = "레어";
                     break;
-                //에픽
                 case HeroGrade.Epic:
                     cardImage.sprite = epicImage;
                     gradeText.text = "에픽";
@@ -76,6 +73,7 @@ namespace AFKHero.UI
         #endregion
 
         #region 카드 뒤집기
+
         //카드 클릭 버튼
         public void OnClickedFlip()
         {
@@ -131,4 +129,3 @@ namespace AFKHero.UI
 
     }
 }
-

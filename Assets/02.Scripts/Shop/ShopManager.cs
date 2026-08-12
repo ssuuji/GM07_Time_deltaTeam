@@ -8,26 +8,26 @@ namespace AFKHero.Shop
     public class ShopManager : MonoBehaviour
     {
         [Header("Dia Cost")]
-        [SerializeField] private int oneCost = 100;
-        [SerializeField] private int tenCost = 1000;
+        [SerializeField] private int oneCost = 100;                   //1회  소환 다이아비용
+        [SerializeField] private int tenCost = 1000;                  //10회 소환 다이아비용
 
         [Header("Hero Summon")]
         [SerializeField] private HeroSummonManager heroSummonManager; //영웅 소환
-        [SerializeField] private UISummonResult summonResult;         //소환 결과
+        [SerializeField] private UISummonResult summonResult;         //소환 결과 UI
 
         [Header("Player")]
-        [SerializeField] private AFKHeroPlayerManager playerManager;   //플레이어 정보
+        [SerializeField] private AFKHeroPlayerManager playerManager;  //플레이어 정보
 
         //영웅 소환
         private void Summon(int count)
         {
             List<HeroData> result = heroSummonManager.Summon(count); //소환요청 보내기
-                                                                     
-            foreach (HeroData hero in result)                        //소환한 영웅 획득 처리
+
+            foreach (HeroData hero in result)
             {
                 if (hero == null) continue;
 
-                HeroManager.Instance.UnlockHero(hero.HeroID);
+                HeroManager.Instance.UnlockHero(hero.HeroID);        //소환된 영웅 해금
             }
 
             summonResult.ShowResult(result);                         //결과 UI에게 전달
