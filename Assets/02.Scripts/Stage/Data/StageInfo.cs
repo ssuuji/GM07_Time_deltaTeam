@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AFKHero.Battle;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ public class StageInfo : ScriptableObject
     [Header("해당 구간의 전투 제한 시간")]
     [SerializeField] private float timeLimit = 120.0f;
     [Header("해당 구간에 등장하는 적 목록")]
-    [SerializeField] private List<StageEnemyInfo> enemies = new List<StageEnemyInfo>();
+    [SerializeField] private List<UnitData> enemies = new List<UnitData>();
 
     [Header("클리어 보상")]
     [SerializeField] private int clearGold;
@@ -32,6 +33,6 @@ public class StageInfo : ScriptableObject
     public bool IsBossStage => isBossStage;
     public float TimeLimit => timeLimit;
     public int ClearGold => clearGold;
-    public List<StageEnemyInfo> Enemies => enemies;
+    public List<UnitData> Enemies => enemies;
  
 }

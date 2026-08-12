@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+//사실상 스테이지들의 정보를 모두 담을 DB역할을 할 클래스.
+//새로운 캠페인이 추가되었을 때 사용할 수 있을 것 같기도.
+
 [CreateAssetMenu(fileName = "StageData", menuName = "Game Data / Stage Data")]
 public class StageData : ScriptableObject
 {
