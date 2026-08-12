@@ -8,8 +8,11 @@ public class HeroInstance
     public int level;
     public bool isUnlocked;
 
-    // 추가된 부분: 승급 재료로 사용할 중복 카드 수량
+    // 승급 재료로 사용할 중복 카드 수량
     public int duplicateCount;
+
+    // 추가된 부분 : 현재 등급을 관리하는 변수 추가
+    public HeroGrade currentGrade;
 
     // 장비 슬롯 변수 - 장비 할때 추가하기
     //public EquipmentData equippedWeapon { get; private set; }
@@ -55,6 +58,9 @@ public class HeroInstance
         isUnlocked = defaultUnlocked;
 
         duplicateCount = 0; //초기화
+
+        // 추가된 부분 : 처음 생성 시 처음 등급으로 초기화
+        currentGrade = data.HeroGrade;
     }
 
     // ==========================
@@ -68,7 +74,7 @@ public class HeroInstance
 
   
     // 장비를 추가한다면 수정할 내용: 최종 스탯 프로퍼티 덮어쓰기 - 아래 시너지 적용 스탯과 교체
-    //// 장비 스탯을 먼저 더한 뒤에 파티 시너지 뻥튀기를 적용
+    // 장비 스탯을 먼저 더한 뒤에 파티 시너지 뻥튀기를 적용
  
     //public int FinalMaxHP
     //{
@@ -104,6 +110,7 @@ public class HeroInstance
 
 
 
+    
     // =========================================
     // 시너지 적용 스탯
     // =========================================
@@ -133,7 +140,7 @@ public class HeroInstance
     }
 
     // ===================
-    // 레벨업
+    // 레벨업 및 승급
     // ===================
 
     // 현재 레벨 비례 레벨업 필요 골드 계산
@@ -149,5 +156,19 @@ public class HeroInstance
 
         level++;
         return true;
+    }
+
+    // 추가된 부분 : 영웅 승급 함수
+    public void UpgradeGrade()
+    {
+        if (currentGrade < HeroGrade.EpicPlus)
+        {
+            currentGrade++;
+            Debug.Log($"{data.HeroName}영웅이 {currentGrade}등급으로 승급했습니다!");
+        }
+        else
+        {
+            Debug.LogWarning("이미 최고 등급입니다.");
+        }
     }
 }

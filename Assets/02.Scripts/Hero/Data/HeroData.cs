@@ -53,6 +53,7 @@ public class HeroData : ScriptableObject
 
     public JobStats GetJobStats()
     {
-        return RaceJobData.GetStatsByJob(jobType);
+    // 변경: 태생 등급도 같이 넘겨서 그에 맞는 스탯을 받아오게 함
+        return RaceJobData.GetStatsByJob(jobType, heroGrade);
     }
 }
