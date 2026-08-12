@@ -12,14 +12,6 @@ public class HeroManager : MonoBehaviour
     // 영웅 ID를 키로 사용하여 현재 상태를 빠르게 검색
     private Dictionary<int, HeroInstance> heroDictionary = new Dictionary<int, HeroInstance>();
 
-    // =========================================
-    // 추가된 부분 : 공용 조각
-    // =========================================
-    [Header("공용 조각 인벤토리")]
-    public int normalShards = 0; // 노말 공용 조각
-    public int rareShards = 0;   // 레어 공용 조각
-    public int epicShards = 0;   // 에픽 공용 조각
-
     private void Awake()
     {
         if (Instance == null)
@@ -66,12 +58,9 @@ public class HeroManager : MonoBehaviour
             }
             else
             {
-                // 중복 획득 시 개별 조각 대신 공용 조각 1개 증가
-                if (hero.data.HeroGrade == HeroGrade.Normal) normalShards++;
-                else if (hero.data.HeroGrade == HeroGrade.Rare) rareShards++;
-                else if (hero.data.HeroGrade == HeroGrade.Epic) epicShards++;
-
-                Debug.Log($"[HeroManager] {hero.data.HeroName} 중복 획득! {hero.data.HeroGrade} 공용 조각 1개 획득!");
+                // 이미 해금된 영웅일 경우 (중복 획득)
+                hero.duplicateCount++;
+                Debug.Log($"[HeroManager] {hero.data.HeroName} 중복 획득! (보유 중복 카드: {hero.duplicateCount}장)");
                 return true;
             }
         }
@@ -102,50 +91,14 @@ public class HeroManager : MonoBehaviour
         return false;
     }
 
-    // 추가된 부분 : 영웅 등급업 (공용 조각 차감 로직 적용)
+    // 추가된 부분 : 영웅 등급업
     public bool UpgradeHeroGrade(int heroID)
     {
         if (heroDictionary.TryGetValue(heroID, out HeroInstance hero) && hero.isUnlocked)
         {
-            if (hero.currentGrade >= HeroGrade.EpicPlus)
-            {
-                Debug.LogWarning("이미 최고 등급입니다.");
-                return false;
-            }
-
-            // 영웅 인스턴스에서 필요한 조각 종류와 개수 가져오기
-            HeroGrade requiredGrade = hero.GetRequiredShardGrade();
-            int requiredCount = hero.GetRequiredShardCount();
-            bool canUpgrade = false;
-
-            // 지갑에 공용 조각이 충분한지 검사하고 차감하기
-            if (requiredGrade == HeroGrade.Normal && normalShards >= requiredCount)
-            {
-                normalShards -= requiredCount;
-                canUpgrade = true;
-            }
-            else if (requiredGrade == HeroGrade.Rare && rareShards >= requiredCount)
-            {
-                rareShards -= requiredCount;
-                canUpgrade = true;
-            }
-            else if (requiredGrade == HeroGrade.Epic && epicShards >= requiredCount)
-            {
-                epicShards -= requiredCount;
-                canUpgrade = true;
-            }
-
-            // 조건 충족 시 승급 진행
-            if (canUpgrade)
-            {
-                hero.UpgradeGrade();
-                return true;
-            }
-            else
-            {
-                Debug.LogWarning($"[{hero.data.HeroName}] 승급 실패! {requiredGrade} 공용 조각이 {requiredCount}개 필요합니다.");
-                return false;
-            }
+            // 중복 카드가 충분한지 검사하고 차감한 뒤 이 함수를 호출합니다.
+            hero.UpgradeGrade();
+            return true;
         }
         return false;
     }
@@ -157,19 +110,19 @@ public class HeroManager : MonoBehaviour
     // 데이터 조회 및 세이브/로드
     // =============================
 
-    // 수정된 부분 :  duplicateCount 삭제
-    public Dictionary<int, (int level, bool isUnlocked, HeroGrade currentGrade)> GetSaveData()
+    // 저장할 핵심 데이터에 duplicateCount 와 currentGrade추가
+    public Dictionary<int, (int level, bool isUnlocked, int duplicateCount, HeroGrade currentGrade)> GetSaveData()
     {
-        var saveData = new Dictionary<int, (int, bool, HeroGrade)>();
+        var saveData = new Dictionary<int, (int, bool, int, HeroGrade)>();
         foreach (var kvp in heroDictionary)
         {
-            saveData.Add(kvp.Key, (kvp.Value.level, kvp.Value.isUnlocked, kvp.Value.currentGrade));
+            saveData.Add(kvp.Key, (kvp.Value.level, kvp.Value.isUnlocked, kvp.Value.duplicateCount, kvp.Value.currentGrade));
         }
         return saveData;
     }
 
-    // 수정된 부분 : duplicateCount 삭제
-    public void LoadSaveData(Dictionary<int, (int level, bool isUnlocked, HeroGrade currentGrade)> savedData)
+    // 불러올 핵심 데이터에 duplicateCount 와 currentGrade추가
+    public void LoadSaveData(Dictionary<int, (int level, bool isUnlocked, int duplicateCount, HeroGrade currentGrade)> savedData)
     {
         foreach (var kvp in savedData)
         {
@@ -178,7 +131,8 @@ public class HeroManager : MonoBehaviour
                 // 데이터 변조 방지를 위해 최대 레벨 제한 적용
                 hero.level = Mathf.Clamp(kvp.Value.level, 1, 50);
                 hero.isUnlocked = kvp.Value.isUnlocked;
-                hero.currentGrade = kvp.Value.currentGrade;
+                hero.duplicateCount = kvp.Value.duplicateCount; // 중복 카드 수량 로드 연동
+                hero.currentGrade = kvp.Value.currentGrade;     // 현재 등급 로드 연동
             }
         }
     }

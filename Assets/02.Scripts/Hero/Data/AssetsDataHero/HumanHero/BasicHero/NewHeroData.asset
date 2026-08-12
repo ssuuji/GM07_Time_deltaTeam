@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e48ee36aedb041449b36316992decba, type: 3}
   m_Name: NewHeroData
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
-  heroID: 1001
+  heroID: 0
   heroName: 
-  heroGrade: 2
+  heroGrade: 0
   raceType: 0
   jobType: 0
-  ultimateSkillName: "\uD68C\uC804 \uACF5\uACA9"
+  ultimateSkillName: 
   ultimateEffectPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}
   heroImage: {fileID: 0}
