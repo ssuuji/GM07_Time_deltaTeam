@@ -17475,7 +17475,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1250732925}
-  - component: {fileID: 1250732927}
+  - component: {fileID: 1250732929}
   - component: {fileID: 1250732928}
   - component: {fileID: 1250732926}
   - component: {fileID: 1250732924}
@@ -17538,25 +17538,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.UI.UIHeroList
   heroSlotPrefab: {fileID: 8297572565331295310, guid: a3c8e3e211e9835419b45b7e4840ecb3, type: 3}
   heroInfoPopup: {fileID: 1250732924}
---- !u!114 &1250732927
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1250732923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bfcc410f9b337b4eb0dabb78a431f1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HeroManager
-  allHeroDataList:
-  - {fileID: 11400000, guid: 52cedf96ddb33d749bbeb1c1764db086, type: 2}
-  - {fileID: 11400000, guid: 283b00437eb4ef34497d345fe6f66339, type: 2}
-  - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
-  normalShards: 0
-  rareShards: 0
-  epicShards: 0
 --- !u!114 &1250732928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17569,6 +17550,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7279ea745d5a774fa10860a300fd517, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoolManager
+--- !u!114 &1250732929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1250732923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bfcc410f9b337b4eb0dabb78a431f1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HeroManager
+  allHeroDataList:
+  - {fileID: 11400000, guid: 70ab1537ef2c9104ab77e66f7c5668a7, type: 2}
+  - {fileID: 11400000, guid: ba5157846496f0148b68b93b90908a4a, type: 2}
+  - {fileID: 11400000, guid: a22be3cf50c014d4793f053d0fbe4a22, type: 2}
+  - {fileID: 11400000, guid: 52cedf96ddb33d749bbeb1c1764db086, type: 2}
+  - {fileID: 11400000, guid: 283b00437eb4ef34497d345fe6f66339, type: 2}
+  - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
+  - {fileID: 11400000, guid: dd91f9df2ef134840bb854913b228896, type: 2}
+  - {fileID: 11400000, guid: 27a1d9f4bca06d54d872ae9496bcf903, type: 2}
+  - {fileID: 11400000, guid: 9697ce20dc5c0734ab2d26eaaf8d8d75, type: 2}
+  - {fileID: 11400000, guid: ecfab310504a8d049957d81fb0478923, type: 2}
+  - {fileID: 11400000, guid: 3ef66e9527c29c54ebf60ceffd54256c, type: 2}
+  - {fileID: 11400000, guid: dcd683ad4226dcc42ad99cb4588f947d, type: 2}
+  - {fileID: 11400000, guid: 11b022b29d1c1304f94b2191855adf76, type: 2}
+  - {fileID: 11400000, guid: 1e493698dabd9204290d7d9fd4d15209, type: 2}
+  - {fileID: 11400000, guid: 83369abcba5a332418ebcf1d597eab38, type: 2}
+  - {fileID: 11400000, guid: a4d752d765b92884a87339bdfa77e499, type: 2}
+  - {fileID: 11400000, guid: ad5a21e502378234186b39bbdba1789a, type: 2}
+  - {fileID: 11400000, guid: b340003f9bc08834194470bd7d6fb4eb, type: 2}
+  - {fileID: 11400000, guid: 6497791b2eb2d0045a79acf163e08bb9, type: 2}
+  - {fileID: 11400000, guid: f835f16a1448daf40be8d6f92783555a, type: 2}
+  - {fileID: 11400000, guid: 2e74b8c831a98284b861bbe0deeda661, type: 2}
+  - {fileID: 11400000, guid: 1158f6ad3469e3f43acffff5607f225d, type: 2}
+  - {fileID: 11400000, guid: d72dfa495a30b5c469b43e29196a070c, type: 2}
+  - {fileID: 11400000, guid: b140fe23f42f1f641b832aa26550ba6f, type: 2}
+  - {fileID: 11400000, guid: 2b12c57f31ae1b540acfa7e0a64acdd8, type: 2}
+  - {fileID: 11400000, guid: cb1e7890cf0e1be49b2bd38349bde56e, type: 2}
+  - {fileID: 11400000, guid: 40539e01f63f7bb4dbbabc6eb1d0d344, type: 2}
+  - {fileID: 11400000, guid: a6e0a853253538548a104fac855a9b4d, type: 2}
+  - {fileID: 11400000, guid: 2be6ce4276888bc40b9f9c8339020be9, type: 2}
+  - {fileID: 11400000, guid: 153132fe3f705394ab69420f8c09a14b, type: 2}
+  - {fileID: 11400000, guid: a72b4e0d1e8c2cc4b8f406114daf5a20, type: 2}
+  - {fileID: 11400000, guid: dda0795fe71b34d49833645ad8977f45, type: 2}
+  normalShards: 0
+  rareShards: 0
+  epicShards: 0
 --- !u!1 &1264555397
 GameObject:
   m_ObjectHideFlags: 0
