@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -8,82 +8,82 @@ namespace AFKHero.Battle
 {
     public sealed class BattleManager : MonoBehaviour
     {
-        // 0ÃÊ ÀÌÇÏÀÇ Á¦ÇÑ½Ã°£ÀÌ ¼³Á¤µÇÁö ¾Ê°Ô
+        // 0ì´ˆ ì´í•˜ì˜ ì œí•œì‹œê°„ì´ ì„¤ì •ë˜ì§€ ì•Šê²Œ
         private const float MinimumBattleTimeLimit = 1f;
 
-        [Header("ÀüÅõ ½Ã°£")]
+        [Header("ì „íˆ¬ ì‹œê°„")]
         [SerializeField, Min(MinimumBattleTimeLimit)]
         private float battleTimeLimit = 90f;
 
-        [Header("±Ã±Ø±â ÀÚµ¿/¼öµ¿ ¸ğµå")]
+        [Header("ê¶ê·¹ê¸° ìë™/ìˆ˜ë™ ëª¨ë“œ")]
         [SerializeField] private UltimateUseMode ultimateUseMode = UltimateUseMode.Auto;
 
-        // ÇöÀç ÀüÅõ¿¡ µî·ÏµÈ ¾Æ±º À¯´Ö
+        // í˜„ì¬ ì „íˆ¬ì— ë“±ë¡ëœ ì•„êµ° ìœ ë‹›
         private readonly List<BattleUnit> allyUnits = new();
 
-        // ÇöÀç ÀüÅõ¿¡ µî·ÏµÈ Àû±º À¯´Ö
+        // í˜„ì¬ ì „íˆ¬ì— ë“±ë¡ëœ ì êµ° ìœ ë‹›
         private readonly List<BattleUnit> enemyUnits = new();
 
-        // ±Ã±Ø±â ´ë±â Å¥
+        // ê¶ê·¹ê¸° ëŒ€ê¸° í
         private readonly UltimateQueue ultimateQueue = new();
 
-        // °°Àº ÇÁ·¹ÀÓ¿¡ »ç¸ÁÇØµµ ½ÂÆĞ Áßº¹ ¹æÁö
+        // ê°™ì€ í”„ë ˆì„ì— ì‚¬ë§í•´ë„ ìŠ¹íŒ¨ ì¤‘ë³µ ë°©ì§€
         private bool isBattleResultConfirmed;
 
-        // ³²Àº ½Ã°£
+        // ë‚¨ì€ ì‹œê°„
         private float remainingBattleTime;
 
-        // ±Ã±Ø±â°¡ µ¿½Ã¿¡ ½ÇÇà ¹æÁö¿ë
+        // ê¶ê·¹ê¸°ê°€ ë™ì‹œì— ì‹¤í–‰ ë°©ì§€ìš©
         private BattleUnit currentUltimateUnit;
 
-        // ´Ù¸¥ ±Ã±Ø±â°¡ ½ÇÇà ÁßÀÏ ¶§ Á¾·á Á÷ÈÄ ¼±ÅÃÇÑ ±Ã±Ø±â ¸ÕÀú ÀúÀå
+        // ë‹¤ë¥¸ ê¶ê·¹ê¸°ê°€ ì‹¤í–‰ ì¤‘ì¼ ë•Œ ì¢…ë£Œ ì§í›„ ì„ íƒí•œ ê¶ê·¹ê¸° ë¨¼ì € ì €ì¥
         private BattleUnit manualSelectUltimateUnit;
 
-        // ÇöÀç ÀüÅõÀÇ ÁøÇà »óÅÂ
+        // í˜„ì¬ ì „íˆ¬ì˜ ì§„í–‰ ìƒíƒœ
         public BattleState CurrentState { get; private set; } = BattleState.None;
 
-        // ¾Æ±º À¯´Ö ¸ñ·Ï
+        // ì•„êµ° ìœ ë‹› ëª©ë¡
         public IReadOnlyList<BattleUnit> AllyUnits => allyUnits;
 
-        // Àû±º À¯´Ö ¸ñ·Ï
+        // ì êµ° ìœ ë‹› ëª©ë¡
         public IReadOnlyList<BattleUnit> EnemyUnits => enemyUnits;
 
-        // ±Ã±Ø±â Å¥
+        // ê¶ê·¹ê¸° í
         public UltimateQueue UltimateQueue => ultimateQueue;
 
-        // ±Ã±Ø±â ½ÇÇà »óÅÂ
+        // ê¶ê·¹ê¸° ì‹¤í–‰ ìƒíƒœ
         public BattleUnit CurrentUltimateUnit => currentUltimateUnit;
         public bool IsUltimatePlaying => currentUltimateUnit != null;
 
-        // ±Ã±Ø±â ½ÇÇà »óÅÂÀÏ¶§ µ¥¹ÌÁö ¹İ¿µ ¸ØÃã
+        // ê¶ê·¹ê¸° ì‹¤í–‰ ìƒíƒœì¼ë•Œ ë°ë¯¸ì§€ ë°˜ì˜ ë©ˆì¶¤
         public bool IsDamageApplicationPaused => IsUltimatePlaying;
 
-        // ±Ã±Ø±â Á¦¾î »óÅÂ
+        // ê¶ê·¹ê¸° ì œì–´ ìƒíƒœ
         public UltimateUseMode UltimateMode => ultimateUseMode;
         public BattleUnit ManualSelectUltimateUnit => manualSelectUltimateUnit;
 
-        // ÃÖ¼ÒÇÑ º¸Á¤
+        // ìµœì†Œí•œ ë³´ì •
         public float BattleTimeLimit => Mathf.Max(MinimumBattleTimeLimit, battleTimeLimit);
 
         public float RemainingBattleTime => remainingBattleTime;
 
-        // UI¿¡¼­ È°¿ë(0 ¶Ç´Â 1·Î ÁøÇà·ü·Î »ç¿ë)
+        // UIì—ì„œ í™œìš©(0 ë˜ëŠ” 1ë¡œ ì§„í–‰ë¥ ë¡œ ì‚¬ìš©)
         public float RemainingBattleTimeNormalized => BattleTimeLimit > 0f ? remainingBattleTime / BattleTimeLimit : 0f;
 
-        // ÀüÅõ »óÅÂ º¯°æ
+        // ì „íˆ¬ ìƒíƒœ ë³€ê²½
         public event Action<BattleState> StateChanged;
 
-        // Á×À½ »óÅÂ º¯°æ
+        // ì£½ìŒ ìƒíƒœ ë³€ê²½
         public event Action<BattleUnit> UnitDied;
 
-        // Ã¹ ¹øÂ° °ªÀº ³²Àº ½Ã°£, µÎ ¹øÂ° °ªÀº ÀüÃ¼ Á¦ÇÑ½Ã°£
+        // ì²« ë²ˆì§¸ ê°’ì€ ë‚¨ì€ ì‹œê°„, ë‘ ë²ˆì§¸ ê°’ì€ ì „ì²´ ì œí•œì‹œê°„
         public event Action<float, float> BattleTimeChanged;
 
-        // UI, Ä«¸Ş¶ó, ¿¬Ãâ¿ë
+        // UI, ì¹´ë©”ë¼, ì—°ì¶œìš©
         public event Action<BattleUnit> UltimateStarted;
         public event Action<BattleUnit> UltimateFinished;
 
-        // ±Ã±Ø±â ¸ğµå, ¼öµ¿ ¼±ÅÃ
+        // ê¶ê·¹ê¸° ëª¨ë“œ, ìˆ˜ë™ ì„ íƒ
         public event Action<UltimateUseMode> UltimateUseModeChanged;
         public event Action<BattleUnit> UltimateManualSelected;
 
@@ -99,23 +99,23 @@ namespace AFKHero.Battle
             {
                 TryStartNextUltimate();
             }
-            // Á¦ÇÑ½Ã°£ÀÌ ³¡³ª´Â ¸¶Áö¸· ÇÁ·¹ÀÓ¿¡ °ø°İ °á°ú ÆÇÁ¤ ¹İ¿µ
+            // ì œí•œì‹œê°„ì´ ëë‚˜ëŠ” ë§ˆì§€ë§‰ í”„ë ˆì„ì— ê³µê²© ê²°ê³¼ íŒì • ë°˜ì˜
             UpdateBattleTimer();
         }
 
-        // ÇØ´ç Áø¿µ ¸ñ·Ï¿¡ À¯´Ö µî·Ï
+        // í•´ë‹¹ ì§„ì˜ ëª©ë¡ì— ìœ ë‹› ë“±ë¡
         public void RegisterUnit(BattleUnit unit)
         {
             if(unit == null || !unit.IsInitialized)
             {
-                Debug.LogError("ÃÊ±âÈ­µÇÁö ¾ÊÀº BattleUnitÀº µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù.",this);
+                Debug.LogError("ì´ˆê¸°í™”ë˜ì§€ ì•Šì€ BattleUnitì€ ë“±ë¡í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.",this);
                 return;
             }
 
-            // À¯´Ö Áø¿µ¿¡ µû¶ó µî·ÏÇÒ ³»ºÎ ¸ñ·Ï °áÁ¤
+            // ìœ ë‹› ì§„ì˜ì— ë”°ë¼ ë“±ë¡í•  ë‚´ë¶€ ëª©ë¡ ê²°ì •
             List<BattleUnit> targetList = unit.Team == TeamType.Ally ? allyUnits : enemyUnits;
 
-            // °°Àº À¯´ÖÀÌ ¿©·¯ ¹ø µî·ÏµÇÁö ¾Êµµ·Ï ¹æÁö
+            // ê°™ì€ ìœ ë‹›ì´ ì—¬ëŸ¬ ë²ˆ ë“±ë¡ë˜ì§€ ì•Šë„ë¡ ë°©ì§€
             if (!targetList.Contains(unit))
             {
                 targetList.Add(unit);
@@ -123,25 +123,25 @@ namespace AFKHero.Battle
             }
         }
 
-        // ¹İ´ë Áø¿µ ¸ñ·Ï ¹İÈ¯ (°¡Àå °¡±î¿î Àû Å½»ö¿ë)
+        // ë°˜ëŒ€ ì§„ì˜ ëª©ë¡ ë°˜í™˜ (ê°€ì¥ ê°€ê¹Œìš´ ì  íƒìƒ‰ìš©)
         public IReadOnlyList<BattleUnit> GetOpponents(TeamType requesterTeam)
         {
             return requesterTeam == TeamType.Ally ? enemyUnits : allyUnits;
         }
 
-        // ¾ç Áø¿µ¿¡ ÇÑ ¸í ÀÌ»ó µî·ÏµÇ¾î ÀÖ´Ù¸é ÀüÅõ ½ÃÀÛ
+        // ì–‘ ì§„ì˜ì— í•œ ëª… ì´ìƒ ë“±ë¡ë˜ì–´ ìˆë‹¤ë©´ ì „íˆ¬ ì‹œì‘
         public void StartBattle()
         {
-            // ÀüÅõ Áßº¹ ½ÇÇà ¹æÁö
+            // ì „íˆ¬ ì¤‘ë³µ ì‹¤í–‰ ë°©ì§€
             if (CurrentState == BattleState.Fighting || CurrentState == BattleState.UltimateSequence)
             {
-                Debug.LogWarning("ÀÌ¹Ì ÀüÅõ°¡ ÁøÇà ÁßÀÔ´Ï´Ù.");
+                Debug.LogWarning("ì´ë¯¸ ì „íˆ¬ê°€ ì§„í–‰ ì¤‘ì…ë‹ˆë‹¤.");
                 return;
             }
 
             if(!HasLivingUnit(TeamType.Ally)||!HasLivingUnit(TeamType.Enemy))
             {
-                Debug.LogError("¾ç Áø¿µ¿¡ À¯´ÖÀÌ ÇÑ ¸í ÀÌ»ó ÀÖ¾î¾ß ÀüÅõ¸¦ ½ÃÀÛÇÒ ¼ö ÀÖ½À´Ï´Ù.", this);
+                Debug.LogError("ì–‘ ì§„ì˜ì— ìœ ë‹›ì´ í•œ ëª… ì´ìƒ ìˆì–´ì•¼ ì „íˆ¬ë¥¼ ì‹œì‘í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.", this);
                 return;
             }
 
@@ -159,8 +159,8 @@ namespace AFKHero.Battle
             ResetBattleTimer();
             ChangeState(BattleState.Fighting);
 
-            Debug.Log($"ÀüÅõ ½ÃÀÛ!\n" +
-                $"¾Æ±º [{allyUnits.Count}]¸í / Àû±º [{enemyUnits.Count}]¸í ");
+            Debug.Log($"ì „íˆ¬ ì‹œì‘!\n" +
+                $"ì•„êµ° [{allyUnits.Count}]ëª… / ì êµ° [{enemyUnits.Count}]ëª… ");
         }
 
         public void NotifyUnitDied(BattleUnit deadunit)
@@ -174,7 +174,7 @@ namespace AFKHero.Battle
 
             if (!isRegistered)
             {
-                Debug.LogWarning($"µî·ÏµÇÁö ¾ÊÀº À¯´Ö {deadunit.name}ÀÌ Á×¾ú½À´Ï´Ù.",this);
+                Debug.LogWarning($"ë“±ë¡ë˜ì§€ ì•Šì€ ìœ ë‹› {deadunit.name}ì´ ì£½ì—ˆìŠµë‹ˆë‹¤.",this);
 
                 return;
             }
@@ -191,7 +191,7 @@ namespace AFKHero.Battle
                 deadunit.Energy.UltimateReady -= HandleUltimateReady;
             }
 
-            // ±Ã±Ø±â ½ÇÇà Áß »ç¸Á Ã³¸®
+            // ê¶ê·¹ê¸° ì‹¤í–‰ ì¤‘ ì‚¬ë§ ì²˜ë¦¬
             bool wasCurrentUltimateUnit = deadunit == currentUltimateUnit;
 
             if (wasCurrentUltimateUnit)
@@ -202,7 +202,7 @@ namespace AFKHero.Battle
 
             UnitDied?.Invoke(deadunit);
 
-            // ÀûÀÌ Á×À¸¸é ´ÙÀ½ ÀûÀ» Ã£µµ·Ï ¾Ë¸²
+            // ì ì´ ì£½ìœ¼ë©´ ë‹¤ìŒ ì ì„ ì°¾ë„ë¡ ì•Œë¦¼
             NotifyTargetInvalidated(deadunit);
 
             if(IsBattleRunning() && !isBattleResultConfirmed)
@@ -221,7 +221,7 @@ namespace AFKHero.Battle
             }
         }
 
-        // »õ·Î¿î ÀüÅõ ½ÃÀÛ ½Ã À¯´Ö ÀçÁ¤ºñ
+        // ìƒˆë¡œìš´ ì „íˆ¬ ì‹œì‘ ì‹œ ìœ ë‹› ì¬ì •ë¹„
         public void ClearRegisteredUnits()
         {
             CancelCurrentUltimate();
@@ -236,7 +236,7 @@ namespace AFKHero.Battle
             allyUnits.Clear();
             enemyUnits.Clear();
 
-            // Àç½ÃÀÛÇÒ ¶§ ÀÌÀü ÀüÅõÀÇ ½ÂÆĞ ÆÇÁ¤ÀÌ ³²Áö¾Ê°Ô ÃÊ±âÈ­
+            // ì¬ì‹œì‘í•  ë•Œ ì´ì „ ì „íˆ¬ì˜ ìŠ¹íŒ¨ íŒì •ì´ ë‚¨ì§€ì•Šê²Œ ì´ˆê¸°í™”
             isBattleResultConfirmed = false;
 
             ResetBattleTimer();
@@ -244,7 +244,7 @@ namespace AFKHero.Battle
             ChangeState(BattleState.Preparing);
         }
 
-        // Á×Àº À¯´ÖÀ» ¹Ù¶óº¸´ø »ıÁ¸ À¯´Ö °»½Å
+        // ì£½ì€ ìœ ë‹›ì„ ë°”ë¼ë³´ë˜ ìƒì¡´ ìœ ë‹› ê°±ì‹ 
         private void NotifyTargetInvalidated(BattleUnit deadUnit)
         {
             NotifyTargetInvalidatedInList(allyUnits, deadUnit);
@@ -306,16 +306,16 @@ namespace AFKHero.Battle
 
             bool hasLivingEnemy = HasLivingUnit(TeamType.Enemy);
 
-            // ¾çÂÊ ¸ğµÎ »ıÁ¸ÀÚ°¡ ÀÖÀ¸¸é ÀüÅõ Áö¼Ó
+            // ì–‘ìª½ ëª¨ë‘ ìƒì¡´ìê°€ ìˆìœ¼ë©´ ì „íˆ¬ ì§€ì†
             if(hasLivingAlly && hasLivingEnemy)
             {
                 return;
             }
 
-            // ¾çÂÊÀÌ µ¿½Ã¿¡ Àü¸êÇÏ¸é ¾Æ±º ÆĞ¹è
+            // ì–‘ìª½ì´ ë™ì‹œì— ì „ë©¸í•˜ë©´ ì•„êµ° íŒ¨ë°°
             BattleState resultState = hasLivingAlly ? BattleState.Victory : BattleState.Defeat;
 
-            ConfirmBattleResult(resultState, resultState == BattleState.Victory ? "ÀüÅõ ½Â¸®!" : "ÀüÅõ ÆĞ¹è...");
+            ConfirmBattleResult(resultState, resultState == BattleState.Victory ? "ì „íˆ¬ ìŠ¹ë¦¬!" : "ì „íˆ¬ íŒ¨ë°°...");
         }
         
         private void UpdateBattleTimer()
@@ -339,7 +339,7 @@ namespace AFKHero.Battle
                 return;
             }
 
-            ConfirmBattleResult(BattleState.Defeat, "ÀüÅõ Á¦ÇÑ½Ã°£ Á¾·á - ÆĞ¹è...");
+            ConfirmBattleResult(BattleState.Defeat, "ì „íˆ¬ ì œí•œì‹œê°„ ì¢…ë£Œ - íŒ¨ë°°...");
         }
 
         private void ResetBattleTimer()
@@ -353,6 +353,20 @@ namespace AFKHero.Battle
             BattleTimeChanged?.Invoke(remainingBattleTime, BattleTimeLimit);
         }
 
+        public bool TrySetBattleTimeLimit(float timeLimit)
+        {
+            if (IsBattleRunning())
+            {
+                return false;
+            }
+
+            battleTimeLimit = Mathf.Max(MinimumBattleTimeLimit, timeLimit);
+
+            ResetBattleTimer();
+
+            return true;
+        }
+
         private void ConfirmBattleResult(BattleState resultState, string resultLog)
         {
             if(isBattleResultConfirmed || !IsBattleRunning())
@@ -362,7 +376,7 @@ namespace AFKHero.Battle
 
             if(resultState != BattleState.Victory && resultState != BattleState.Defeat)
             {
-                Debug.LogError($"{resultState}´Â ÀüÅõ °á°ú »óÅÂ°¡ ¾Æ´Õ´Ï´Ù.", this);
+                Debug.LogError($"{resultState}ëŠ” ì „íˆ¬ ê²°ê³¼ ìƒíƒœê°€ ì•„ë‹™ë‹ˆë‹¤.", this);
 
                 return;
             }
@@ -379,7 +393,7 @@ namespace AFKHero.Battle
             Debug.Log(resultLog,this);
         }
 
-        // À¯´Ö ´ë±â¿­ µî·Ï
+        // ìœ ë‹› ëŒ€ê¸°ì—´ ë“±ë¡
         private void HandleUltimateReady(BattleUnit readyUnit)
         {
             if(CurrentState != BattleState.Fighting || !IsRegisterUnit(readyUnit))
@@ -392,7 +406,7 @@ namespace AFKHero.Battle
                 return;
             }
 
-            Debug.Log($"±Ã±Ø±â Å¥ µî·Ï - {readyUnit.name} | ÇöÀç ´ë±â {ultimateQueue.Count}¸í", readyUnit);
+            Debug.Log($"ê¶ê·¹ê¸° í ë“±ë¡ - {readyUnit.name} | í˜„ì¬ ëŒ€ê¸° {ultimateQueue.Count}ëª…", readyUnit);
 
             LogUltimateQueueOrder();
         }
@@ -406,7 +420,7 @@ namespace AFKHero.Battle
 
             ultimateUseMode = nextMode;
             UltimateUseModeChanged?.Invoke(ultimateUseMode);
-            Debug.Log($"[±Ã±Ø±â ÀÚµ¿/¼öµ¿ º¯°æ] {ultimateUseMode}", this);
+            Debug.Log($"[ê¶ê·¹ê¸° ìë™/ìˆ˜ë™ ë³€ê²½] {ultimateUseMode}", this);
         }
 
         public void ToggleUltimateUseMode()
@@ -414,13 +428,13 @@ namespace AFKHero.Battle
             SetUltimateUseMode(ultimateUseMode == UltimateUseMode.Auto ? UltimateUseMode.Manual : UltimateUseMode.Auto);
         }
 
-        // Åä±Û °ª ÀÚµ¿/¼öµ¿ Á¶Á¤
+        // í† ê¸€ ê°’ ìë™/ìˆ˜ë™ ì¡°ì •
         public void SetAutomaticUltimateUse(bool useAuto)
         {
             SetUltimateUseMode(useAuto ? UltimateUseMode.Auto : UltimateUseMode.Manual);
         }
 
-        // ´ë±âÁßÀÎ ±Ã±Ø±â¸¦ ´ÙÀ½ ½ÇÇà ´ë»óÀ¸·Î ÁöÁ¤
+        // ëŒ€ê¸°ì¤‘ì¸ ê¶ê·¹ê¸°ë¥¼ ë‹¤ìŒ ì‹¤í–‰ ëŒ€ìƒìœ¼ë¡œ ì§€ì •
         public bool TrySelectQueueUltimate(BattleUnit selectUnit)
         {
             if (!IsBattleRunning() ||
@@ -435,7 +449,7 @@ namespace AFKHero.Battle
             manualSelectUltimateUnit = selectUnit;
             UltimateManualSelected?.Invoke(selectUnit);
 
-            Debug.Log($"[±Ã±Ø±â ¼öµ¿ ¼±ÅÃ] {selectUnit.name}", selectUnit);
+            Debug.Log($"[ê¶ê·¹ê¸° ìˆ˜ë™ ì„ íƒ] {selectUnit.name}", selectUnit);
 
             if(currentUltimateUnit == null)
             {
@@ -445,7 +459,7 @@ namespace AFKHero.Battle
             return true;
         }
 
-        // ±Ã±Ø±â ¼øÂ÷ ½ÇÇà
+        // ê¶ê·¹ê¸° ìˆœì°¨ ì‹¤í–‰
         private void TryStartNextUltimate()
         {
             if(isBattleResultConfirmed||
@@ -480,7 +494,7 @@ namespace AFKHero.Battle
                 {
                     ChangeState(BattleState.Fighting);
                 }
-                Debug.LogWarning($"[±Ã±Ø±â ½ÇÇà ½ÇÆĞ] {nextUnit.name}ÀÇ ¿¡³ÊÁö¿Í ´ë±â¿­À» À¯Áö",nextUnit);
+                Debug.LogWarning($"[ê¶ê·¹ê¸° ì‹¤í–‰ ì‹¤íŒ¨] {nextUnit.name}ì˜ ì—ë„ˆì§€ì™€ ëŒ€ê¸°ì—´ì„ ìœ ì§€",nextUnit);
                 return;
             }
 
@@ -493,7 +507,7 @@ namespace AFKHero.Battle
                 {
                     ChangeState(BattleState.Fighting);
                 }
-                Debug.LogWarning($"[±Ã±Ø±â ¿¡³ÊÁö ¼Òºñ ½ÇÆĞ] {nextUnit.name}ÀÇ ±Ã±Ø±â ½ÇÇàÀ» Ãë¼Ò",nextUnit);
+                Debug.LogWarning($"[ê¶ê·¹ê¸° ì—ë„ˆì§€ ì†Œë¹„ ì‹¤íŒ¨] {nextUnit.name}ì˜ ê¶ê·¹ê¸° ì‹¤í–‰ì„ ì·¨ì†Œ",nextUnit);
                 return;
             }
 
@@ -504,13 +518,13 @@ namespace AFKHero.Battle
             }
 
             UltimateStarted?.Invoke(nextUnit);
-            Debug.Log($"[±Ã±Ø±â ½ÃÀÛ] {nextUnit.name}", nextUnit);
+            Debug.Log($"[ê¶ê·¹ê¸° ì‹œì‘] {nextUnit.name}", nextUnit);
         }
 
-        // ¼öµ¿ ¼±ÅÃ ¸ğµå Ã³¸®
+        // ìˆ˜ë™ ì„ íƒ ëª¨ë“œ ì²˜ë¦¬
         private bool TryFindNextUltimate(out BattleUnit nextUnit)
         {
-            // »ç¿ëÀÚ°¡ Á÷Á¢ ¼±ÅÃÇÑ ±Ã±Ø±â°¡ ÀÖÀ¸¸é °¡Àå ¸ÕÀú °Ë»ç
+            // ì‚¬ìš©ìê°€ ì§ì ‘ ì„ íƒí•œ ê¶ê·¹ê¸°ê°€ ìˆìœ¼ë©´ ê°€ì¥ ë¨¼ì € ê²€ì‚¬
             if(manualSelectUltimateUnit != null)
             {
                 if (!ultimateQueue.Contains(manualSelectUltimateUnit))
@@ -559,7 +573,7 @@ namespace AFKHero.Battle
 
             currentUltimateUnit = null;
             UltimateFinished?.Invoke(completeUnit);
-            Debug.Log($"[±Ã±Ø±â Á¾·á] {completeUnit}", completeUnit);
+            Debug.Log($"[ê¶ê·¹ê¸° ì¢…ë£Œ] {completeUnit}", completeUnit);
 
             if (isBattleResultConfirmed)
             {
@@ -585,13 +599,13 @@ namespace AFKHero.Battle
             currentUltimateUnit = null;
         }
 
-        // ÀüÅõ¿¡ µî·Ï µÇ¾îÀÖ´ÂÁö °Ë»ç
+        // ì „íˆ¬ì— ë“±ë¡ ë˜ì–´ìˆëŠ”ì§€ ê²€ì‚¬
         private bool IsRegisterUnit(BattleUnit unit)
         {
             return unit != null && (allyUnits.Contains(unit) || enemyUnits.Contains(unit));
         }
 
-        // ·Î±× È®ÀÎ¿ë
+        // ë¡œê·¸ í™•ì¸ìš©
         private void LogUltimateQueueOrder()
         {
             IReadOnlyList<BattleUnit> waitingUnits = ultimateQueue.WaitingUnits;
@@ -605,10 +619,10 @@ namespace AFKHero.Battle
                 }
                 queueOrder += waitingUnits[i].name;
             }
-            Debug.Log($"[±Ã±Ø±â ´ë±â ¼ø¼­] {queueOrder}",this);
+            Debug.Log($"[ê¶ê·¹ê¸° ëŒ€ê¸° ìˆœì„œ] {queueOrder}",this);
         }
 
-        // »õ ÀüÅõ¿ë ¿¡³ÊÁö ÃÊ±âÈ­
+        // ìƒˆ ì „íˆ¬ìš© ì—ë„ˆì§€ ì´ˆê¸°í™”
         private void ResetAllUnitEnergy()
         {
             ResetEnergyInList(allyUnits);
@@ -647,7 +661,7 @@ namespace AFKHero.Battle
             }
         }
 
-        // ±¸µ¶ ÇØÁ¦
+        // êµ¬ë… í•´ì œ
         private void UnsubscribeUltimateReadyInList(IReadOnlyList<BattleUnit> units)
         {
             for(int i = 0; i< units.Count; i++)
@@ -669,7 +683,7 @@ namespace AFKHero.Battle
             UnsubscribeUltimateReadyInList(EnemyUnits);
         }
 
-        // ÇöÀç ÀüÅõ »óÅÂ¸¦ »õ·Î¿î »óÅÂ·Î º¯°æÇÏ°í ÀÌº¥Æ® ¹ß»ı
+        // í˜„ì¬ ì „íˆ¬ ìƒíƒœë¥¼ ìƒˆë¡œìš´ ìƒíƒœë¡œ ë³€ê²½í•˜ê³  ì´ë²¤íŠ¸ ë°œìƒ
         private void ChangeState(BattleState nextState)
         {
             if(CurrentState == nextState)
@@ -679,7 +693,7 @@ namespace AFKHero.Battle
 
             CurrentState = nextState;
 
-            // »óÅÂ º¯°æÀ» ±¸µ¶ÇÏ°í ÀÖ´Â UI³ª ÀüÅõ ½Ã½ºÅÛ¿¡ ¾Ë¸²
+            // ìƒíƒœ ë³€ê²½ì„ êµ¬ë…í•˜ê³  ìˆëŠ” UIë‚˜ ì „íˆ¬ ì‹œìŠ¤í…œì— ì•Œë¦¼
             StateChanged?.Invoke(CurrentState);
         }
     }

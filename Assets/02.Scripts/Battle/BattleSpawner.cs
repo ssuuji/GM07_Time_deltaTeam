@@ -1,123 +1,180 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
+using Newtonsoft.Json.Bson;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace AFKHero.Battle
 {
     public sealed class BattleSpawner : MonoBehaviour
     {
-        // ÇÑ ÆÄÆ¼ ´ç ÃÖ´ë À¯´Ö ¼ö
+        // í•œ íŒŒí‹° ë‹¹ ìµœëŒ€ ìœ ë‹› ìˆ˜
         private const int MaxPartySize = 5;
 
-        [Header("ÄÄÆ÷³ÍÆ®")]
+        [Header("ì»´í¬ë„ŒíŠ¸")]
         [SerializeField] private BattleManager battleManager;
         [SerializeField] private FormationData formationData;
         [SerializeField] private Transform battleOrigin;
         [SerializeField] private Transform unitContainer;
 
-        [Header("ÆÄÆ¼ - Àü¹æ 2, ÈÄ¹æ 3")]
-        [SerializeField] private List<UnitData> allyParty = new();
-        [SerializeField] private List<UnitData> enemyParty = new();
+        // ë‹¤ìŒ ìŠ¤í…Œì´ì§€ ì‹œì‘ ì‹œ ì´ì „ ìœ ë‹› ì •ë¦¬ ìš© ë¦¬ì‹œíŠ¸
+        private readonly List<BattleUnit> spawnedUnits = new List<BattleUnit>();
 
-        [Header("½ÃÀÛ ¿É¼Ç")]
-        [Header("½ÃÀÛ ½Ã ÀÚµ¿À¸·Î ¾ç Áø¿µÀÇ À¯´Ö »ı¼º")]
-        [SerializeField] private bool spawnOnStart = true;
-        [Header("À¯´Ö »ı¼º ÈÄ ÀÚµ¿À¸·Î ÀüÅõ ½ÃÀÛ")]
-        [SerializeField] private bool startBattleAfterSpawn = true;
-
-        private readonly List<BattleUnit> spawnedUnits =new();
-
-        private void Start()
+        public bool SpawnBattle(
+            IReadOnlyList<HeroInstance> allyParty,
+            IReadOnlyList<HeroData> enemyParty,
+            int enemyLevel,
+            float battleTimeLimit)
         {
-            if (spawnOnStart)
-            {
-                SpawnAllUnits();
-            }
-        }
-        [ContextMenu("¸ğµç À¯´Ö ½ºÆù")]
-        public void SpawnAllUnits()
-        {
-            // ÂüÁ¶°¡ Á¤»óÀûÀ¸·Î ¼³Á¤µÇ¾îÀÖ´Â Áö È®ÀÎ
             if (!ValidateDependencies())
             {
-                return;
+                return false;
             }
 
-            // À¯´Ö°ú µî·Ï Á¤º¸ Á¤¸®
+            if(allyParty == null || enemyParty == null)
+            {
+                Debug.LogError("ì•„êµ° ë˜ëŠ” ì êµ° ë°ì´í„°ê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.", this);
+
+                return false;
+            }
+
             ClearSpawnedUnits();
 
-            // ¾Æ±º À¯´ÖÀ» ¾Æ±º ÁøÇü¿¡ »ı¼º
-            SpawnParty(allyParty, TeamType.Ally);
-
-            // Àû±º À¯´ÖÀ» Àû±º ÁøÇü¿¡ »ı¼º
-            SpawnParty(enemyParty, TeamType.Enemy);
-
-            // ÀÚµ¿ ½ÃÀÛ ¿É¼ÇÀÌ ÄÑÁ®ÀÖÀ¸¸é ÀüÅõ ¹Ù·Î ½ÃÀÛ
-            if (startBattleAfterSpawn)
+            if (!battleManager.TrySetBattleTimeLimit(battleTimeLimit))
             {
-                battleManager.StartBattle();
+                Debug.LogError("ì „íˆ¬ ì œí•œì‹œê°„ ì„¤ì •ì— ì‹¤íŒ¨ í–ˆìŠµë‹ˆë‹¤.", this);
+
+                return false;
             }
+
+            int allyCount = SpawnAllyParty(allyParty);
+
+            int enemyCount = SpawnEnemyParty(enemyParty, enemyLevel);
+
+            if(allyCount == 0 || enemyCount == 0)
+            {
+                Debug.LogError("ì „íˆ¬ ìƒì„± ì‹¤íŒ¨");
+
+                ClearSpawnedUnits();
+                return false;
+            }
+
+            battleManager.StartBattle();
+
+            return battleManager.CurrentState == BattleState.Fighting;
         }
 
-        private void SpawnParty(IReadOnlyList<UnitData> party, TeamType team)
+        private int SpawnAllyParty(IReadOnlyList<HeroInstance> party)
         {
-            // ÁøÇü ½½·Ô ¼ö °¡Á®¿Å
-            int formationSlotCount = formationData.GetSlotCount(team);
+            int spawnCount = Mathf.Min(party.Count, MaxPartySize, formationData.GetSlotCount(TeamType.Ally));
 
-            // ÆÄÆ¼ Å©±â, ÃÖ´ë À¯´Ö ¼ö, ½ÇÁ¦ ½½·Ô ¼ö ÃÊ°úÇÏÁö ¾Ê°Ô »ı¼º
-            int spawnCount = Mathf.Min(party.Count, MaxPartySize, formationSlotCount);
+            int successCount = 0;
 
-            // °¢ ÁøÇü ½½·Ô¿¡ ¹èÄ¡
-            for (int slotIndex = 0; slotIndex < spawnCount; slotIndex++)
+            for(int slotIndex = 0; slotIndex < spawnCount; slotIndex++)
             {
-                UnitData unitData = party[slotIndex];
+                HeroInstance hero = party[slotIndex];
 
-                // Áß°£¿¡ µ¥ÀÌÅÍ°¡ ºñ¾î ÀÖÀ¸¸é ÇØ´ç ½½·Ô °Ç³Ê ¶Ù±â
-                if(unitData == null)
+                if(hero == null || hero.data == null)
                 {
                     continue;
                 }
 
-                // UnitData¿¡ ÀüÅõ¿ë ÇÁ¸®ÆÕ  ÀÖ´ÂÁö °Ë»ç
-                if(unitData.BattlePrefab == null)
+                if (TrySpawnUnit(hero, TeamType.Ally, slotIndex))
                 {
-                    Debug.LogError($"[{unitData.name}] Battle PrefabÀÌ ºñ¾î ÀÖ½À´Ï´Ù.");
-                    continue;
+                    successCount++;
                 }
-
-                // ÁÂÇ¥ °è»ê
-                Vector3 spawnPosition = formationData.GetWolrdPosition(
-                    team,
-                    slotIndex,
-                    battleOrigin.position);
-
-                // ÇÁ¸®ÆÕ »ı¼º
-                BattleUnit unit = Instantiate(
-                    unitData.BattlePrefab, 
-                    spawnPosition,
-                    Quaternion.identity,
-                    unitContainer);
-
-                // BattleUnit¿¡ µ¥ÀÌÅÍ, Áø¿µ, ½½·Ô ¹øÈ£ Àü´Ş
-                unit.Initialize(unitData, team, slotIndex, battleManager);
-
-                // ÃÊ±âÈ­¿¡ ½ÇÆĞÇÑ À¯´ÖÀº µî·ÏÇÏÁö ¾Ê°í Á¤¸®
-                if (!unit.IsInitialized)
-                {
-                    Debug.LogError($"[{unitData.name}] À¯´Ö ÃÊ±âÈ­¿¡ ½ÇÆĞÇÏ¿´½À´Ï´Ù.",unit);
-
-                    DestroyUnitObject(unit);
-                    continue;
-                }
-
-                // BattleManager ÇØ´ç Áø¿µ ¸ñ·Ï¿¡ À¯´Ö µî·Ï
-                battleManager.RegisterUnit(unit);
-
-                // ´Ù½Ã »ı¼º ¶§ Á¦°ÅÇÒ ¼ö ÀÖ°Ô »ı¼º ¸ñ·Ï¿¡ ÀúÀå
-                spawnedUnits.Add(unit);
             }
+            return successCount;
         }
-        // µî·Ï ¸ñ·Ï Á¤¸®
-        [ContextMenu("À¯´Ö Clear")]
+
+        private int SpawnEnemyParty(IReadOnlyList<HeroData> party, int enemyLevel)
+        {
+            int spawnCount = Mathf.Min(party.Count, MaxPartySize, formationData.GetSlotCount(TeamType.Enemy));
+
+            int successCount = 0;
+
+            for(int slotIndex = 0; slotIndex < spawnCount; slotIndex++)
+            {
+                HeroData enemyData = party[slotIndex];
+
+                if(enemyData == null)
+                {
+                    continue;
+                }
+
+                HeroInstance enemyInstance = new HeroInstance(enemyData, true);
+
+                enemyInstance.level =  Mathf.Max(1, enemyLevel);
+
+                if (TrySpawnUnit(enemyInstance, TeamType.Enemy, slotIndex))
+                {
+                    successCount++;
+                }
+            }
+            return successCount;
+        }
+
+        private bool TrySpawnUnit(HeroInstance hero, TeamType team, int slotIndex)
+        {
+            HeroData heroData = hero.data;
+
+            if(heroData.HeroPrefab == null)
+            {
+                Debug.LogError($"[{heroData.HeroName}] HeroPrefabì´ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤.", heroData);
+
+                return false;
+            }
+
+            Vector3 spawnPosition = formationData.GetWolrdPosition(team, slotIndex, battleOrigin.position);
+
+            GameObject unitObject = Instantiate(heroData.HeroPrefab, spawnPosition, Quaternion.identity, unitContainer);
+
+            BattleUnit unit = EnsureBattleComponents(unitObject);
+
+            unit.Initialize(hero, team, slotIndex, battleManager, bonusHpRate: 0f, bonusAttackRate: 0f);
+
+            if (!unit.IsInitialized)
+            {
+                Debug.LogError($"[{heroData.HeroName}] BattleUnit ì´ˆê¸°í™” ì‹¤íŒ¨", unit);
+
+                DestroyUnitObejct(unit);
+                return false;
+            }
+
+            battleManager.RegisterUnit(unit);
+            spawnedUnits.Add(unit);
+
+            return true;
+        }
+
+        private static BattleUnit EnsureBattleComponents(GameObject unitObject)
+        {
+            GetOrAddComponent<UnitTargetFinder>(unitObject);
+            GetOrAddComponent<UnitMovement>(unitObject);
+            GetOrAddComponent<UnitAttackController>(unitObject);
+            GetOrAddComponent<UnitHealth>(unitObject);
+            GetOrAddComponent<UnitEnergy>(unitObject);
+
+            GetOrAddComponent<UnitUltimateController>(unitObject);
+
+            GetOrAddComponent<UnitStatusEffectController>(unitObject);
+
+            return GetOrAddComponent<BattleUnit>(unitObject);
+        }
+
+        private static T GetOrAddComponent<T>(GameObject target) where T : Component
+        {
+            T component = target.GetComponent<T>();
+
+            if (component != null)
+            {
+                return component;
+            }
+
+            return target.AddComponent<T>();
+        }
+
+        // ì´ì „ ì „íˆ¬ ìœ ë‹›ê³¼ BattleManaerì˜ ë“±ë¡ ì •ë³´ë¥¼ ì •ë¦¬
+        // ë‹¤ìŒ ì „íˆ¬ ì´ˆê¸°í™”ìš©
         public void ClearSpawnedUnits()
         {
             if(battleManager != null)
@@ -125,48 +182,51 @@ namespace AFKHero.Battle
                 battleManager.ClearRegisteredUnits();
             }
 
-            for (int i = spawnedUnits.Count - 1;  i >= 0; i--) 
+            for(int i = spawnedUnits.Count - 1; i >= 0; i--)
             {
-                if (spawnedUnits[i] == null)
+                BattleUnit unit = spawnedUnits[i];
+
+                if(unit != null)
                 {
-                    continue;
+                    DestroyUnitObejct(unit);
                 }
-                DestroyUnitObject(spawnedUnits[i]);
-                
             }
+
             spawnedUnits.Clear();
         }
 
-        private static void DestroyUnitObject(BattleUnit unit)
+        private static void DestroyUnitObejct(BattleUnit unit)
         {
             if(unit == null)
             {
                 return;
-            }    
+            }
 
             GameObject unitObject = unit.gameObject;
+
             unitObject.SetActive(false);
 
-            if (Application.isPlaying)
+            if(Application.isPlaying)
             {
-                UnityEngine.Object.Destroy(unitObject);
+                Destroy(unitObject);
             }
             else
             {
-                UnityEngine.Object.DestroyImmediate(unitObject);
+                DestroyImmediate(unitObject);
             }
         }
 
-        // À¯´Ö »ı¼º¿¡ ÇÊ¿äÇÑ BattleManager ¿Í FormationData °Ë»ç
+        // ìœ íš¨ì„± ê²€ì‚¬ìš©
         private bool ValidateDependencies()
         {
             if(battleManager == null || formationData == null)
             {
-                Debug.LogError("BattleSpawner ¶Ç´Â FormationData°¡ ºñ¾î ÀÖ½À´Ï´Ù.");
+                Debug.LogError("BattleManager ë˜ëŠ” FormationDataê°€ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤.", this);
+
                 return false;
             }
 
-            if(battleOrigin == null)
+            if (battleOrigin == null)
             {
                 battleOrigin = transform;
             }
@@ -180,7 +240,7 @@ namespace AFKHero.Battle
         }
 
 #if UNITY_EDITOR
-        // À¯´Ö ¼±ÅÃ ½Ã ±âÁî¸ğ
+        // ìœ ë‹› ì„ íƒ ì‹œ ê¸°ì¦ˆëª¨
         private void OnDrawGizmos()
         {
             if(formationData == null)
@@ -188,13 +248,13 @@ namespace AFKHero.Battle
                 return;
             }
 
-            // battleOrigin(À§Ä¡)ÀÌ ¿¬°áµÇ¾î ÀÖÀ¸¸é ÇØ´ç À§Ä¡ »ç¿ë ¾Æ´Ï¸é ÀÓ½Ã ±âÁØÁ¡ »ı¼º
+            // battleOrigin(ìœ„ì¹˜)ì´ ì—°ê²°ë˜ì–´ ìˆìœ¼ë©´ í•´ë‹¹ ìœ„ì¹˜ ì‚¬ìš© ì•„ë‹ˆë©´ ì„ì‹œ ê¸°ì¤€ì  ìƒì„±
             Vector3 origin = battleOrigin != null ? battleOrigin.position : transform.position;
 
-            // ¾Æ±º
+            // ì•„êµ°
             DrawFormationGizmos(TeamType.Ally, origin, Color.cyan);
 
-            // Àû±º
+            // ì êµ°
             DrawFormationGizmos(TeamType.Enemy, origin, Color.red);
         }
 

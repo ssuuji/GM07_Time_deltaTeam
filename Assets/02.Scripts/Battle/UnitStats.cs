@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace AFKHero.Battle
@@ -15,24 +15,30 @@ namespace AFKHero.Battle
 
         public int MaxUltimateEnergy { get; private set; }
         public int CurrentUltimateEnergy { get; private set; }
+
         public bool IsAlive => CurrentHealth > 0;
-        public UnitStats(UnitData source)
+
+        public UnitStats(HeroInstance source, float bonusHpRate, float bonusAttackRate)
         {
-            if(source == null)
+            if(source == null || source.data == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            MaxHealth= source.MaxHealth;
+
+            MaxHealth = Mathf.RoundToInt(source.MaxHP * (1f + Mathf.Max(0f, bonusHpRate)));
             CurrentHealth = MaxHealth;
 
-            AttackPower = source.AttackPower;
-            Defense = source.Defense;
-            
-            AttackRange = source.AttackRange;
-            AttackInterval = source.AttackInterval;
-            MoveSpeed = source.MoveSpeed;
+            AttackPower = Mathf.RoundToInt(source.Attack * (1f + Mathf.Max(0f, bonusAttackRate)));
 
-            MaxUltimateEnergy = source.MaxUltimateEnergy;
+            Defense = source.Defense;
+            AttackRange = source.AttackRange;
+
+            AttackInterval = 1f / Mathf.Max(0.01f, source.AttackSpeed);
+
+            MoveSpeed = source.data.MoveSpeed;
+
+            MaxUltimateEnergy = source.data.MaxUltimateEnergy;
+
             CurrentUltimateEnergy = 0;
         }
 
