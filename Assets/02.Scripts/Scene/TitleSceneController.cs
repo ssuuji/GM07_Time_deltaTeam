@@ -141,7 +141,7 @@ namespace AFKHero.UI
             startSeq.Append(fadeImage.DOFade(1f, 0.5f).SetEase(Ease.InQuad));   //화면 페이드아웃
 
             //게임씬 이동
-            startSeq.OnComplete(() => { SceneManager.LoadScene("UI"); });
+            startSeq.OnComplete(() => { SceneManager.LoadScene("Game"); });
         }
 
     }
