@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Human_Tank
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
   heroID: 1002
-  heroName: 
-  heroGrade: 2
+  heroName: "\uC601\uC6C5\uD734\uBA3C\uD0F1\uCEE4"
+  heroGrade: 4
   raceType: 0
   jobType: 1
   ultimateSkillName: "\uC218\uD638\uC758 \uBC29\uD328"

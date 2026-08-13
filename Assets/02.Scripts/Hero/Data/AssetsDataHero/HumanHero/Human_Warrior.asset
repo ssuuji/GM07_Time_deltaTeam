@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e48ee36aedb041449b36316992decba, type: 3}
   m_Name: Human_Warrior
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
-  heroID: 1001
-  heroName: 
-  heroGrade: 2
+  heroID: 1004
+  heroName: "\uC601\uC6C5\uD734\uBA3C\uC804\uC0AC"
+  heroGrade: 4
   raceType: 0
   jobType: 0
   ultimateSkillName: "\uD68C\uC804 \uACF5\uACA9"

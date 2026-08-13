@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Undead_Warrior
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
   heroID: 4001
-  heroName: 
-  heroGrade: 2
+  heroName: "\uC601\uC6C5\uC5B8\uB370\uB4DC\uC804\uC0AC"
+  heroGrade: 4
   raceType: 3
   jobType: 0
   ultimateSkillName: "\uD68C\uC804 \uACF5\uACA9"
