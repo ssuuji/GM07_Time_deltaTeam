@@ -24,7 +24,6 @@ public class StageManager : MonoBehaviour
     [SerializeField] private RectTransform victoryPanel;
     [SerializeField] private RectTransform defeatPanel;
 
-
     [Header("현재 진행 정보")]
     [SerializeField] private int currentStageNumber = 1;
     [SerializeField] private int currentSectionNumber = 1;
@@ -35,13 +34,10 @@ public class StageManager : MonoBehaviour
 
     //승리 패널을 자동으로 닫히게 할 코루틴
     private Coroutine autoClosePanelCoroutine;
-
-
     private StageInfo currentStageInfo; // 현재 진행 중인 구간의 데이터
 
+
     public StageInfo CurrentStageInfo => currentStageInfo;
-
-
     public int CurrentStageNumber => currentStageNumber;
     public int CurrentSectionNumber => currentSectionNumber;
     public int LastStageNumber => lastStageNumber;
@@ -81,6 +77,7 @@ public class StageManager : MonoBehaviour
 
 
     //이게 아마도 전투시작 버튼에 연결되어야 하고, Start에서 실행이 되어서는 안 될텐데?
+    //그리고, 이게 "재도전" 버튼에도 연결될 수 있을 것 같은데?
     public void StartStage() // 스테이지 구간을 시작
     {
         victoryPanel.gameObject.SetActive(false);
@@ -103,11 +100,8 @@ public class StageManager : MonoBehaviour
         int enemyLevel = EnemyLevelCalculator.CalculateEnemyLevel(currentStageNumber, currentSectionNumber);
 
         // [수정한 부분: 적 목록(Enemies)과 방금 계산한 레벨(enemyLevel)을 같이 넘겨줍니다]
-        //StageInfo의 리스트가 StageEnemyInfo가 아니라 UnitData로 변경되어 주석처리함. 테스트용이라서 나중에 복원할 듯.
+        //StageInfo의 리스트가 StageEnemyInfo가 아니라 UnitData로 변경되어 주석처리함. BattleSpawner 기반으로 변경하기
         //enemySpawner.SpawnEnemies(currentStageInfo.Enemies, enemyLevel);       
-
-
-
     }
 
     //전투상태가 변경되었을 때 이벤트로 호출되며, 승리 / 패배에 따라 다른 코드들을 실행하게 할 메서드
@@ -138,9 +132,19 @@ public class StageManager : MonoBehaviour
         //승리 패널부터 우선 활성화
         victoryPanel.gameObject.SetActive(true);
 
+
+        if(AFKHero.Player.PlayerManager.Instance == null)
+        {
+            Debug.LogError("[StageManager] : PlayerManager의 Instance를 찾을 수 없습니다.");
+            return;
+        }
+
+
         //승리했으니 현 스테이지의 보상에 해당하는 골드를 매니저를 통해 지급 => PlayerManager를 활용하는 것으로 변경
-        //골드 이외의 다른 보상이 있더라도 새 클래스를 늘리기보단 ClearDia, ClearTicket 필드를 StageInfo에 만드는 것을 고려한다.
-        //CurrencyManager.Instance.AddGold(currentStageInfo.ClearGold);
+        //골드 이외의 다른 보상이 있더라도 새 클래스를 늘리기보단
+        //ClearDia, ClearTicket 필드를 StageInfo에 만드는 것을 고려한다.
+        //지급만 총괄하는 메서드를 구현해서 여기서 호출해도 될 듯.
+        AFKHero.Player.PlayerManager.Instance.AddGold(currentStageInfo.ClearGold);
 
         //마지막으로 클리어한 스테이지와 섹션의 값을 저장 => 방치 전투에서 활용.
         lastStageNumber = currentStageNumber;
