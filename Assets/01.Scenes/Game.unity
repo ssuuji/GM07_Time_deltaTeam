@@ -1122,8 +1122,8 @@ MonoBehaviour:
   - level: 1
     maxExp: 100
     normalRate: 0
-    rareRate: 100
-    epicRate: 0
+    rareRate: 0
+    epicRate: 100
   - level: 2
     maxExp: 200
     normalRate: 90
@@ -7688,7 +7688,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 11400000, guid: a94643face8334a46beae8e60e1ba63b, type: 2}
-  spawnOnStart: 1
+  spawnOnStart: 0
   startBattleAfterSpawn: 1
 --- !u!114 &584118162
 MonoBehaviour:
@@ -18334,7 +18334,7 @@ MonoBehaviour:
   stageData: {fileID: 11400000, guid: b48beeb15d2f91c4f9b2f26ec9e55ce1, type: 2}
   enemySpawner: {fileID: 1328320267}
   battleManager: {fileID: 584118162}
-  battleSpawner: {fileID: 0}
+  battleSpawner: {fileID: 584118161}
   victoryPanel: {fileID: 173547937}
   defeatPanel: {fileID: 1791452372}
   currentStageNumber: 1
