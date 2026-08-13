@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e48ee36aedb041449b36316992decba, type: 3}
-  m_Name: NewHeroData
+  m_Name: BasicHero
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
   heroID: 1001
   heroName: 
