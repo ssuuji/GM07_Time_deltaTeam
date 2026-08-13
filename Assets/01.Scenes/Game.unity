@@ -7635,6 +7635,8 @@ GameObject:
   - component: {fileID: 584118160}
   - component: {fileID: 584118162}
   - component: {fileID: 584118161}
+  - component: {fileID: 584118164}
+  - component: {fileID: 584118165}
   - component: {fileID: 584118163}
   m_Layer: 0
   m_Name: Battle
@@ -7717,6 +7719,40 @@ MonoBehaviour:
   heroSlotTransform: {fileID: 105496139}
   heroSlotPrefab: {fileID: 8563887800930457519, guid: 350d36a6478a512479c1b28bb617200b, type: 3}
   currentStageText: {fileID: 832826874}
+--- !u!114 &584118164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 584118159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c61dfc98476c846429d08a6471555daa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.BattleSystemTester
+  battleManager: {fileID: 584118162}
+  testUnit: {fileID: 0}
+  stunDuration: 3
+  silenceDuration: 3
+--- !u!114 &584118165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 584118159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8927cd5977b2bab40b08bd8985c4041c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.TestUltimateController
+  battleManager: {fileID: 584118162}
+  showPanel: 1
+  panelWidth: 480
+  titleFontSize: 36
+  contentFontSize: 26
+  buttonHeight: 60
 --- !u!1 &605026133
 GameObject:
   m_ObjectHideFlags: 0
@@ -7875,27 +7911,22 @@ MonoBehaviour:
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
-    duplicateCount: 0
     currentGrade: 0
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
-    duplicateCount: 0
     currentGrade: 0
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
-    duplicateCount: 0
     currentGrade: 0
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
-    duplicateCount: 0
     currentGrade: 0
   - data: {fileID: 0}
     level: 0
     isUnlocked: 0
-    duplicateCount: 0
     currentGrade: 0
   totalBonusAttackRate: 0
   totalBonusHpRate: 0
@@ -17523,6 +17554,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 52cedf96ddb33d749bbeb1c1764db086, type: 2}
   - {fileID: 11400000, guid: 283b00437eb4ef34497d345fe6f66339, type: 2}
   - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
+  normalShards: 0
+  rareShards: 0
+  epicShards: 0
 --- !u!114 &1250732928
 MonoBehaviour:
   m_ObjectHideFlags: 0
