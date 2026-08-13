@@ -79,21 +79,20 @@ namespace AFKHero.Shop
         //결정된 등급에서 영웅 1명 뽑기
         private HeroData GetRandomHero(HeroGrade grade)
         {
-            //원본리스트
             IReadOnlyList<HeroData> allHeroDataList = HeroManager.Instance.AllHeroDataList; //원본리스트
 
-            List<HeroData> gradeHeroes = new List<HeroData>();                     //영웅 리스트 
-
-            foreach (HeroData hero in allHeroDataList)
-            {
-                if (hero.HeroGrade == grade)                                       //해당 등급의 영웅이면 리스트에 추가
-                {
-                    gradeHeroes.Add(hero);
-                }
-            }
-
-            int randomIndex = UnityEngine.Random.Range(0, gradeHeroes.Count);      //랜덤 뽑기
-            return gradeHeroes[randomIndex];                                       //영웅 반환
+            List<HeroData> gradeHeroes = new List<HeroData>();                              //영웅 리스트 
+                                                                                            
+            foreach (HeroData hero in allHeroDataList)                                      
+            {                                                                               
+                if (hero.HeroGrade == grade)                                                //해당 등급의 영웅이면 리스트에 추가
+                {                                                                           
+                    gradeHeroes.Add(hero);                                                  
+                }                                                                           
+            }                                                                               
+                                                                                            
+            int randomIndex = UnityEngine.Random.Range(0, gradeHeroes.Count);               //랜덤 뽑기
+            return gradeHeroes[randomIndex];                                                //영웅 반환
         }
 
         //영웅 소환
