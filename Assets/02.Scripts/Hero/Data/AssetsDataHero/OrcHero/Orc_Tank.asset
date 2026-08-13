@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Orc_Tank
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
   heroID: 3002
-  heroName: 
-  heroGrade: 2
+  heroName: "\uC601\uC6C5\uC624\uD06C\uD0F1\uCEE4"
+  heroGrade: 4
   raceType: 2
   jobType: 1
   ultimateSkillName: "\uC218\uD638\uC758 \uBC29\uD328"

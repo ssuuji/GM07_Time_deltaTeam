@@ -16,7 +16,9 @@ GameObject:
   - component: {fileID: -8413466624999857358}
   - component: {fileID: 2276604362978842545}
   - component: {fileID: -3801880347106441142}
-  - component: {fileID: -2542636996741220937}
+  - component: {fileID: 9035270387451743139}
+  - component: {fileID: -2850850390268505855}
+  - component: {fileID: 6246974544523616730}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -33,7 +35,7 @@ Transform:
   m_GameObject: {fileID: 969841853409754783}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.36725, y: 0.65754, z: 0}
+  m_LocalPosition: {x: -0.30255, y: 0.34246, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -115,7 +117,8 @@ MonoBehaviour:
   attackController: {fileID: -3801880347106441142}
   unitHealth: {fileID: -8413466624999857358}
   unitEnergy: {fileID: 2276604362978842545}
-  ultimateController: {fileID: 0}
+  ultimateController: {fileID: -2850850390268505855}
+  statusEffectController: {fileID: 9035270387451743139}
   spriteRenderers:
   - {fileID: 6857615387005519392}
   sortingBaseOrder: 1000
@@ -184,7 +187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f33d3258bf60f2446a7dcf9e23397fff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitAttackController
---- !u!114 &-2542636996741220937
+--- !u!114 &9035270387451743139
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -193,9 +196,38 @@ MonoBehaviour:
   m_GameObject: {fileID: 969841853409754783}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66726e4303706774787644a4be1aa4d5, type: 3}
+  m_Script: {fileID: 11500000, guid: a5e0f8737e05c1e4797fae2b675de03b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitStatusEffectController
+--- !u!114 &-2850850390268505855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 969841853409754783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9772f191ca896004ab81a9acc0897089, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitUltimateController
-  ultimateDuration: 3
+  ultimateDuration: 1.5
   animator: {fileID: 0}
   animationTrigger: Ultimate
+--- !u!114 &6246974544523616730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 969841853409754783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6dbda304d75c7e4fbc8ecde412296b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.TestUnitStateColorController
+  ultimateColor: {r: 0, g: 0, b: 0, a: 1}
+  stunColor: {r: 1, g: 0.8431373, b: 0, a: 1}
+  silenceColor: {r: 0.9, g: 0.9, b: 0.9, a: 1}
+  spriteRenderers:
+  - {fileID: 6857615387005519392}

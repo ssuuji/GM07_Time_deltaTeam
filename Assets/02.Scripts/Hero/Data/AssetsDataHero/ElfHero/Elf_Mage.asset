@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Elf_Mage
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
   heroID: 2003
-  heroName: 
-  heroGrade: 2
+  heroName: "\uC601\uC6C5\uC5D8\uD504\uB9C8\uBC95\uC0AC"
+  heroGrade: 4
   raceType: 1
   jobType: 2
   ultimateSkillName: "\uBA54\uD14C\uC624"
