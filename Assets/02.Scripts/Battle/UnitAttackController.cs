@@ -66,6 +66,11 @@ namespace AFKHero.Battle
                 return false;
             }
 
+            if(owner.StatusEffects != null && !owner.StatusEffects.CanUseBasicAttack)
+            {
+                return false;
+            }
+
             return unitMovement.IsTargetInAttackRange;
         }
 

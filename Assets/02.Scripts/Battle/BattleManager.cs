@@ -152,6 +152,8 @@ namespace AFKHero.Battle
 
             ultimateQueue.Clear();
 
+            ClearAllUnitStatusEffects();
+
             ResetAllUnitEnergy();
 
             ResetBattleTimer();
@@ -222,6 +224,8 @@ namespace AFKHero.Battle
         // 새로운 전투 시작 시 유닛 재정비
         public void ClearRegisteredUnits()
         {
+            CancelCurrentUltimate();
+            ClearAllUnitStatusEffects();
             UnsubscribeUltimateReadyInList(allyUnits);
             UnsubscribeUltimateReadyInList(enemyUnits);
 
@@ -364,10 +368,12 @@ namespace AFKHero.Battle
             }
 
             isBattleResultConfirmed = true;
+
             CancelCurrentUltimate();
             manualSelectUltimateUnit = null;
-            
             ultimateQueue.Clear();
+
+            ClearAllUnitStatusEffects();
 
             ChangeState(resultState);
             Debug.Log(resultLog,this);
@@ -539,7 +545,9 @@ namespace AFKHero.Battle
                 unit.Energy != null &&
                 unit.Energy.IsUltimateReady &&
                 unit.UltimateController != null &&
-                !unit.UltimateController.IsExecuting;
+                !unit.UltimateController.IsExecuting &&
+                unit.StatusEffects != null &&
+                unit.StatusEffects.CanUseUltimate;
         }
 
         private void HandleUltimateCompleted(BattleUnit completeUnit)
@@ -605,6 +613,25 @@ namespace AFKHero.Battle
         {
             ResetEnergyInList(allyUnits);
             ResetEnergyInList(enemyUnits);
+        }
+
+        private void ClearAllUnitStatusEffects()
+        {
+            ClearStatusEffectsInList(allyUnits);
+            ClearStatusEffectsInList(enemyUnits);
+        }
+
+        private static void ClearStatusEffectsInList(IReadOnlyList<BattleUnit> units)
+        {
+            for(int i = 0; i < units.Count;i++)
+            {
+                BattleUnit unit = units[i];
+
+                if(unit != null && unit.StatusEffects != null)
+                {
+                    unit.StatusEffects.ClearAllStatusEffects();
+                }
+            }
         }
 
         private static void ResetEnergyInList(IReadOnlyList<BattleUnit> units)

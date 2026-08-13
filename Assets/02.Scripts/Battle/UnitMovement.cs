@@ -68,6 +68,11 @@ namespace AFKHero.Battle
                 return false;
             }
 
+            if(owner.StatusEffects != null && !owner.StatusEffects.CanMove)
+            {
+                return false;
+            }
+
             // 이미 사거리 안 이라면 공격하는 동안 이동 X
             return !IsTargetInAttackRange;
         }

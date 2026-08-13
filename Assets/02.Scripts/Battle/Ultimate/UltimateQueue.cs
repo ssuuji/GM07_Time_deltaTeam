@@ -99,11 +99,11 @@ namespace AFKHero.Battle
 
             for(int i = 0; i < waitingUnits.Count; i++)
             {
-                BattleUnit watingUnit = waitingUnits[i];
+                BattleUnit waitingUnit = waitingUnits[i];
 
-                if(watingUnit != null && condition(watingUnit))
+                if(waitingUnit != null && condition(waitingUnit))
                 {
-                    unit = watingUnit;
+                    unit = waitingUnit;
                     return true;
                 }
             }
@@ -134,13 +134,13 @@ namespace AFKHero.Battle
         // 큐 비우기
         public void Clear()
         {
-            bool hadWatingUnit = waitingUnits.Count > 0;
+            bool hadWaitingUnit = waitingUnits.Count > 0;
 
             waitingUnits.Clear();
             queueUnits.Clear();
             queueFrames.Clear();
 
-            if (hadWatingUnit)
+            if (hadWaitingUnit)
             {
                 QueueChanged?.Invoke();
             }
