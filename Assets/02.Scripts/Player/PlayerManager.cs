@@ -135,6 +135,36 @@ namespace AFKHero.Player
         }
 
         #endregion
+
+        #region 저장
+
+        //플레이어 저장 데이터 생성
+        public PlayerSaveData CreatePlayerSaveData()
+        {
+            PlayerSaveData saveData = new PlayerSaveData();
+
+            saveData.playerName = playerName;
+            saveData.gold = gold;
+            saveData.dia = dia;
+            saveData.freeTicket = freeTicket;
+
+            return saveData;
+        }
+
+        //플레이어 저장 데이터 적용
+        public void LoadPlayerSaveData(PlayerSaveData saveData)
+        {
+            if (saveData == null) return;
+
+            playerName = saveData.playerName;
+            gold = saveData.gold;
+            dia = saveData.dia;
+            freeTicket = saveData.freeTicket;
+
+            OnPlayerInfoChanged?.Invoke();
+        }
+
+        #endregion
     }
 }
 

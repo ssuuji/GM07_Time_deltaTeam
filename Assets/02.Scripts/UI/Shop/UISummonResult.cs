@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace AFKHero.UI
 {
@@ -28,11 +29,32 @@ namespace AFKHero.UI
         private Vector3 riseOriginScale;                           //Rise  기존 스케일 저장
         private Vector3 flashOriginScale;                          //Flash 기존 스케일 저장
 
+        [Header("소환 결과 배경")]
+        [SerializeField] private Button backButton;      //검정 반투명 배경
 
         private void Awake()
         {
             riseOriginScale = summonRise.transform.localScale;   //Rise  기존 스케일 저장
             flashOriginScale = summonFlash.transform.localScale; //Flash 기존 스케일 저장
+
+            //1회 소환 카드
+            summon1Card.OnOpened += CheckAllCardsOpened;
+
+            //10회 소환 카드
+            foreach (UISummonCard card in summon10Cards)
+            {
+                card.OnOpened += CheckAllCardsOpened;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            summon1Card.OnOpened -= CheckAllCardsOpened;
+
+            foreach (UISummonCard card in summon10Cards)
+            {
+                card.OnOpened -= CheckAllCardsOpened;
+            }
         }
 
         #region 소환결과
@@ -40,6 +62,9 @@ namespace AFKHero.UI
         //소환 결과
         public void ShowResult(List<HeroData> heroes)
         {
+            backButton.gameObject.SetActive(true);
+            backButton.interactable = false;
+
             //1회
             if (heroes.Count == 1)
             {
@@ -85,6 +110,48 @@ namespace AFKHero.UI
             }
         }
 
+        //소환 결과 닫기
+        public void OnClickedCloseResult()
+        {
+            if (!backButton.interactable) return;
+
+            summon1Panel.SetActive(false);
+            summon10Panel.SetActive(false);
+
+            backButton.interactable = false;
+            backButton.gameObject.SetActive(false);
+        }
+
+        //모든 카드 오픈 여부 확인
+        private void CheckAllCardsOpened()
+        {
+            //1회 소환
+            if (summon1Panel.activeSelf)
+            {
+                if (summon1Card.IsOpen)
+                {
+                    backButton.interactable = true;
+                }
+
+                return;
+            }
+
+            //10회 소환
+            if (summon10Panel.activeSelf)
+            {
+                foreach (UISummonCard card in summon10Cards)
+                {
+                    //하나라도 안 열렸으면 아직 닫기 불가
+                    if (!card.IsOpen)
+                    {
+                        return;
+                    }
+                }
+
+                //10장 모두 열림
+                backButton.interactable = true;
+            }
+        }
         #endregion
 
         #region 연출

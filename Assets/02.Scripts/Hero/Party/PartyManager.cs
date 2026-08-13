@@ -1,15 +1,15 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 public class PartyManager : MonoBehaviour
 {
     public static PartyManager Instance { get; private set; }
 
-    // ¼öÁ¤µÈ ºÎºĞ: Àü/ÈÄ¿­ ±¸ºĞÀ» Áö¿ì°í ¼ø¼ö ÃâÀü ¸í´ÜÀ¸·Î¸¸ »ç¿ë
-    [Header("ÃâÀü ¸í´Ü (ÃÖ´ë 5¸í)")]
+    // ìˆ˜ì •ëœ ë¶€ë¶„: ì „/í›„ì—´ êµ¬ë¶„ì„ ì§€ìš°ê³  ìˆœìˆ˜ ì¶œì „ ëª…ë‹¨ìœ¼ë¡œë§Œ ì‚¬ìš©
+    [Header("ì¶œì „ ëª…ë‹¨ (ìµœëŒ€ 5ëª…)")]
     public HeroInstance[] partySlots = new HeroInstance[5];
 
-    [Header("È°¼ºÈ­µÈ ½Ã³ÊÁö º¸³Ê½º")]
+    [Header("í™œì„±í™”ëœ ì‹œë„ˆì§€ ë³´ë„ˆìŠ¤")]
     public float totalBonusAttackRate = 0f;
     public float totalBonusHpRate = 0f;
     public List<string> activeSynergyDescriptions = new List<string>();
@@ -28,13 +28,13 @@ public class PartyManager : MonoBehaviour
     }
 
     // ============================
-    // ÆÄÆ¼ ½½·Ô ¸í´Ü µî·Ï ·ÎÁ÷
+    // íŒŒí‹° ìŠ¬ë¡¯ ëª…ë‹¨ ë“±ë¡ ë¡œì§
     // ============================
     public void PlaceHero(int slotIndex, HeroInstance hero)
     {
         if (slotIndex < 0 || slotIndex >= 5) return;
 
-        // Áßº¹ ¹èÄ¡ ¹æÁö ±ÔÄ¢ ±¸Çö
+        // ì¤‘ë³µ ë°°ì¹˜ ë°©ì§€ ê·œì¹™ êµ¬í˜„
         for (int i = 0; i < 5; i++)
         {
             if (partySlots[i] == hero) partySlots[i] = null;
@@ -45,10 +45,10 @@ public class PartyManager : MonoBehaviour
     }
 
     // ============================
-    // Ãß°¡µÈ ºÎºĞ : ÆÄÆ¼ ½½·Ô ¸í´Ü ÇØÁ¦ ·ÎÁ÷
+    // ì¶”ê°€ëœ ë¶€ë¶„ : íŒŒí‹° ìŠ¬ë¡¯ ëª…ë‹¨ í•´ì œ ë¡œì§
     // ============================
 
-    // Æ¯Á¤ ¿µ¿õÀ» ÁöÁ¤ÇØ¼­ ÆÄÆ¼¿¡¼­ »¬ ¶§ »ç¿ë
+    // íŠ¹ì • ì˜ì›…ì„ ì§€ì •í•´ì„œ íŒŒí‹°ì—ì„œ ëº„ ë•Œ ì‚¬ìš©
     public void RemoveHero(HeroInstance heroToRemove)
     {
         if (heroToRemove == null) return;
@@ -57,16 +57,16 @@ public class PartyManager : MonoBehaviour
         {
             if (partySlots[i] == heroToRemove)
             {
-                Debug.Log($"[PartyManager] {heroToRemove.data.HeroName} ÆÄÆ¼¿¡¼­ ÇØÁ¦µÊ.");
+                Debug.Log($"[PartyManager] {heroToRemove.data.HeroName} íŒŒí‹°ì—ì„œ í•´ì œë¨.");
                 partySlots[i] = null;
-                UpdateSynergy(); // ÀÎ¿øÀÌ ºüÁ³À¸¹Ç·Î ½Ã³ÊÁö Áï½Ã Àç°è»ê
-                break; // ¿µ¿õÀ» Ã£¾Æ¼­ »°À¸¹Ç·Î ¹İº¹¹® Á¾·á
+                UpdateSynergy(); // ì¸ì›ì´ ë¹ ì¡Œìœ¼ë¯€ë¡œ ì‹œë„ˆì§€ ì¦‰ì‹œ ì¬ê³„ì‚°
+                break; // ì˜ì›…ì„ ì°¾ì•„ì„œ ëºìœ¼ë¯€ë¡œ ë°˜ë³µë¬¸ ì¢…ë£Œ
             }
         }
     }
 
     // =========================================
-    // ¿µ¿õÀÌ ÇöÀç ÆÄÆ¼¿¡ Æ÷ÇÔµÇ¾î ÀÖ´ÂÁö °Ë»ç
+    // ì˜ì›…ì´ í˜„ì¬ íŒŒí‹°ì— í¬í•¨ë˜ì–´ ìˆëŠ”ì§€ ê²€ì‚¬
     // =========================================
     public bool IsHeroInParty(HeroInstance hero)
     {
@@ -80,7 +80,7 @@ public class PartyManager : MonoBehaviour
     }
 
     // ==========================
-    // Á¾Á· ½Ã³ÊÁö °è»ê ·ÎÁ÷
+    // ì¢…ì¡± ì‹œë„ˆì§€ ê³„ì‚° ë¡œì§
     // ==========================
     public void UpdateSynergy()
     {
@@ -108,25 +108,25 @@ public class PartyManager : MonoBehaviour
             {
                 totalBonusAttackRate += 0.15f;
                 totalBonusHpRate += 0.15f;
-                activeSynergyDescriptions.Add($"{race} 3¸í: ÆÄÆ¼ ÀüÃ¼ °ø°İ·Â 15%, Ã¼·Â 15% Áõ°¡");
+                activeSynergyDescriptions.Add($"{race} 3ëª…: íŒŒí‹° ì „ì²´ ê³µê²©ë ¥ 15%, ì²´ë ¥ 15% ì¦ê°€");
             }
             else if (count == 2)
             {
                 totalBonusAttackRate += 0.10f;
-                activeSynergyDescriptions.Add($"{race} 2¸í: ÆÄÆ¼ ÀüÃ¼ °ø°İ·Â 10% Áõ°¡");
+                activeSynergyDescriptions.Add($"{race} 2ëª…: íŒŒí‹° ì „ì²´ ê³µê²©ë ¥ 10% ì¦ê°€");
             }
         }
     }
 
     // =========================================
-    // ¼¼ÀÌºê µ¥ÀÌÅÍ¸¦ À§ÇÑ µ¥ÀÌÅÍ ¿¬µ¿ ÇÔ¼ö
+    // ì„¸ì´ë¸Œ ë°ì´í„°ë¥¼ ìœ„í•œ ë°ì´í„° ì—°ë™ í•¨ìˆ˜
     // =========================================
     public int[] GetPartySaveData()
     {
         int[] savedIDs = new int[5];
         for (int i = 0; i < 5; i++)
         {
-            savedIDs[i] = (partySlots[i] != null) ? partySlots[i].data.HeroID : -1;
+            savedIDs[i] = (partySlots[i] != null && partySlots[i].data != null) ? partySlots[i].data.HeroID : -1;
         }
         return savedIDs;
     }

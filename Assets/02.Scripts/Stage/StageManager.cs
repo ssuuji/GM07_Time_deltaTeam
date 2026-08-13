@@ -163,7 +163,7 @@ public class StageManager : MonoBehaviour
         }
 
         //TODO : SaveManager를 호출하여 값 저장
-        TempSaveManager.Instance.SaveStage();
+        GameSaveManager.Instance.SaveGame();
 
         autoClosePanelCoroutine = StartCoroutine(AutoClosePanelCo());
     }
@@ -172,7 +172,7 @@ public class StageManager : MonoBehaviour
     {
         defeatPanel.gameObject.SetActive(true);
         //
-        TempSaveManager.Instance.SaveStage();
+        GameSaveManager.Instance.SaveGame();
     }
 
     //승리 시, 3초 후 패널이 자동으로 닫히게 할 메서드

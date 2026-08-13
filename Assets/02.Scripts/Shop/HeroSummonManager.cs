@@ -9,11 +9,13 @@ namespace AFKHero.Shop
     //제단의 레벨에 따라 등장 가능한 영웅등급과 확률이 달라진다.
     public class HeroSummonManager : MonoBehaviour
     {
+        public static HeroSummonManager Instance { get; private set; }
+
         private int summonLevel = 1;                              //제단의 레벨
         private int summonExp = 0;                                //현재 누적된 게이지
         
         [SerializeField] private List<SummonLevelData> levelData; //레벨별 설정 데이터
-        [SerializeField] private List<HeroData> heroList;         //영웅리스트
+        //[SerializeField] private List<HeroData> heroList;         //영웅리스트
 
         public event Action OnSummonInfoChanged;                  //제단정보 변경 이벤트
 
@@ -26,6 +28,18 @@ namespace AFKHero.Shop
             {
                 SummonLevelData data = GetCurrentLevelData();
                 return data.maxExp;
+            }
+        }
+
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
             }
         }
 
@@ -65,18 +79,21 @@ namespace AFKHero.Shop
         //결정된 등급에서 영웅 1명 뽑기
         private HeroData GetRandomHero(HeroGrade grade)
         {
-            List<HeroData> gradeHeroes = new List<HeroData>();                //영웅 리스트 
-                                                                              
-            foreach (HeroData hero in heroList)                               
-            {                                                                 
-                if (hero.HeroGrade == grade)                                  //해당 등급의 영웅이면 리스트에 추가
+            //원본리스트
+            IReadOnlyList<HeroData> allHeroDataList = HeroManager.Instance.AllHeroDataList; //원본리스트
+
+            List<HeroData> gradeHeroes = new List<HeroData>();                     //영웅 리스트 
+
+            foreach (HeroData hero in allHeroDataList)
+            {
+                if (hero.HeroGrade == grade)                                       //해당 등급의 영웅이면 리스트에 추가
                 {
-                    gradeHeroes.Add(hero);  
+                    gradeHeroes.Add(hero);
                 }
             }
 
-            int randomIndex = UnityEngine.Random.Range(0, gradeHeroes.Count); //랜덤 뽑기
-            return gradeHeroes[randomIndex];                                  //영웅 반환
+            int randomIndex = UnityEngine.Random.Range(0, gradeHeroes.Count);      //랜덤 뽑기
+            return gradeHeroes[randomIndex];                                       //영웅 반환
         }
 
         //영웅 소환
@@ -113,6 +130,32 @@ namespace AFKHero.Shop
             summonExp -= currentData.maxExp;                    //남은 게이지는 다음레벨로 넘기기
             summonLevel++;                                      //제단 레벨업
         }
+
+        #region 저장
+
+        //소환 제단 저장 데이터 생성
+        public HeroSummonSaveData CreateHeroSummonSaveData()
+        {
+            HeroSummonSaveData saveData = new HeroSummonSaveData();
+
+            saveData.summonLevel = summonLevel;
+            saveData.summonExp = summonExp;
+
+            return saveData;
+        }
+
+        //소환 제단 저장 데이터 적용
+        public void LoadHeroSummonSaveData(HeroSummonSaveData saveData)
+        {
+            if (saveData == null) return;
+
+            summonLevel = saveData.summonLevel;
+            summonExp = saveData.summonExp;
+
+            OnSummonInfoChanged?.Invoke();
+        }
+
+        #endregion
     }
 }
 

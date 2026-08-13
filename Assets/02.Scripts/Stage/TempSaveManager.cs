@@ -1,165 +1,165 @@
+ï»¿
+//using System;
+//using System.IO;
+//using UnityEngine;
 
-using System;
-using System.IO;
-using UnityEngine;
-
-/**********************************
+///**********************************
  
-[ÀúÀåÀÌ ÇÊ¿äÇÑ ¿µ¿ª]
-1) HeroManager : º¸À¯ÇÑ ¿µ¿õ°ú ¿µ¿õÀÇ ¼ºÀå»óÅÂ? ¸Å´ÏÀú ³»ºÎ¿¡¼­ HeroInstanceÀÇ °ªÀ» º¹»çÇØ ÀúÀåÇØ¾ß ÇÒÁö?
-µñ¼Å³Ê¸®¸¦ ÅëÇØ ÀúÀå µ¥ÀÌÅÍ¸¦ ¸¸µå´Â ºÎºĞÀÌ ÀÖ´Âµ¥, Å°°ªÀ» ³Ö¾î¼­ ¹Ş¾Æ¿À´Â °ªÀÌ ³Ê¹« ¸¹À½. Å° ³Ö¾î¼­ Å¬·¡½º ÇÏ³ª¸¸ ¹Ş¾Æ¿À°Ô ÇÏ´Â °Ç ¾î¶²Áö.
-2) HeroSummonManager : Á¦´Ü ·¹º§, Á¦´Ü °ÔÀÌÁö
-3) PlayerManager : ÇÃ·¹ÀÌ¾îÀÇ ÇöÀç º¸À¯ ÀçÈ­, °ñµå, Æ¼ÄÏ
-4)
+//[ì €ì¥ì´ í•„ìš”í•œ ì˜ì—­]
+//1) HeroManager : ë³´ìœ í•œ ì˜ì›…ê³¼ ì˜ì›…ì˜ ì„±ì¥ìƒíƒœ? ë§¤ë‹ˆì € ë‚´ë¶€ì—ì„œ HeroInstanceì˜ ê°’ì„ ë³µì‚¬í•´ ì €ì¥í•´ì•¼ í• ì§€?
+//ë”•ì…”ë„ˆë¦¬ë¥¼ í†µí•´ ì €ì¥ ë°ì´í„°ë¥¼ ë§Œë“œëŠ” ë¶€ë¶„ì´ ìˆëŠ”ë°, í‚¤ê°’ì„ ë„£ì–´ì„œ ë°›ì•„ì˜¤ëŠ” ê°’ì´ ë„ˆë¬´ ë§ìŒ. í‚¤ ë„£ì–´ì„œ í´ë˜ìŠ¤ í•˜ë‚˜ë§Œ ë°›ì•„ì˜¤ê²Œ í•˜ëŠ” ê±´ ì–´ë–¤ì§€.
+//2) HeroSummonManager : ì œë‹¨ ë ˆë²¨, ì œë‹¨ ê²Œì´ì§€
+//3) PlayerManager : í”Œë ˆì´ì–´ì˜ í˜„ì¬ ë³´ìœ  ì¬í™”, ê³¨ë“œ, í‹°ì¼“
+//4)
 
-***********************************/
-
-
-//¸ğµç ¼¼ÀÌºê µ¥ÀÌÅÍ¸¦ ÅëÇÕ °ü¸®ÇÒ Å¬·¡½ºÀÔ´Ï´Ù.
-//¾Æ·¡¿¡ ¸¸µé¾îÁú °¢°¢ÀÇ SaveDataÅ¬·¡½º¸¦ ÇÊµå·Î °¡Á®¾ß ÇÕ´Ï´Ù.
-//ÀÎº¥Åä¸®³ª º¸À¯ ¿µ¿õµéÀ» ÀúÀåÇÏ±â À§ÇØ¼­´Â List³ª µñ¼Å³Ê¸® µîÀÇ ÄÃ·º¼ÇÀ¸·Î °ü¸®ÇØ¾ß ÇÒ °Í °°Àºµ¥ ÀÌ ºÎºĞÀº Á¶±İ ´õ ¿¬±¸ÇØº¸°Ú½À´Ï´Ù.
-[Serializable]
-public class GameSaveData
-{
-    public StageSaveData stageSaveData;
-}
+//***********************************/
 
 
-
-//ÇöÀç ½ºÅ×ÀÌÁö, ¼½¼Ç / ¸¶Áö¸·À¸·Î Å¬¸®¾îÇÑ ½ºÅ×ÀÌÁö, ¼½¼ÇÀ» ÀúÀåÇÒ Å¬·¡½ºÀÔ´Ï´Ù.
-//¼¼ÀÌºê°¡ ÇÊ¿äÇÑ ºÎºĞÀÌ ÀÖ´Ù¸é, ÇÊ¿äÇÑ °ªµéÀ» º¹»çÇÒ Å¬·¡½º¸¦ ¾Æ·¡¿Í À¯»çÇÏ°Ô ¸¸µé¾îÁÖ¼¼¿ä.
-[Serializable]
-public class StageSaveData
-{
-    public int currentStageNumber;
-    public int currentSectionNumber;
-    public int lastStageNumber;
-    public int lastSectionNumber;
-}
-
-//ÀÓ½Ã¿ë ¼¼ÀÌºê ¸Å´ÏÀúÀÔ´Ï´Ù
-//½Ì±ÛÅæÀÌ Àû¿ëµÇ¾î ÀÖÀ¸¸ç, SaveStage() ¸Ş¼­µå´Â StageManager ³»ºÎ¿¡¼­ È£ÃâÇÏ±â¿¡ ¼öÁ¤ÇÏ°Ô µÉ °æ¿ì À¯ÀÇ ¹Ù¶ø´Ï´Ù.
-
-public class TempSaveManager : MonoBehaviour
-{
-    public static TempSaveManager Instance;
-
-    [SerializeField] private string saveFileName = "save.json";
-
-    private string SavePath => Path.Combine(Application.persistentDataPath, saveFileName);
-
-    private void Awake()
-    {
-        if(Instance == null)
-        {
-            Instance = this;
-        }
-        else if (Instance != this)
-        {
-            Destroy(Instance.gameObject);
-        }
-        DontDestroyOnLoad(this.gameObject);
-    }
-
-    private void Start()
-    {
-        LoadStage();
-    }
-
-    private void OnApplicationQuit()
-    {
-        SaveStage();
-    }
+////ëª¨ë“  ì„¸ì´ë¸Œ ë°ì´í„°ë¥¼ í†µí•© ê´€ë¦¬í•  í´ë˜ìŠ¤ì…ë‹ˆë‹¤.
+////ì•„ë˜ì— ë§Œë“¤ì–´ì§ˆ ê°ê°ì˜ SaveDataí´ë˜ìŠ¤ë¥¼ í•„ë“œë¡œ ê°€ì ¸ì•¼ í•©ë‹ˆë‹¤.
+////ì¸ë²¤í† ë¦¬ë‚˜ ë³´ìœ  ì˜ì›…ë“¤ì„ ì €ì¥í•˜ê¸° ìœ„í•´ì„œëŠ” Listë‚˜ ë”•ì…”ë„ˆë¦¬ ë“±ì˜ ì»¬ë ‰ì…˜ìœ¼ë¡œ ê´€ë¦¬í•´ì•¼ í•  ê²ƒ ê°™ì€ë° ì´ ë¶€ë¶„ì€ ì¡°ê¸ˆ ë” ì—°êµ¬í•´ë³´ê² ìŠµë‹ˆë‹¤.
+//[Serializable]
+//public class GameSaveData
+//{
+//    public StageSaveData stageSaveData;
+//}
 
 
 
-    public void SaveStage()
-    {
-        //ÀÌ ºÎºĞµµ ¸¶Âù°¡Áö·Î GameSaveData¿Í °°Àº ¸ğµç ¼¼ÀÌºê¸¦ °ü¸®ÇÒ Å¬·¡½º ¸íÀÇ·Î È£ÃâÇØ¾ß ÇÏ°í,
-        //SaveGameÀ¸·Î ¸íÄªÀÌ ¹Ù²î¾î¾ß ÇÑ´Ù => StageManager¿¡¼­ È£ÃâºÎ ¼öÁ¤ÇÒ °Í.
-        //GameSaveData ³»ºÎ´Â StageSaveData, PlayerSaveData ÀÌ·± Å¬·¡½º¸¸ ÇÊµå·Î °®°í,
-        //½ÇÁ¦·Î ¼¼ÀÌºê¸¦ ÇÒ ¶§´Â ±× ÇÊµå¿¡ °ªÀ» ³Ö´Â ½ÄÀ¸·Î.
+////í˜„ì¬ ìŠ¤í…Œì´ì§€, ì„¹ì…˜ / ë§ˆì§€ë§‰ìœ¼ë¡œ í´ë¦¬ì–´í•œ ìŠ¤í…Œì´ì§€, ì„¹ì…˜ì„ ì €ì¥í•  í´ë˜ìŠ¤ì…ë‹ˆë‹¤.
+////ì„¸ì´ë¸Œê°€ í•„ìš”í•œ ë¶€ë¶„ì´ ìˆë‹¤ë©´, í•„ìš”í•œ ê°’ë“¤ì„ ë³µì‚¬í•  í´ë˜ìŠ¤ë¥¼ ì•„ë˜ì™€ ìœ ì‚¬í•˜ê²Œ ë§Œë“¤ì–´ì£¼ì„¸ìš”.
+//[Serializable]
+//public class StageSaveData
+//{
+//    public int currentStageNumber;
+//    public int currentSectionNumber;
+//    public int lastStageNumber;
+//    public int lastSectionNumber;
+//}
 
-        //GameSaveData saveData = CreateSaveData();ÀÌ·± ½ÄÀ¸·Î ¹Ù²Ù±â¸¸ ÇÏ¸é µÉ µí?
-        StageSaveData saveData = StageManager.Instance.CreateStageSaveData();
+////ì„ì‹œìš© ì„¸ì´ë¸Œ ë§¤ë‹ˆì €ì…ë‹ˆë‹¤
+////ì‹±ê¸€í†¤ì´ ì ìš©ë˜ì–´ ìˆìœ¼ë©°, SaveStage() ë©”ì„œë“œëŠ” StageManager ë‚´ë¶€ì—ì„œ í˜¸ì¶œí•˜ê¸°ì— ìˆ˜ì •í•˜ê²Œ ë  ê²½ìš° ìœ ì˜ ë°”ëë‹ˆë‹¤.
 
-        string json = JsonUtility.ToJson(saveData, true);
+//public class TempSaveManager : MonoBehaviour
+//{
+//    public static TempSaveManager Instance;
 
-        File.WriteAllText(SavePath, json);
-        Debug.Log($"Save Complete. path : {SavePath}");
-    }
+//    [SerializeField] private string saveFileName = "save.json";
 
+//    private string SavePath => Path.Combine(Application.persistentDataPath, saveFileName);
 
-    //jsonÆÄÀÏÀ» ÀĞ¾î¿À±â ¶§¹®¿¡, ÀÌ ºÎºĞÀº LoadGameÀ¸·Î ¸íÄªÀÌ ¹Ù²î¾î¾ß ÇÑ´Ù. ¾îÂ÷ÇÇ ¼öÁ¤ÇÒ ºÎºĞ µÎ °÷¹Û¿¡ ¾øÀ½.
-    public void LoadStage()
-    {
-       if(!HasSave())
-        {
-            Debug.Log($"Save file does not exit. path : {SavePath}");
-            return;
-        }
+//    private void Awake()
+//    {
+//        if (Instance == null)
+//        {
+//            Instance = this;
+//        }
+//        else if (Instance != this)
+//        {
+//            Destroy(Instance.gameObject);
+//        }
+//        DontDestroyOnLoad(this.gameObject);
+//    }
 
-        string json = File.ReadAllText(SavePath);
+//    private void Start()
+//    {
+//        LoadStage();
+//    }
 
-        //ÀÌ°Íµµ ¸ğµç °ÍµéÀ» ÇÑ ¹ø¿¡ ºÒ·¯¿À·Á¸é, GameSaveDataÅ¬·¡½º ÇüÀ¸·Î ¹Ş¾Æ¾ß ÇÑ´Ù.
-        //GameSaveData saveData = JsonUtility.FromJson<GameSaveData(json);
-        StageSaveData saveData = JsonUtility.FromJson<StageSaveData>(json);
-
-        if(saveData == null)
-        {
-            Debug.LogWarning("Save data is null");
-            return;
-        }
-
-        //ÀÌ ºÎºĞÀ» ApplyLoadedData ÀÌ·± ¸Ş¼­µå ¸¸µé°í ±×°É È£ÃâÇØ¾ß ÇÑ´Ù.
-        StageManager.Instance.LoadStageSaveData(saveData);
-        Debug.Log($"Load complete. path : {SavePath}");
-    }
-
-    //ÀúÀåÆÄÀÏÀÌ À§Ä¡¿¡ ÇöÀç Á¸ÀçÇÏ´ÂÁö ¾Æ´ÑÁö¸¦ È®ÀÎÇÏ´Â ¸Ş¼­µå.
-    public bool HasSave()
-    {
-        return File.Exists(SavePath);
-    }
-
-    //ÀúÀåÆÄÀÏÀ» »èÁ¦ÇÏ´Â ¸Ş¼­µå.
-    //Å×½ºÆ®¸¦ À§ÇØ¼± ÀÚÁÖ »èÁ¦ÇØÁÖ¼¼¿ä.
-    [ContextMenu("Delete Save")]
-    public void DeleteSave()
-    {
-        if (!HasSave()) return;
-
-        File.Delete(SavePath);
-        Debug.Log($"Save deleted. path : {SavePath}");
-    }
-
-
-    //°ÔÀÓ ½ÇÇà Áß ¼¼ÀÌºê°¡ ÇÊ¿äÇÑ ¸ğµç °ÍµéÀ» ÇÑ ¹ø¿¡ ÀúÀåÇØ¹ö¸± ¸Ş¼­µå
-    //ÀúÀåÀÌ ÇÊ¿äÇÑ ºÎºĞÀÌ ÀÖ´Ù¸é, À§ÀÇ StageSaveDataÃ³·³ Å¬·¡½º ÇÏ³ª ¸¸µé°í
-    //GameSaveData Å¬·¡½º ³»ºÎ¿¡ ÇÊµå·Î °®°Ô ÇÏ°í
-    //ÀúÀåÀÌ È£ÃâµÇ¾î¾ß ÇÏ´Â ¸Å´ÏÀú ³»ºÎ¿¡ Create¹«¾ùSaveData(); ¸Ş¼­µå¸¦ ±¸ÇöÇØ¾ßÇÕ´Ï´Ù.
-    //¿©±â¿¡¼­ saveData ÇÊµå¿¡ ÀúÀå µ¥ÀÌÅÍ¸¦ ÇÒ´çÇÏ¸é µÉ °Í °°½À´Ï´Ù?
-    //¸¸ÀÏ Æ¯Á¤ »óÈ²¿¡¼­ ¾î¶² ¸Å´ÏÀú°¡ ÆÄ±«µÇ°Å³ª ÇÑ´Ù¸é, NullReferenceExceptionÀÌ ¶ã ¼öµµ ÀÖ½À´Ï´Ù.
-    private GameSaveData CreateSaveData()
-    {
-        GameSaveData saveData = new GameSaveData();
-
-        saveData.stageSaveData = StageManager.Instance.CreateStageSaveData();
+//    private void OnApplicationQuit()
+//    {
+//        SaveStage();
+//    }
 
 
 
-        return saveData;
-    }
+//    public void SaveStage()
+//    {
+//        //ì´ ë¶€ë¶„ë„ ë§ˆì°¬ê°€ì§€ë¡œ GameSaveDataì™€ ê°™ì€ ëª¨ë“  ì„¸ì´ë¸Œë¥¼ ê´€ë¦¬í•  í´ë˜ìŠ¤ ëª…ì˜ë¡œ í˜¸ì¶œí•´ì•¼ í•˜ê³ ,
+//        //SaveGameìœ¼ë¡œ ëª…ì¹­ì´ ë°”ë€Œì–´ì•¼ í•œë‹¤ => StageManagerì—ì„œ í˜¸ì¶œë¶€ ìˆ˜ì •í•  ê²ƒ.
+//        //GameSaveData ë‚´ë¶€ëŠ” StageSaveData, PlayerSaveData ì´ëŸ° í´ë˜ìŠ¤ë§Œ í•„ë“œë¡œ ê°–ê³ ,
+//        //ì‹¤ì œë¡œ ì„¸ì´ë¸Œë¥¼ í•  ë•ŒëŠ” ê·¸ í•„ë“œì— ê°’ì„ ë„£ëŠ” ì‹ìœ¼ë¡œ.
+
+//        //GameSaveData saveData = CreateSaveData();ì´ëŸ° ì‹ìœ¼ë¡œ ë°”ê¾¸ê¸°ë§Œ í•˜ë©´ ë  ë“¯?
+//        StageSaveData saveData = StageManager.Instance.CreateStageSaveData();
+
+//        string json = JsonUtility.ToJson(saveData, true);
+
+//        File.WriteAllText(SavePath, json);
+//        Debug.Log($"Save Complete. path : {SavePath}");
+//    }
 
 
-    //°ÔÀÓ¿¡¼­ ÇÊ¿äÇÑ ¸ğµç °ªµéÀ» ÇÑ ¹ø¿¡ ·ÎµåÇÒ ¸Ş¼­µå.
-    //GameSaveData³»ºÎ¿¡ Ãß°¡µÈ ÇÊµå¸¦ »ç¿ëÇÏ¿©, StageManagerÈ£ÃâÇÑ °ÍÃ³·³ ÇÏ½Ã¸é µÉ °Í °°½À´Ï´Ù.
-    //·Îµå°¡ ÇÊ¿äÇÑ ¸Å´ÏÀú ³»ºÎ¿¡ Load¹«¾ùSaveData ¸Ş¼­µå¸¦ ±¸ÇöÇØ¾ßÇÕ´Ï´Ù.
-    //´Ù¸¸, ÀúÀåÀÌ ÇÊ¿äÇÑ ¸Å´ÏÀúµéÀº ¸ğµÎ ½Ì±ÛÅæÀÌ¾î¾ß ¿ÏÀüÈ÷ ¶È°°Àº ¸ğ¾ç»õ·Î ÀÛ¼ºµÉ °ÍÀÔ´Ï´Ù.
-    private void ApplyLoadedData(GameSaveData saveData)
-    {
-        StageManager.Instance.LoadStageSaveData(saveData.stageSaveData);
-    }
+//    //jsoníŒŒì¼ì„ ì½ì–´ì˜¤ê¸° ë•Œë¬¸ì—, ì´ ë¶€ë¶„ì€ LoadGameìœ¼ë¡œ ëª…ì¹­ì´ ë°”ë€Œì–´ì•¼ í•œë‹¤. ì–´ì°¨í”¼ ìˆ˜ì •í•  ë¶€ë¶„ ë‘ ê³³ë°–ì— ì—†ìŒ.
+//    public void LoadStage()
+//    {
+//        if (!HasSave())
+//        {
+//            Debug.Log($"Save file does not exit. path : {SavePath}");
+//            return;
+//        }
+
+//        string json = File.ReadAllText(SavePath);
+
+//        //ì´ê²ƒë„ ëª¨ë“  ê²ƒë“¤ì„ í•œ ë²ˆì— ë¶ˆëŸ¬ì˜¤ë ¤ë©´, GameSaveDataí´ë˜ìŠ¤ í˜•ìœ¼ë¡œ ë°›ì•„ì•¼ í•œë‹¤.
+//        //GameSaveData saveData = JsonUtility.FromJson<GameSaveData(json);
+//        StageSaveData saveData = JsonUtility.FromJson<StageSaveData>(json);
+
+//        if (saveData == null)
+//        {
+//            Debug.LogWarning("Save data is null");
+//            return;
+//        }
+
+//        //ì´ ë¶€ë¶„ì„ ApplyLoadedData ì´ëŸ° ë©”ì„œë“œ ë§Œë“¤ê³  ê·¸ê±¸ í˜¸ì¶œí•´ì•¼ í•œë‹¤.
+//        StageManager.Instance.LoadStageSaveData(saveData);
+//        Debug.Log($"Load complete. path : {SavePath}");
+//    }
+
+//    //ì €ì¥íŒŒì¼ì´ ìœ„ì¹˜ì— í˜„ì¬ ì¡´ì¬í•˜ëŠ”ì§€ ì•„ë‹Œì§€ë¥¼ í™•ì¸í•˜ëŠ” ë©”ì„œë“œ.
+//    public bool HasSave()
+//    {
+//        return File.Exists(SavePath);
+//    }
+
+//    //ì €ì¥íŒŒì¼ì„ ì‚­ì œí•˜ëŠ” ë©”ì„œë“œ.
+//    //í…ŒìŠ¤íŠ¸ë¥¼ ìœ„í•´ì„  ìì£¼ ì‚­ì œí•´ì£¼ì„¸ìš”.
+//    [ContextMenu("Delete Save")]
+//    public void DeleteSave()
+//    {
+//        if (!HasSave()) return;
+
+//        File.Delete(SavePath);
+//        Debug.Log($"Save deleted. path : {SavePath}");
+//    }
 
 
-}
+//    //ê²Œì„ ì‹¤í–‰ ì¤‘ ì„¸ì´ë¸Œê°€ í•„ìš”í•œ ëª¨ë“  ê²ƒë“¤ì„ í•œ ë²ˆì— ì €ì¥í•´ë²„ë¦´ ë©”ì„œë“œ
+//    //ì €ì¥ì´ í•„ìš”í•œ ë¶€ë¶„ì´ ìˆë‹¤ë©´, ìœ„ì˜ StageSaveDataì²˜ëŸ¼ í´ë˜ìŠ¤ í•˜ë‚˜ ë§Œë“¤ê³ 
+//    //GameSaveData í´ë˜ìŠ¤ ë‚´ë¶€ì— í•„ë“œë¡œ ê°–ê²Œ í•˜ê³ 
+//    //ì €ì¥ì´ í˜¸ì¶œë˜ì–´ì•¼ í•˜ëŠ” ë§¤ë‹ˆì € ë‚´ë¶€ì— Createë¬´ì—‡SaveData(); ë©”ì„œë“œë¥¼ êµ¬í˜„í•´ì•¼í•©ë‹ˆë‹¤.
+//    //ì—¬ê¸°ì—ì„œ saveData í•„ë“œì— ì €ì¥ ë°ì´í„°ë¥¼ í• ë‹¹í•˜ë©´ ë  ê²ƒ ê°™ìŠµë‹ˆë‹¤?
+//    //ë§Œì¼ íŠ¹ì • ìƒí™©ì—ì„œ ì–´ë–¤ ë§¤ë‹ˆì €ê°€ íŒŒê´´ë˜ê±°ë‚˜ í•œë‹¤ë©´, NullReferenceExceptionì´ ëœ° ìˆ˜ë„ ìˆìŠµë‹ˆë‹¤.
+//    private GameSaveData CreateSaveData()
+//    {
+//        GameSaveData saveData = new GameSaveData();
+
+//        saveData.stageSaveData = StageManager.Instance.CreateStageSaveData();
+
+
+
+//        return saveData;
+//    }
+
+
+//    //ê²Œì„ì—ì„œ í•„ìš”í•œ ëª¨ë“  ê°’ë“¤ì„ í•œ ë²ˆì— ë¡œë“œí•  ë©”ì„œë“œ.
+//    //GameSaveDataë‚´ë¶€ì— ì¶”ê°€ëœ í•„ë“œë¥¼ ì‚¬ìš©í•˜ì—¬, StageManagerí˜¸ì¶œí•œ ê²ƒì²˜ëŸ¼ í•˜ì‹œë©´ ë  ê²ƒ ê°™ìŠµë‹ˆë‹¤.
+//    //ë¡œë“œê°€ í•„ìš”í•œ ë§¤ë‹ˆì € ë‚´ë¶€ì— Loadë¬´ì—‡SaveData ë©”ì„œë“œë¥¼ êµ¬í˜„í•´ì•¼í•©ë‹ˆë‹¤.
+//    //ë‹¤ë§Œ, ì €ì¥ì´ í•„ìš”í•œ ë§¤ë‹ˆì €ë“¤ì€ ëª¨ë‘ ì‹±ê¸€í†¤ì´ì–´ì•¼ ì™„ì „íˆ ë˜‘ê°™ì€ ëª¨ì–‘ìƒˆë¡œ ì‘ì„±ë  ê²ƒì…ë‹ˆë‹¤.
+//    private void ApplyLoadedData(GameSaveData saveData)
+//    {
+//        StageManager.Instance.LoadStageSaveData(saveData.stageSaveData);
+//    }
+
+
+//}

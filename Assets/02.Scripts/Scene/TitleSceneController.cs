@@ -19,6 +19,11 @@ namespace AFKHero.UI
 
         private void Start()
         {
+            if (GameSaveManager.Instance != null)
+            {
+                GameSaveManager.Instance.LoadSaveData();
+            }
+
             PlayTitle(); //타이틀 연출 시작
         }
 
