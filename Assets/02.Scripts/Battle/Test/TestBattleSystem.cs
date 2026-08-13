@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace AFKHero.Battle
 {
-    public sealed class BattleSystemTester : MonoBehaviour
+    public sealed class TestBattleSystem : MonoBehaviour
     {
         [Header("전투 관리자")]
 
