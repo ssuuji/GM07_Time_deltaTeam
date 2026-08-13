@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 // 모든 영웅의 획득 상태와 성장을 총괄함.
 public class HeroManager : MonoBehaviour
@@ -8,6 +9,8 @@ public class HeroManager : MonoBehaviour
 
     [Header("영웅 원본 데이터")]
     [SerializeField] private List<HeroData> allHeroDataList = new List<HeroData>();
+
+    public IReadOnlyList<HeroData> AllHeroDataList => allHeroDataList;
 
     // 영웅 ID를 키로 사용하여 현재 상태를 빠르게 검색
     private Dictionary<int, HeroInstance> heroDictionary = new Dictionary<int, HeroInstance>();
