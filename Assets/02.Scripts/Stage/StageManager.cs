@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class StageManager : MonoBehaviour
 {
-    public static StageManager Instance;
+    public static StageManager Instance { get; private set; }
 
     [Header("스테이지 데이터")]
     [SerializeField] private StageData stageData;
@@ -239,6 +239,19 @@ public class StageManager : MonoBehaviour
 
         victoryPanel.gameObject.SetActive(false); //버튼이 눌렸을 때 패널이 닫히게 된다.
         StartStage();
+    }
+
+    //전투 승리 시, 다음 스테이지로 진행하지 않고 전투를 종료할 메서드
+    //사실상 위의 코드에서 StartStage만 실행하지 않는 건데, 이거 어떻게 처리하지?
+    public void EndStageProgress()
+    {
+        if(autoClosePanelCoroutine != null)
+        {
+            StopCoroutine(autoClosePanelCoroutine);
+            autoClosePanelCoroutine = null;
+        }
+
+        victoryPanel.gameObject.SetActive(false);
     }
 
 
