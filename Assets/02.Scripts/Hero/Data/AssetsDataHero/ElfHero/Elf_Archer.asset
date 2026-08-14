@@ -20,5 +20,11 @@ MonoBehaviour:
   ultimateSkillName: "\uC9D1\uC911 \uC800\uACA9"
   ultimateEffectPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}
+  moveSpeed: 2
+  maxUltimateEnergy: 100
+  basicAttackEnergyGain: 10
+  damageTakenEnergyGain: 5
   heroImage: {fileID: 0}
   heroPrefab: {fileID: 2816577043033081344, guid: a4e99481b0f4e4762b729b8568de6c5a, type: 3}
+  battleUnitPrefab: {fileID: 5405934589750331299, guid: 5c6b261913f32014e80afaf9bb3a837e, type: 3}
+  canUseUltimate: 0
