@@ -26,6 +26,12 @@ public class HeroData : ScriptableObject
     [SerializeField] private Sprite heroImage;     // 초상화 프레임 Sprite
     [SerializeField] private GameObject heroPrefab;  // 전투 인게임 생성 프리팹
 
+    [Header("스킬(궁극기) 설정")]
+    [Tooltip("체크하면 전투 중 에너지가 찼을 때 궁극기를 사용합니다.")]
+    [SerializeField] private bool canUseUltimate = false;
+
+    public bool CanUseUltimate => canUseUltimate;
+
     // 읽기 전용 캡슐화 프로퍼티
     public int HeroID => heroID;
     public string HeroName => heroName;
