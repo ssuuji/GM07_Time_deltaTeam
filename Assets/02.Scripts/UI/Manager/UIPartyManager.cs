@@ -69,13 +69,21 @@ namespace AFKHero.UI
         //파티 슬롯 선택
         public void OnClickedPartySlot(int slotIndex)
         {
-            if (selectedHero == null) return;
+            if (selectedHero != null)
+            {
+                PartyManager.Instance.PlaceHero(slotIndex, selectedHero); //선택한 자리에 영웅 배치
+                selectedHero = null;                                      //배치 완료 후 선택 해제
 
-            PartyManager.Instance.PlaceHero(slotIndex, selectedHero); //선택한 자리에 영웅 배치
-            selectedHero = null;                                      //배치 완료 후 선택 해제
+                UINoticePopup.Instance.Hide();                            //알림창 닫기
+                SetSlotAlpha(false);                                      //자리 이미지 원래 상태로
+            }
+            else
+            {
+                HeroInstance hero = PartyManager.Instance.partySlots[slotIndex]; //임시로 배치되어있는 파티영웅 클릭하면 바로 해제
+                PartyManager.Instance.RemoveHero(hero);
+            }
 
-            UINoticePopup.Instance.Hide();                            //알림창 닫기
-            SetSlotAlpha(false);                                      //자리 이미지 원래 상태로
+
             UpdatePartySet();                                         //파티 UI 갱신
             synergyUI.UpdateUI();                                     //시너지 UI갱신
         }
