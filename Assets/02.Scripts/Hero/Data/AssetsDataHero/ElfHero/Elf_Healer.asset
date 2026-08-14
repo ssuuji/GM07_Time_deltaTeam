@@ -21,4 +21,4 @@ MonoBehaviour:
   ultimateEffectPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}
   heroImage: {fileID: 0}
-  heroPrefab: {fileID: 3724078027469465319, guid: 627da812dbe633a4cbb829e29485f14f, type: 3}
+  heroPrefab: {fileID: 0}
