@@ -7917,7 +7917,6 @@ GameObject:
   - component: {fileID: 526846887}
   - component: {fileID: 526846890}
   - component: {fileID: 526846889}
-  - component: {fileID: 526846888}
   m_Layer: 0
   m_Name: Stage
   m_TagString: Untagged
@@ -7940,18 +7939,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1338232157}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &526846888
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 526846886}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b19cb781a13f9fc4bb6b830708bf6a4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TempSaveManager
 --- !u!114 &526846889
 MonoBehaviour:
   m_ObjectHideFlags: 0

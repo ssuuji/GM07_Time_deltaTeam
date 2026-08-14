@@ -1,3 +1,4 @@
+ï»¿using System;
 using UnityEngine;
 
 namespace AFKHero.Battle
@@ -12,6 +13,8 @@ namespace AFKHero.Battle
         private UnitMovement unitMovement;
 
         private float nextAttackTime;
+
+        public event Action<BattleUnit> BasicAttackStarted;
 
         public void Initialize(
             BattleUnit unitOwner,
@@ -44,7 +47,7 @@ namespace AFKHero.Battle
 
         private bool CanAttack()
         {
-            // ÄÄÆ÷³ÍÆ® °Ë»ç
+            // ì»´í¬ë„ŒíŠ¸ ê²€ì‚¬
             if (owner == null ||
                 owner.Stats == null ||
                 battleManager == null ||
@@ -54,13 +57,13 @@ namespace AFKHero.Battle
                 return false;
             }
 
-            // ÀüÅõ »óÅÂ °Ë»ç
+            // ì „íˆ¬ ìƒíƒœ ê²€ì‚¬
             if (battleManager.CurrentState != BattleState.Fighting)
             {
                 return false;
             }
 
-            // »ıÁ¸ »óÅÂ È®ÀÎ
+            // ìƒì¡´ ìƒíƒœ í™•ì¸
             if (!owner.Stats.IsAlive || !targetFinder.HasValidTarget)
             {
                 return false;
@@ -90,6 +93,8 @@ namespace AFKHero.Battle
             float attackInterval = Mathf.Max(MinimumAttackInterval, owner.Stats.AttackInterval);
 
             nextAttackTime = Time.time + attackInterval;
+
+            BasicAttackStarted?.Invoke(target);
 
             int finalDamage = DamageCalculator.CalculateBasicAttackDamage(
                 owner.Stats,
