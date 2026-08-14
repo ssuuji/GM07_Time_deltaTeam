@@ -25,5 +25,5 @@ MonoBehaviour:
   basicAttackEnergyGain: 10
   damageTakenEnergyGain: 5
   heroImage: {fileID: 0}
-  heroPrefab: {fileID: 8563698722828192534, guid: c868b1a52d45a37409aa8e3351eeef47, type: 3}
+  heroPrefab: {fileID: 0}
   canUseUltimate: 0
