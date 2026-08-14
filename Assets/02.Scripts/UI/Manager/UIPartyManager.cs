@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace AFKHero.UI
@@ -13,17 +14,20 @@ namespace AFKHero.UI
 
         [Header("파티 배치 슬롯")]
         [SerializeField] private Image[] partyPlaceImages; //배치자리 이미지
-        [SerializeField] private Image[] partyHeroImages;  //배치된 영웅 이미지
+        [SerializeField] private Transform[] partyHeroPrefabs;    //영웅 프리펩 배치할 위치
 
         [Header("시너지")]
         [SerializeField] private UISynergy synergyUI;      //시너지 UI
 
         private HeroInstance selectedHero;                 //배치할 영웅
+        private GameObject[] heroPrefabs;                  //영웅 프리펩
 
 
         private void Awake()
         {
             Instance = this;
+
+            heroPrefabs = new GameObject[partyHeroPrefabs.Length];
         }
 
         private void Start()
@@ -91,19 +95,42 @@ namespace AFKHero.UI
         //파티 배치 UI 갱신
         public void UpdatePartySet()
         {
-            for (int i = 0; i < partyHeroImages.Length; i++)
+            for (int i = 0; i < partyHeroPrefabs.Length; i++)
             {
                 HeroInstance hero = PartyManager.Instance.partySlots[i];
 
-                if (hero == null || hero.data == null)
-                {
-                    partyHeroImages[i].gameObject.SetActive(false);       //빈자리 숨기기
-                    continue;
-                }
-
-                partyHeroImages[i].gameObject.SetActive(true);
-                partyHeroImages[i].sprite = hero.data.HeroIcon;           //배치된 영웅 표시
+                SetHeroPrefab(i, hero);
             }
+        }
+
+        //영웅 프리펩 표시
+        private void SetHeroPrefab(int slotIndex, HeroInstance hero)
+        {
+            
+            if (heroPrefabs[slotIndex] != null) //기존 프리펩 제거
+            {
+                Destroy(heroPrefabs[slotIndex]);
+                heroPrefabs[slotIndex] = null;
+            }
+            if (hero == null || hero.data == null || hero.data.HeroPrefab == null) return; //빈자리
+
+            GameObject heroPrefab = Instantiate(hero.data.HeroPrefab, partyHeroPrefabs[slotIndex]); //프리팹 생성
+            heroPrefabs[slotIndex] = heroPrefab;
+
+            //위치 및 크기
+            heroPrefab.transform.localPosition = Vector3.zero;
+            heroPrefab.transform.localRotation = Quaternion.identity;
+            heroPrefab.transform.localScale = Vector3.one * 150f;
+
+            //UI 위에 표시
+            SortingGroup sortingGroup = heroPrefab.GetComponentInChildren<SortingGroup>();
+
+            if (sortingGroup != null)
+            {
+                sortingGroup.sortingLayerName = "UI";
+                sortingGroup.sortingOrder = 10;
+            }
+
         }
 
         #endregion
