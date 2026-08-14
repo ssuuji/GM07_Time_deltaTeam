@@ -377,6 +377,7 @@ MonoBehaviour:
   summonPointCenter: {fileID: 2030808347}
   summonRise: {fileID: 912307304}
   summonFlash: {fileID: 656493992}
+  backButton: {fileID: 0}
 --- !u!1 &15928188
 GameObject:
   m_ObjectHideFlags: 0
@@ -7951,7 +7952,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b19cb781a13f9fc4bb6b830708bf6a4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TempSaveManager
-  saveFileName: save.json
 --- !u!114 &526846889
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13316,10 +13316,6 @@ MonoBehaviour:
     normalRate: 70
     rareRate: 27
     epicRate: 3
-  heroList:
-  - {fileID: 11400000, guid: 52cedf96ddb33d749bbeb1c1764db086, type: 2}
-  - {fileID: 11400000, guid: 283b00437eb4ef34497d345fe6f66339, type: 2}
-  - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
 --- !u!114 &930996494
 MonoBehaviour:
   m_ObjectHideFlags: 0
