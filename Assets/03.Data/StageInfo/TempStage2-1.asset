@@ -16,5 +16,9 @@ MonoBehaviour:
   sectionNumber: 1
   isBossStage: 0
   timeLimit: 120
-  enemies: []
+  enemies:
+  - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
+  - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
+  - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
+  - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
   clearGold: 400

@@ -1,25 +1,32 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewHeroData", menuName = "Game/Hero/Hero Data")]
 public class HeroData : ScriptableObject
 {
-    [Header("±âº» Á¤º¸")]
-    [SerializeField] private int heroID;           // ¿µ¿õ °íÀ¯ ½Äº° ¹øÈ£
-    [SerializeField] private string heroName;       // ¿µ¿õ ÀÌ¸§
-    [SerializeField] private HeroGrade heroGrade;   // ¿µ¿õ µî±Ş
-    [SerializeField] private RaceType raceType;     // Á¾Á· (ÀÎ°£, ¿¤ÇÁ, ¿ÀÅ©, ¾ğµ¥µå)
-    [SerializeField] private JobType jobType;      // Á÷¾÷ (Àü»ç, ÅÊÄ¿, ¸¶¹ı»ç, ±Ã¼ö, Èú·¯)
+    [Header("ê¸°ë³¸ ì •ë³´")]
+    [SerializeField] private int heroID;           // ì˜ì›… ê³ ìœ  ì‹ë³„ ë²ˆí˜¸
+    [SerializeField] private string heroName;       // ì˜ì›… ì´ë¦„
+    [SerializeField] private HeroGrade heroGrade;   // ì˜ì›… ë“±ê¸‰
+    [SerializeField] private RaceType raceType;     // ì¢…ì¡± (ì¸ê°„, ì—˜í”„, ì˜¤í¬, ì–¸ë°ë“œ)
+    [SerializeField] private JobType jobType;      // ì§ì—… (ì „ì‚¬, íƒ±ì»¤, ë§ˆë²•ì‚¬, ê¶ìˆ˜, íëŸ¬)
 
-    [Header("±Ã±Ø±â ¹× ¿¬Ãâ ÆÄÆ¼Å¬")]
-    [SerializeField] private string ultimateSkillName;    // ±Ã±Ø±â ½ºÅ³ ¸íÄª
-    [SerializeField] private GameObject ultimateEffectPrefab; // ±Ã±Ø±â ½ÃÀü ½Ã ¹ßµ¿ÇÒ ÀÌÆåÆ® ÇÁ¸®ÆÕ
-    [SerializeField] private GameObject projectilePrefab;    // ±âº»°ø°İ/Åõ»çÃ¼ ÇÁ¸®ÆÕ (±Ã¼ö, ¸¶¹ı»ç µî)
+    [Header("ê¶ê·¹ê¸° ë° ì—°ì¶œ íŒŒí‹°í´")]
+    [SerializeField] private string ultimateSkillName;    // ê¶ê·¹ê¸° ìŠ¤í‚¬ ëª…ì¹­
+    [SerializeField] private GameObject ultimateEffectPrefab; // ê¶ê·¹ê¸° ì‹œì „ ì‹œ ë°œë™í•  ì´í™íŠ¸ í”„ë¦¬íŒ¹
+    [SerializeField] private GameObject projectilePrefab;    // ê¸°ë³¸ê³µê²©/íˆ¬ì‚¬ì²´ í”„ë¦¬íŒ¹ (ê¶ìˆ˜, ë§ˆë²•ì‚¬ ë“±)
 
-    [Header("UI ¹× ¸®¼Ò½º")]
-    [SerializeField] private Sprite heroImage;     // ÃÊ»óÈ­ ÇÁ·¹ÀÓ Sprite
-    [SerializeField] private GameObject heroPrefab;  // ÀüÅõ ÀÎ°ÔÀÓ »ı¼º ÇÁ¸®ÆÕ
+    // ì „íˆ¬ ì„¤ì •ìš©
+    [Header("ì „íˆ¬ ì„¤ì •)")]
+    [SerializeField, Min(0f)] private float moveSpeed = 2f;
+    [SerializeField, Min(1)] int maxUltimateEnergy = 100;
+    [SerializeField, Min(0)] int basicAttackEnergyGain = 10;
+    [SerializeField, Min(0)] int damageTakenEnergyGain = 5;
 
-    // ÀĞ±â Àü¿ë Ä¸½¶È­ ÇÁ·ÎÆÛÆ¼
+    [Header("UI ë° ë¦¬ì†ŒìŠ¤")]
+    [SerializeField] private Sprite heroImage;     // ì´ˆìƒí™” í”„ë ˆì„ Sprite
+    [SerializeField] private GameObject heroPrefab;  // ì „íˆ¬ ì¸ê²Œì„ ìƒì„± í”„ë¦¬íŒ¹
+
+    // ì½ê¸° ì „ìš© ìº¡ìŠí™” í”„ë¡œí¼í‹°
     public int HeroID => heroID;
     public string HeroName => heroName;
     public HeroGrade HeroGrade => heroGrade;
@@ -33,6 +40,12 @@ public class HeroData : ScriptableObject
     public GameObject UltimateEffectPrefab => ultimateEffectPrefab;
     public GameObject ProjectilePrefab => projectilePrefab;
 
+    // ì „íˆ¬ìš© í”„ë¡œí¼í‹°
+    public float MoveSpeed => moveSpeed;
+    public int MaxUltimateEnergy => maxUltimateEnergy;
+    public int BasicAttackEnergyGain => basicAttackEnergyGain;
+    public int DamageTakenEnergyGain => damageTakenEnergyGain;
+
     public TargetPriority TargetRule => GetJobStats().targetType;
 
     public string JobDescription => GetJobStats().jobDescription;
@@ -41,8 +54,8 @@ public class HeroData : ScriptableObject
     {
         if (!RaceJobData.IsValidRaceJob(raceType, jobType))
         {
-            Debug.LogWarning($"[À¯È¿¼º ¿À·ù] '{heroName}': " +
-                $"{raceType} Á¾Á·¿¡ {jobType} Á÷¾÷Àº ¿Ã¹Ù¸¥ Á¶ÇÕÀÌ ¾Æ´Õ´Ï´Ù.");
+            Debug.LogWarning($"[ìœ íš¨ì„± ì˜¤ë¥˜] '{heroName}': " +
+                $"{raceType} ì¢…ì¡±ì— {jobType} ì§ì—…ì€ ì˜¬ë°”ë¥¸ ì¡°í•©ì´ ì•„ë‹™ë‹ˆë‹¤.");
         }
 
         if (string.IsNullOrEmpty(ultimateSkillName))
@@ -53,7 +66,7 @@ public class HeroData : ScriptableObject
 
     public JobStats GetJobStats()
     {
-    // º¯°æ: ÅÂ»ı µî±Şµµ °°ÀÌ ³Ñ°Ü¼­ ±×¿¡ ¸Â´Â ½ºÅÈÀ» ¹Ş¾Æ¿À°Ô ÇÔ
+    // ë³€ê²½: íƒœìƒ ë“±ê¸‰ë„ ê°™ì´ ë„˜ê²¨ì„œ ê·¸ì— ë§ëŠ” ìŠ¤íƒ¯ì„ ë°›ì•„ì˜¤ê²Œ í•¨
         return RaceJobData.GetStatsByJob(jobType, heroGrade);
     }
 }

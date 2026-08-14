@@ -1,12 +1,12 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 namespace AFKHero.Battle
 {
     public sealed class BattleUnit : MonoBehaviour
     {
-        [Header("À¯´Ö Å½»ö")]
+        [Header("ìœ ë‹› íƒìƒ‰")]
         [SerializeField] private UnitTargetFinder targetFinder;
-        [Header("À¯´Ö ÀÌµ¿ ¹× °ø°İ")]
+        [Header("ìœ ë‹› ì´ë™ ë° ê³µê²©")]
         [SerializeField] private UnitMovement unitMovemnet;
         [SerializeField] private UnitAttackController attackController;
         [SerializeField] private UnitHealth unitHealth;
@@ -18,21 +18,23 @@ namespace AFKHero.Battle
         [Header("2D Depth")]
         [SerializeField] private SpriteRenderer[] spriteRenderers;
 
-        // ¹è°æ°ú °ãÄ¡Áö ¾Ê°Ô
+        // ë°°ê²½ê³¼ ê²¹ì¹˜ì§€ ì•Šê²Œ
         [SerializeField] private int sortingBaseOrder = 1000;
 
-        // Sorting Order ¹Ì¼¼ Á¶Á¤
+        // Sorting Order ë¯¸ì„¸ ì¡°ì •
         [SerializeField] private int sortingPrecision = 100;
 
-        // ¿øº» µ¥ÀÌÅÍ
-        public UnitData Data { get; private set; }
-        // ´É·ÂÄ¡
+        // ì›ë³¸ ë°ì´í„°
+        public HeroData Data { get; private set; }
+        // íˆì–´ë¡œ ì¸ìŠ¤í„´ìŠ¤
+        public HeroInstance HeroInstance { get; private set; }
+        // ëŠ¥ë ¥ì¹˜
         public UnitStats Stats { get; private set; }
-        // ¼Ò¼Ó Áø¿µ
+        // ì†Œì† ì§„ì˜
         public TeamType Team { get; private set; }
-        // ½½·Ô ¹øÈ£
+        // ìŠ¬ë¡¯ ë²ˆí˜¸
         public int FormationSlotIndex { get; private set; }
-        // ÃÊ±âÈ­ µÆ´ÂÁö
+        // ì´ˆê¸°í™” ëëŠ”ì§€
         public bool IsInitialized { get; private set; }
 
 
@@ -45,26 +47,30 @@ namespace AFKHero.Battle
         public UnitStatusEffectController StatusEffects => statusEffectController;
 
         public void Initialize(
-            UnitData data,
+            HeroInstance heroInstance,
             TeamType team,
             int formationSlotIndex,
-            BattleManager battleManager)
+            BattleManager battleManager,
+            float bonusHpRate,
+            float bonusAttackRate)
         {
-            if(data == null)
+            if(heroInstance == null || heroInstance.data == null)
             {
-                Debug.LogError("UnitData°¡ ºñ¾îÀÖ½À´Ï´Ù.", this);
+                Debug.LogError("heroInstance ë˜ëŠ” HeroDataê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.", this);
                 return;
             }
             if(battleManager == null)
             {
-                Debug.LogError("BattleManager°¡ ºñ¾îÀÖ½À´Ï´Ù.", this);
+                Debug.LogError("BattleManagerê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.", this);
                 return;
             }
 
-            Data = data;
-            Stats = new UnitStats(data);
+            HeroInstance = heroInstance;
+            Data = heroInstance.data;
             Team = team;
             FormationSlotIndex = formationSlotIndex;
+
+            Stats = new UnitStats(heroInstance, bonusHpRate, bonusAttackRate);
 
             FindMissingComponents();
 
@@ -86,9 +92,9 @@ namespace AFKHero.Battle
 
             ultimateController.Initialize(this);
 
-            gameObject.name = $"{team}_{data.DisplayName}_{formationSlotIndex}";
+            gameObject.name = $"{team}_{Data.HeroName}_{formationSlotIndex}";
             
-            // »ı¼º Á÷ÈÄ ¿Ã¹Ù¸¥ SortingOrder·Î Ç¥½ÃµÇµµ·Ï °è»ê
+            // ìƒì„± ì§í›„ ì˜¬ë°”ë¥¸ SortingOrderë¡œ í‘œì‹œë˜ë„ë¡ ê³„ì‚°
             RefreshSortingOrder();
         }
 
@@ -149,49 +155,49 @@ namespace AFKHero.Battle
 
             if (targetFinder == null)
             {
-                Debug.LogError($"{name}¿¡ UnitTargetFinder°¡ ºñ¾îÀÖ½À´Ï´Ù.", this);
+                Debug.LogError($"{name}ì— UnitTargetFinderê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.", this);
 
                 isValid = false;
             }
 
             if (unitMovemnet == null)
             {
-                Debug.LogError($"{name}¿¡ UnitMovement°¡ ºñ¾îÀÖ½À´Ï´Ù.", this);
+                Debug.LogError($"{name}ì— UnitMovementê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.", this);
 
                 isValid = false;
             }
 
             if(attackController == null)
             {
-                Debug.LogError($"{name}¿¡ AttackController°¡ ºñ¾îÀÖ½À´Ï´Ù.", this);
+                Debug.LogError($"{name}ì— AttackControllerê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.", this);
                 
                 isValid = false;
             }
             
             if(unitHealth == null)
             {
-                Debug.LogError($"{name}¿¡ UnitHealth°¡ ºñ¾îÀÖ½À´Ï´Ù.", this);
+                Debug.LogError($"{name}ì— UnitHealthê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.", this);
 
                 isValid = false;
             }
 
             if(unitEnergy == null)
             {
-                Debug.LogError($"{name}¿¡ UnitEnergy°¡ ºñ¾îÀÖ½À´Ï´Ù.", this);
+                Debug.LogError($"{name}ì— UnitEnergyê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.", this);
 
                 isValid = false;
             }
 
             if(ultimateController == null)
             {
-                Debug.LogError($"{name}¿¡ UnitUltimateController°¡ ºñ¾îÀÖ½À´Ï´Ù.", this);
+                Debug.LogError($"{name}ì— UnitUltimateControllerê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.", this);
 
                 isValid = false;
             }
             
             if(statusEffectController == null)
             {
-                Debug.LogError($"{name}¿¡ UnitStatusEffectController ºñ¾îÀÖ½À´Ï´Ù.", this);
+                Debug.LogError($"{name}ì— UnitStatusEffectController ë¹„ì–´ìˆìŠµë‹ˆë‹¤.", this);
 
                 isValid = false;
             }
@@ -199,7 +205,7 @@ namespace AFKHero.Battle
             return isValid;
         }
 
-        // Y ÁÂÇ¥°¡ ³·À¸¸é ½ºÇÁ¶óÀÌÆ® sorting order°¡ ¾Æ·¡·Î ³»·Á°¡µµ·Ï ¼³Á¤
+        // Y ì¢Œí‘œê°€ ë‚®ìœ¼ë©´ ìŠ¤í”„ë¼ì´íŠ¸ sorting orderê°€ ì•„ë˜ë¡œ ë‚´ë ¤ê°€ë„ë¡ ì„¤ì •
         private void RefreshSortingOrder()
         {
             if(spriteRenderers == null)
@@ -219,7 +225,7 @@ namespace AFKHero.Battle
         }
 
 #if UNITY_EDITOR
-        // ÄÄÆ÷³ÍÆ®¸¦ Ã³À½ Ãß°¡ÇÒ ¶§ ÀÚµ¿ ¿¬°á
+        // ì»´í¬ë„ŒíŠ¸ë¥¼ ì²˜ìŒ ì¶”ê°€í•  ë•Œ ìë™ ì—°ê²°
         private void Reset()
         {
             targetFinder = GetComponent<UnitTargetFinder>();

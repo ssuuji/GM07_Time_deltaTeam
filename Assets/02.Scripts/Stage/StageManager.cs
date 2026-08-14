@@ -101,7 +101,34 @@ public class StageManager : MonoBehaviour
 
         // [수정한 부분: 적 목록(Enemies)과 방금 계산한 레벨(enemyLevel)을 같이 넘겨줍니다]
         //StageInfo의 리스트가 StageEnemyInfo가 아니라 UnitData로 변경되어 주석처리함. BattleSpawner 기반으로 변경하기
-        //enemySpawner.SpawnEnemies(currentStageInfo.Enemies, enemyLevel);       
+        //enemySpawner.SpawnEnemies(currentStageInfo.Enemies, enemyLevel);
+        
+        // 0814 수정 부분 - 파티와 스테이지 데이터를 BattleSpawner에 연결
+        if(PartyManager.Instance == null)
+        {
+            Debug.LogError("[StageManager] PartyManager를 찾을 수 없습니다.", this);
+
+            return; 
+        }
+
+
+        if(battleManager == null)
+        {
+            Debug.LogError("[StageManger] BattleSpawner가 연결되지 않았습니다.", this);
+
+            return;
+        }
+
+        bool battleStarted = battleSpawner.SpawnBattle(
+            PartyManager.Instance.partySlots,
+            currentStageInfo.Enemies,
+            enemyLevel,
+            currentStageInfo.TimeLimit);
+
+        if (!battleStarted)
+        {
+            Debug.LogError("[StageManager] 현재 스테이지 전투 생성에 실패했습니다.", this);
+        }
     }
 
     //전투상태가 변경되었을 때 이벤트로 호출되며, 승리 / 패배에 따라 다른 코드들을 실행하게 할 메서드
@@ -193,6 +220,10 @@ public class StageManager : MonoBehaviour
     public void CloseDefeatPanel()
     {
         defeatPanel.gameObject.SetActive(false);
+
+        // 0814 수정
+        // 다시 유닛 재 생성 후 전투
+        StartStage() ;
     }
 
     //"다음 스테이지" 버튼에 연결하여 사용하게 될 메서드
