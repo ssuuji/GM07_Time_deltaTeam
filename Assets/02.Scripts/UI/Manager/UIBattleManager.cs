@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using AFKHero.Battle;
+using TMPro;
 using UnityEngine;
 
 namespace AFKHero.UI
@@ -67,6 +68,12 @@ namespace AFKHero.UI
 
                 heroSlots[i].SetHero(hero);                              //배치된 영웅 표시
             }
+        }
+
+        //전투 유닛연결
+        public void SetBattleUnit(int slotIndex, BattleUnit unit)
+        {
+            heroSlots[slotIndex].SetBattleUnit(unit);
         }
     }
 

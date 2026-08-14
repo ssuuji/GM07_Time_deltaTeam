@@ -1,20 +1,21 @@
+ï»¿using System;
 using UnityEngine;
 
 namespace AFKHero.Battle
 {
     public sealed class UnitHealth : MonoBehaviour
     {
-        [Header("Á×ÀÚ¸¶ÀÚ »ç¶óÁü")]
+        [Header("ì£½ìë§ˆì ì‚¬ë¼ì§")]
         [SerializeField] private bool deactivateOnDeath = true;
 
-        [Header("Test ·Î±× Ç¥½Ã")]
+        [Header("Test ë¡œê·¸ í‘œì‹œ")]
         [SerializeField] private bool logDamage = true;
 
         private BattleUnit owner;
         private BattleManager battleManager;
         private bool isDead;
 
-        // À¯´Ö¿¡ ÇöÀç Ã¼·ÂÀÌ µé¾î°¡ ÀÖÁö¾ÊÀ¸¸é ÇöÀç Ã¼·Â 0 ´ëÀÔ
+        // ìœ ë‹›ì— í˜„ì¬ ì²´ë ¥ì´ ë“¤ì–´ê°€ ìˆì§€ì•Šìœ¼ë©´ í˜„ì¬ ì²´ë ¥ 0 ëŒ€ì…
         public int CurrentHealth => owner != null && owner.Stats != null
             ? owner.Stats.CurrentHealth : 0;
 
@@ -22,6 +23,9 @@ namespace AFKHero.Battle
             ? owner.Stats.MaxHealth : 0;
 
         public bool IsDead => isDead;
+
+        //ìœ ë‹›, í˜„ì¬ ì²´ë ¥, ìµœëŒ€ ì²´ë ¥, ì „ë‹¬
+        public event Action<BattleUnit, int, int> HealthChanged;
 
         public void Initialize(BattleUnit unitOwner, BattleManager manager)
         {
@@ -45,7 +49,7 @@ namespace AFKHero.Battle
                 return 0;
             }
 
-            // ±Ã±Ø±â Áß ÇÇÇØ Ã³¸® Á¤Áö
+            // ê¶ê·¹ê¸° ì¤‘ í”¼í•´ ì²˜ë¦¬ ì •ì§€
             if(battleManager != null && battleManager.IsDamageApplicationPaused)
             {
                 return 0;
@@ -89,11 +93,13 @@ namespace AFKHero.Battle
                 return 0;
             }
 
+            HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth); //ì²´ë ¥ ë³€ê²½ ì•Œë¦¼
+
             if (logDamage)
             {
                 string attackName = attacker != null ? attacker.name : "Unknown";
 
-                Debug.Log($"[ÇÇÇØ] {attackName} -> {owner.name} / [µ¥¹ÌÁö] {appliedDamage} / " +
+                Debug.Log($"[í”¼í•´] {attackName} -> {owner.name} / [ë°ë¯¸ì§€] {appliedDamage} / " +
                     $"[HP] ({owner.Stats.CurrentHealth})/({owner.Stats.MaxHealth})");
             }
 
@@ -108,7 +114,7 @@ namespace AFKHero.Battle
             return appliedDamage;
         }
 
-        // À¯´Ö Á×À½
+        // ìœ ë‹› ì£½ìŒ
         private void Die()
         {
             if (isDead)
@@ -118,15 +124,15 @@ namespace AFKHero.Battle
 
             isDead = true;
 
-            // Å¸°Ù ÂüÁ¶ clear
+            // íƒ€ê²Ÿ ì°¸ì¡° clear
             owner.TargetFinder?.ClearTarget();
 
-            // Á×À¸¸é ±ºÁßÁ¦¾î ÇØÁ¦
+            // ì£½ìœ¼ë©´ êµ°ì¤‘ì œì–´ í•´ì œ
             owner.StatusEffects?.ClearAllStatusEffects();
 
-            Debug.Log($"[Á×À½] {owner.name}", owner);
+            Debug.Log($"[ì£½ìŒ] {owner.name}", owner);
 
-            // ½Â¸®/ÆĞ¹è ÆÇÁ¤ ÈÄ ¿ÀºêÁ§Æ® ºñÈ°¼ºÈ­
+            // ìŠ¹ë¦¬/íŒ¨ë°° íŒì • í›„ ì˜¤ë¸Œì íŠ¸ ë¹„í™œì„±í™”
             battleManager?.NotifyUnitDied(owner);
 
             if (deactivateOnDeath)

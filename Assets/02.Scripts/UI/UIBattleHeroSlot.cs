@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using AFKHero.Battle;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,12 +20,14 @@ namespace AFKHero.UI
         [SerializeField] private Sprite rare;            //레어
         [SerializeField] private Sprite epic;            //에픽
 
+        private BattleUnit battleUnit;                   //전투 유닛
+
         //영웅 정보 적용 
         public void SetHero(HeroInstance hero)
         {
             if (hero == null || hero.data == null)
             {
-                gameObject.SetActive(false);
+                Hide();
                 return;
             }
 
@@ -32,9 +35,50 @@ namespace AFKHero.UI
 
             heroIcon.sprite = hero.data.HeroIcon;    //아이콘
             heroNameText.text = hero.data.HeroName;  //이름
-            SetHP(1f, 1f);                           //HP 초기화
+            SetHP(hero.FinalMaxHP, hero.FinalMaxHP); //HP 초기화
             SetUltimate(0f, 1f);                     //궁극기게이지 초기화
             SetHeroGrade(hero.currentGrade);         //등급 테두리 적용
+        }
+
+        //유닛 연결
+        public void SetBattleUnit(BattleUnit unit)
+        {
+            ResetBattleUnit();
+
+            battleUnit = unit;
+            if (battleUnit == null) return;
+
+            if (battleUnit.Health != null)
+            {
+                SetHP(unit.Health.CurrentHealth, unit.Health.MaxHealth);
+                battleUnit.Health.HealthChanged += OnHealthChanged;
+            }
+
+            if (battleUnit.Energy != null)
+            {
+                SetUltimate(unit.Energy.CurrentEnergy, unit.Energy.MaxEnergy);
+                battleUnit.Energy.EnergyChanged += OnEnergyChanged;
+            }
+        }
+
+        //HP 변경
+        private void OnHealthChanged(BattleUnit unit, int currentHealth, int maxHealth)
+        {
+            SetHP(currentHealth, maxHealth);
+        }
+
+        //궁극기 게이지 변경
+        private void OnEnergyChanged(BattleUnit unit, int currentEnergy, int maxEnergy)
+        {
+            SetUltimate(currentEnergy, maxEnergy);
+        }
+
+        //유닛 이벤트연결 해제
+        private void ResetBattleUnit()
+        {
+            if (battleUnit == null) return;
+            if (battleUnit.Health != null) battleUnit.Health.HealthChanged -= OnHealthChanged;
+            if (battleUnit.Energy != null) battleUnit.Energy.EnergyChanged -= OnEnergyChanged;
         }
 
         //등급 테두리 설정
@@ -76,7 +120,14 @@ namespace AFKHero.UI
         //빈자리 표시
         public void Hide()
         {
+            ResetBattleUnit();
+            battleUnit = null;
             gameObject.SetActive(false);
+        }
+
+        private void OnDestroy()
+        {
+            ResetBattleUnit();
         }
     }
 }
