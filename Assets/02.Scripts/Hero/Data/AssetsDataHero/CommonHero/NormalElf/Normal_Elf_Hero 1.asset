@@ -15,10 +15,16 @@ MonoBehaviour:
   heroID: 8102
   heroName: "\uB178\uB9D0\uC5D8\uD504\uD0F1\uCEE4"
   heroGrade: 0
-  raceType: 0
+  raceType: 1
   jobType: 1
   ultimateSkillName: '-'
   ultimateEffectPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}
+  moveSpeed: 2
+  maxUltimateEnergy: 100
+  basicAttackEnergyGain: 10
+  damageTakenEnergyGain: 5
   heroImage: {fileID: 0}
-  heroPrefab: {fileID: 0}
+  heroPrefab: {fileID: 3314089967937337144, guid: 2507bc7480120f94a943c2c3cfb4b884, type: 3}
+  battleUnitPrefab: {fileID: 0}
+  canUseUltimate: 0
