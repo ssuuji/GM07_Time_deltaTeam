@@ -18534,6 +18534,7 @@ GameObject:
   - component: {fileID: 1328320265}
   - component: {fileID: 1328320268}
   - component: {fileID: 1328320267}
+  - component: {fileID: 1328320269}
   m_Layer: 0
   m_Name: Stage
   m_TagString: Untagged
@@ -18589,12 +18590,30 @@ MonoBehaviour:
   enemySpawner: {fileID: 1328320267}
   battleManager: {fileID: 584118162}
   battleSpawner: {fileID: 584118161}
+  stageBackgroundChanger: {fileID: 1328320269}
   victoryPanel: {fileID: 173547937}
   defeatPanel: {fileID: 1791452372}
   currentStageNumber: 1
   currentSectionNumber: 1
   lastStageNumber: 0
   lastSectionNumber: 0
+--- !u!114 &1328320269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328320264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acbda951565ae84438c01fdf70deaf85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StageBackgroundChanger
+  backgroundList:
+  - {fileID: -4432517490320819038, guid: a2589d08fccf13a44896275a4f5fe172, type: 3}
+  - {fileID: -814020915313860238, guid: 8bfa56767c0dc1942b855d8f06ee868e, type: 3}
+  - {fileID: -6358004935262571453, guid: bf60e9767a322024b9cdeea587f305b8, type: 3}
+  backgroundImage: {fileID: 0}
 --- !u!1 &1328999756
 GameObject:
   m_ObjectHideFlags: 0

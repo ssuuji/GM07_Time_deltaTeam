@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Stage1-5
   m_EditorClassIdentifier: Assembly-CSharp::StageInfo
   stageNumber: 1
-  sectionNumber: 1
-  isBossStage: 0
+  sectionNumber: 5
+  isBossStage: 1
   timeLimit: 120
-  enemies: []
+  enemies:
+  - {fileID: 11400000, guid: 283b00437eb4ef34497d345fe6f66339, type: 2}
   clearGold: 0
