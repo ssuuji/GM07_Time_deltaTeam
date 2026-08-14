@@ -20,6 +20,8 @@ public class StageManager : MonoBehaviour
 
     [SerializeField] private BattleSpawner battleSpawner;
 
+    [SerializeField] private StageBackgroundChanger stageBackgroundChanger;
+
     [Header("결과 패널")]
     [SerializeField] private RectTransform victoryPanel;
     [SerializeField] private RectTransform defeatPanel;
@@ -68,6 +70,11 @@ public class StageManager : MonoBehaviour
         //켰을 때 유저가 "전투시작" 버튼을 눌러야만 처음 스테이지 진행이 된다고 한다면, 여기서의 호출을 삭제해야 할 것.
         //StartStage();
 
+        if(stageBackgroundChanger != null)
+        {
+            stageBackgroundChanger.ChangeBackground(currentStageNumber);
+        }
+
     }
 
     private void OnDestroy()
@@ -95,6 +102,12 @@ public class StageManager : MonoBehaviour
 
         //현재 스테이지 UI 갱신
         UIBattleManager.Instance?.UpdateStageUI();
+
+        //배경화면 전환. 있을 때만 바꿈.
+        if (stageBackgroundChanger != null)
+        {
+            stageBackgroundChanger.ChangeBackground(currentStageNumber);
+        }
 
         //적의 레벨을 스테이지 기반으로 계산
         int enemyLevel = EnemyLevelCalculator.CalculateEnemyLevel(currentStageNumber, currentSectionNumber);
