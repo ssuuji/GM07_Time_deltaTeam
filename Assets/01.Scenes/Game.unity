@@ -2490,6 +2490,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1328320268}
+        m_TargetAssemblyTypeName: StageManager, Assembly-CSharp
+        m_MethodName: StartStage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &158684500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7674,20 +7686,6 @@ MonoBehaviour:
   formationData: {fileID: 11400000, guid: 37aafa8ae0cb36e4990a140e390206b5, type: 2}
   battleOrigin: {fileID: 584118160}
   unitContainer: {fileID: 584118160}
-  allyParty:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 11400000, guid: 00a2658e526439d44a2cfda07f6567e8, type: 2}
-  enemyParty:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 11400000, guid: a94643face8334a46beae8e60e1ba63b, type: 2}
-  spawnOnStart: 0
-  startBattleAfterSpawn: 1
 --- !u!114 &584118162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14348,7 +14346,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1085459414}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1328320268}
+        m_TargetAssemblyTypeName: StageManager, Assembly-CSharp
+        m_MethodName: CloseDefeatPanel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1085459414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18338,7 +18348,6 @@ GameObject:
   - component: {fileID: 1328320265}
   - component: {fileID: 1328320268}
   - component: {fileID: 1328320267}
-  - component: {fileID: 1328320266}
   m_Layer: 0
   m_Name: Stage
   m_TagString: Untagged
@@ -18361,18 +18370,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 362812871}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1328320266
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1328320264}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b19cb781a13f9fc4bb6b830708bf6a4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TempSaveManager
 --- !u!114 &1328320267
 MonoBehaviour:
   m_ObjectHideFlags: 0

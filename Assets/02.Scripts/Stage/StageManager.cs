@@ -66,7 +66,7 @@ public class StageManager : MonoBehaviour
         battleManager.StateChanged += HandleBattleResult;
 
         //켰을 때 유저가 "전투시작" 버튼을 눌러야만 처음 스테이지 진행이 된다고 한다면, 여기서의 호출을 삭제해야 할 것.
-        StartStage();
+        //StartStage();
 
     }
 
@@ -220,6 +220,8 @@ public class StageManager : MonoBehaviour
     public void CloseDefeatPanel()
     {
         defeatPanel.gameObject.SetActive(false);
+
+        Debug.Log("패배 패널 닫음");
 
         // 0814 수정
         // 다시 유닛 재 생성 후 전투
