@@ -9,6 +9,7 @@ public class HeroManager : MonoBehaviour
     [Header("영웅 원본 데이터")]
     [SerializeField] private List<HeroData> allHeroDataList = new List<HeroData>();
 
+    public IReadOnlyList<HeroData> AllHeroDataList => allHeroDataList;
     // 영웅 ID를 키로 사용하여 현재 상태를 빠르게 검색
     private Dictionary<int, HeroInstance> heroDictionary = new Dictionary<int, HeroInstance>();
 
