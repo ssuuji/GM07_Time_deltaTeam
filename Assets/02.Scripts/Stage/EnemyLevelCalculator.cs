@@ -13,6 +13,6 @@ public static class EnemyLevelCalculator
     //값을 덮어씌우는 게 아닌 더하는 방식으로 구현하면 될 것 같습니다.
     public static int CalculateEnemyLevel(int stageNumber, int sectionNumber)
     {
-        return Mathf.Clamp((stageNumber - 1) * 10 + stageNumber, 1, 9999);
+        return Mathf.Clamp((stageNumber - 1) * 10 + sectionNumber, 1, 9999);
     }
 }

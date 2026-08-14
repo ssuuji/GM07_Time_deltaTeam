@@ -19,8 +19,10 @@ public class StageInfo : ScriptableObject
 
     [Header("해당 구간의 전투 제한 시간")]
     [SerializeField] private float timeLimit = 120.0f;
+
+    // 스테이지 적 데이터를 HeroData로 통합
     [Header("해당 구간에 등장하는 적 목록")]
-    [SerializeField] private List<UnitData> enemies = new List<UnitData>();
+    [SerializeField] private List<HeroData> enemies = new List<HeroData>();
 
     [Header("클리어 보상")]
     [SerializeField] private int clearGold;
@@ -33,6 +35,6 @@ public class StageInfo : ScriptableObject
     public bool IsBossStage => isBossStage;
     public float TimeLimit => timeLimit;
     public int ClearGold => clearGold;
-    public List<UnitData> Enemies => enemies;
+    public List<HeroData> Enemies => enemies;
  
 }
