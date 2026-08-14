@@ -1,0 +1,224 @@
+﻿using AFKHero.Shop;
+using Newtonsoft.Json;
+using System.IO;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using AFKHeroPlayerManager = AFKHero.Player.PlayerManager;
+
+[DefaultExecutionOrder(-100)]
+public class GameSaveManager : MonoBehaviour
+{
+    public static GameSaveManager Instance;
+
+    [SerializeField] private string saveFileName = "save.json"; //저장파일
+    private GameSaveData loadedSaveData;
+
+    public GameSaveData LoadedSaveData => loadedSaveData;
+    private string SavePath => Path.Combine(Application.persistentDataPath, saveFileName);
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Start() //임시 : 나중엔 타이틀씬에서 로드 -> 게임씬 불러오기로
+    {
+        //에디터에서 Game씬을 바로 실행해도 저장데이터 불러올수 있게끔
+        if (SceneManager.GetActiveScene().name == "Game" && loadedSaveData == null)
+        {
+            LoadSaveData();
+            ApplyLoadedData();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+    }
+
+
+    private void OnApplicationQuit()
+    {
+        if (SceneManager.GetActiveScene().name != "Game") return;
+
+        SaveGame();
+    }
+
+    //씬 로드 완료 시 호출
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name != "Game") return;
+
+        ApplyLoadedData();
+    }
+
+    #region 저장
+
+    //게임전체저장
+    [ContextMenu("Save Game")]
+    public void SaveGame()
+    {
+        GameSaveData saveData = CreateSaveData();
+
+        string json = JsonConvert.SerializeObject(saveData, Formatting.Indented);
+        File.WriteAllText(SavePath, json);
+        loadedSaveData = saveData;
+
+        Debug.Log($"[GameSaveManager]저장 완료 : {SavePath}");
+    }
+
+    //저장데이터 생성
+    private GameSaveData CreateSaveData()
+    {
+        GameSaveData saveData = new GameSaveData();
+
+        //스테이지
+        if (StageManager.Instance != null)
+        {
+            saveData.stageSaveData = StageManager.Instance.CreateStageSaveData();
+        }
+        
+        //플레이어
+        if (AFKHeroPlayerManager.Instance != null)
+        {
+            saveData.playerSaveData = AFKHeroPlayerManager.Instance.CreatePlayerSaveData();
+        }
+
+        //영웅
+        if (HeroManager.Instance != null)
+        {
+            saveData.heroSaveData = new HeroManagerSaveData();
+
+            saveData.heroSaveData.heroes = HeroManager.Instance.GetSaveData();
+            saveData.heroSaveData.normalShards = HeroManager.Instance.normalShards;
+            saveData.heroSaveData.rareShards = HeroManager.Instance.rareShards;
+            saveData.heroSaveData.epicShards = HeroManager.Instance.epicShards;
+        }
+
+        //파티
+        if (PartyManager.Instance != null)
+        {
+            saveData.partySaveData = PartyManager.Instance.GetPartySaveData();
+        }
+
+        //상점 : 소환 제단
+        if (HeroSummonManager.Instance != null)
+        {
+            saveData.heroSummonSaveData = HeroSummonManager.Instance.CreateHeroSummonSaveData();
+        }
+
+        return saveData;
+    }
+
+    #endregion
+
+    #region 불러오기
+
+    //저장 파일 불러오기
+    public void LoadSaveData()
+    {
+        if (!HasSave())
+        {
+            Debug.Log($"[GameSaveManager] 저장 파일 없음 : {SavePath}");
+            loadedSaveData = null;
+            return;
+        }
+
+        string json = File.ReadAllText(SavePath);
+
+        loadedSaveData = JsonConvert.DeserializeObject<GameSaveData>(json);
+
+        if (loadedSaveData == null)
+        {
+            Debug.LogWarning("[GameSaveManager] 저장 데이터가 없습니다.");
+            return;
+        }
+
+        Debug.Log("[GameSaveManager] 저장 데이터 읽기 완료");
+    }
+
+    //불러온 데이터를 각 매니저에 적용
+    public void ApplyLoadedData()
+    {
+        if (loadedSaveData == null)
+        {
+            Debug.Log("[GameSaveManager] 적용할 저장 데이터가 없습니다.");
+            return;
+        }
+
+        //스테이지
+        if (StageManager.Instance != null && loadedSaveData.stageSaveData != null)
+        {
+            StageManager.Instance.LoadStageSaveData(loadedSaveData.stageSaveData);
+        }
+
+        //플레이어
+        if (AFKHeroPlayerManager.Instance != null && loadedSaveData.playerSaveData != null)
+        {
+            AFKHeroPlayerManager.Instance.LoadPlayerSaveData(loadedSaveData.playerSaveData);
+        }
+
+        //영웅
+        if (HeroManager.Instance != null && loadedSaveData.heroSaveData != null)
+        {
+            if (loadedSaveData.heroSaveData.heroes != null)
+            {
+                HeroManager.Instance.LoadSaveData(loadedSaveData.heroSaveData.heroes);
+            }
+
+            HeroManager.Instance.normalShards = loadedSaveData.heroSaveData.normalShards;
+            HeroManager.Instance.rareShards = loadedSaveData.heroSaveData.rareShards;
+            HeroManager.Instance.epicShards = loadedSaveData.heroSaveData.epicShards;
+        }
+
+        //파티
+        if (PartyManager.Instance != null && loadedSaveData.partySaveData != null)
+        {
+            PartyManager.Instance.LoadPartyFromData(loadedSaveData.partySaveData);
+        }
+
+        //상점 : 소환 제단
+        if (HeroSummonManager.Instance != null && loadedSaveData.heroSummonSaveData != null)
+        {
+            HeroSummonManager.Instance.LoadHeroSummonSaveData(loadedSaveData.heroSummonSaveData);
+        }
+
+        Debug.Log("[GameSaveManager] 저장 데이터 적용 완료");
+    }
+
+    #endregion
+
+    #region 파일관리
+
+    //저장 파일 존재 여부
+    public bool HasSave()
+    {
+        return File.Exists(SavePath);
+    }
+
+
+    //저장 파일 삭제
+    [ContextMenu("Delete Save")]
+    public void DeleteSave()
+    {
+        if (!HasSave()) return;
+
+        File.Delete(SavePath);
+
+        Debug.Log($"[GameSaveManager] 저장 파일 삭제 : {SavePath}");
+    }
+
+    #endregion
+}

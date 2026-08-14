@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,6 +27,10 @@ namespace AFKHero.UI
         private float flipDuration = 0.2f;               //카드 뒤집기 시간
         private bool isFlip = false;                     //뒤집는 중인지 확인여부
         private bool isOpen = false;                     //오픈된 상태인지 확인여부
+
+        public event Action OnOpened;                    //카드 오픈 완료 이벤트
+
+        public bool IsOpen => isOpen;
 
         private void Awake()
         {
@@ -124,6 +129,8 @@ namespace AFKHero.UI
 
             isOpen = true;  //오픈
             isFlip = false; //뒤집기도 끝
+
+            OnOpened?.Invoke(); //카드 오픈 완료 알림
         }
         #endregion
 

@@ -900,6 +900,7 @@ MonoBehaviour:
   summonPointCenter: {fileID: 570100851}
   summonRise: {fileID: 1698540022}
   summonFlash: {fileID: 1510502475}
+  backButton: {fileID: 328029280}
 --- !u!4 &83892926
 Transform:
   m_ObjectHideFlags: 0
@@ -1134,10 +1135,6 @@ MonoBehaviour:
     normalRate: 70
     rareRate: 27
     epicRate: 3
-  heroList:
-  - {fileID: 11400000, guid: 52cedf96ddb33d749bbeb1c1764db086, type: 2}
-  - {fileID: 11400000, guid: 283b00437eb4ef34497d345fe6f66339, type: 2}
-  - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
 --- !u!114 &105183768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1747,8 +1744,6 @@ RectTransform:
   - {fileID: 615200524}
   - {fileID: 570100851}
   - {fileID: 855204868}
-  - {fileID: 1747941330}
-  - {fileID: 893573665}
   - {fileID: 1783685723}
   - {fileID: 335396972}
   m_Father: {fileID: 1120345828}
@@ -4696,9 +4691,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1562331657}
-        m_TargetAssemblyTypeName: AFKHero.UI.UIUpgradeManager, Assembly-CSharp
-        m_MethodName: OnClickedCloseUpgradePopup
+      - m_Target: {fileID: 83892925}
+        m_TargetAssemblyTypeName: AFKHero.UI.UISummonResult, Assembly-CSharp
+        m_MethodName: OnClickedCloseResult
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5267,6 +5262,7 @@ Transform:
   - {fileID: 1430627237}
   - {fileID: 67597628}
   - {fileID: 105183769}
+  - {fileID: 1277064770}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &368176920
@@ -5890,6 +5886,8 @@ RectTransform:
   - {fileID: 328029283}
   - {fileID: 1216638318}
   - {fileID: 1816759678}
+  - {fileID: 1747941330}
+  - {fileID: 893573665}
   m_Father: {fileID: 244743769}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -11750,11 +11748,11 @@ RectTransform:
   - {fileID: 425725115}
   - {fileID: 1549528763}
   - {fileID: 1146649744}
-  m_Father: {fileID: 119241317}
+  m_Father: {fileID: 417135402}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.000030517578, y: 0}
+  m_AnchoredPosition: {x: 1.3711534, y: -573.799}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &895115259
@@ -17735,6 +17733,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1264555397}
   m_CullTransparentMesh: 1
+--- !u!1 &1277064769
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1277064770}
+  - component: {fileID: 1277064771}
+  m_Layer: 0
+  m_Name: SAVE
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1277064770
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277064769}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 362812871}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1277064771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277064769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca789ea9ea9ddcf46911c892f4695714, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameSaveManager
+  saveFileName: save.json
 --- !u!1 &1277849202
 GameObject:
   m_ObjectHideFlags: 0
@@ -18330,7 +18373,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b19cb781a13f9fc4bb6b830708bf6a4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TempSaveManager
-  saveFileName: save.json
 --- !u!114 &1328320267
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25016,11 +25058,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1907913685}
-  m_Father: {fileID: 119241317}
+  m_Father: {fileID: 417135402}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000091552734, y: 0}
+  m_AnchoredPosition: {x: 1.3710312, y: -573.799}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1754584353

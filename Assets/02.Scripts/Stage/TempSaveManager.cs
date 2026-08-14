@@ -144,7 +144,7 @@ public class TempSaveManager : MonoBehaviour
     {
         GameSaveData saveData = new GameSaveData();
 
-        saveData.stageSaveData = StageManager.Instance.CreateStageSaveData();
+//        saveData.stageSaveData = StageManager.Instance.CreateStageSaveData();
 
 
 
