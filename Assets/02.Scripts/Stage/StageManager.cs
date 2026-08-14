@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class StageManager : MonoBehaviour
 {
-    public static StageManager Instance;
+    public static StageManager Instance { get; private set; }
 
     [Header("스테이지 데이터")]
     [SerializeField] private StageData stageData;
@@ -19,6 +19,8 @@ public class StageManager : MonoBehaviour
     [SerializeField] private BattleManager battleManager;
 
     [SerializeField] private BattleSpawner battleSpawner;
+
+    [SerializeField] private StageBackgroundChanger stageBackgroundChanger;
 
     [Header("결과 패널")]
     [SerializeField] private RectTransform victoryPanel;
@@ -68,6 +70,11 @@ public class StageManager : MonoBehaviour
         //켰을 때 유저가 "전투시작" 버튼을 눌러야만 처음 스테이지 진행이 된다고 한다면, 여기서의 호출을 삭제해야 할 것.
         //StartStage();
 
+        if(stageBackgroundChanger != null)
+        {
+            stageBackgroundChanger.ChangeBackground(currentStageNumber);
+        }
+
     }
 
     private void OnDestroy()
@@ -95,6 +102,12 @@ public class StageManager : MonoBehaviour
 
         //현재 스테이지 UI 갱신
         UIBattleManager.Instance?.UpdateStageUI();
+
+        //배경화면 전환. 있을 때만 바꿈.
+        if (stageBackgroundChanger != null)
+        {
+            stageBackgroundChanger.ChangeBackground(currentStageNumber);
+        }
 
         //적의 레벨을 스테이지 기반으로 계산
         int enemyLevel = EnemyLevelCalculator.CalculateEnemyLevel(currentStageNumber, currentSectionNumber);
@@ -239,6 +252,19 @@ public class StageManager : MonoBehaviour
 
         victoryPanel.gameObject.SetActive(false); //버튼이 눌렸을 때 패널이 닫히게 된다.
         StartStage();
+    }
+
+    //전투 승리 시, 다음 스테이지로 진행하지 않고 전투를 종료할 메서드
+    //사실상 위의 코드에서 StartStage만 실행하지 않는 건데, 이거 어떻게 처리하지?
+    public void EndStageProgress()
+    {
+        if(autoClosePanelCoroutine != null)
+        {
+            StopCoroutine(autoClosePanelCoroutine);
+            autoClosePanelCoroutine = null;
+        }
+
+        victoryPanel.gameObject.SetActive(false);
     }
 
 

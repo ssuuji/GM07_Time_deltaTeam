@@ -443,7 +443,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 798051315}
-  - component: {fileID: 798051314}
   m_Layer: 0
   m_Name: TempSaveManager
   m_TagString: Untagged
@@ -451,19 +450,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &798051314
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 798051313}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b19cb781a13f9fc4bb6b830708bf6a4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TempSaveManager
-  saveFileName: save.json
 --- !u!4 &798051315
 Transform:
   m_ObjectHideFlags: 0
@@ -1041,20 +1027,6 @@ MonoBehaviour:
   formationData: {fileID: 11400000, guid: 37aafa8ae0cb36e4990a140e390206b5, type: 2}
   battleOrigin: {fileID: 1787319764}
   unitContainer: {fileID: 1787319764}
-  allyParty:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 11400000, guid: 00a2658e526439d44a2cfda07f6567e8, type: 2}
-  enemyParty:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  spawnOnStart: 1
-  startBattleAfterSpawn: 1
 --- !u!114 &1787319763
 MonoBehaviour:
   m_ObjectHideFlags: 0
