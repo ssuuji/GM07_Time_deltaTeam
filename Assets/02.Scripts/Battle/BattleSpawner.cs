@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AFKHero.UI;
 using Newtonsoft.Json.Bson;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -131,6 +132,8 @@ namespace AFKHero.Battle
             BattleUnit unit = EnsureBattleComponents(unitObject);
 
             unit.Initialize(hero, team, slotIndex, battleManager, bonusHpRate: 0f, bonusAttackRate: 0f);
+
+            UIBattleManager.Instance.SetBattleUnit(slotIndex, unit); //UI연결
 
             if (!unit.IsInitialized)
             {
