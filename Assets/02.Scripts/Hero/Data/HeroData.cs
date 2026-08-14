@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Mono.Cecil.Cil;
+using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewHeroData", menuName = "Game/Hero/Hero Data")]
 public class HeroData : ScriptableObject
@@ -16,7 +17,7 @@ public class HeroData : ScriptableObject
     [SerializeField] private GameObject projectilePrefab;    // 기본공격/투사체 프리팹 (궁수, 마법사 등)
 
     // 전투 설정용
-    [Header("전투 설정)")]
+    [Header("전투 설정")]
     [SerializeField, Min(0f)] private float moveSpeed = 2f;
     [SerializeField, Min(1)] int maxUltimateEnergy = 100;
     [SerializeField, Min(0)] int basicAttackEnergyGain = 10;
@@ -25,6 +26,10 @@ public class HeroData : ScriptableObject
     [Header("UI 및 리소스")]
     [SerializeField] private Sprite heroImage;     // 초상화 프레임 Sprite
     [SerializeField] private GameObject heroPrefab;  // 전투 인게임 생성 프리팹
+
+    // Battle용 프리팹 추가
+    [Header("전투 프리팹")]
+    [SerializeField] private AFKHero.Battle.BattleUnit battleUnitPrefab;
 
     [Header("스킬(궁극기) 설정")]
     [Tooltip("체크하면 전투 중 에너지가 찼을 때 궁극기를 사용합니다.")]
@@ -40,6 +45,8 @@ public class HeroData : ScriptableObject
     public JobType JobType => jobType;
     public Sprite HeroIcon => heroImage;
     public GameObject HeroPrefab => heroPrefab;
+
+    public AFKHero.Battle.BattleUnit BattleUnitPrefab => battleUnitPrefab;
 
     public string UltimateSkillName => string.IsNullOrEmpty(ultimateSkillName)
         ? GetJobStats().defaultSkillName : ultimateSkillName;
