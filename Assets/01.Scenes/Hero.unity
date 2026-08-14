@@ -9504,7 +9504,6 @@ MonoBehaviour:
   summonPointCenter: {fileID: 1266563126}
   summonRise: {fileID: 2135560318}
   summonFlash: {fileID: 1347643528}
-  backButton: {fileID: 0}
 --- !u!1 &605018489
 GameObject:
   m_ObjectHideFlags: 0
@@ -16447,6 +16446,10 @@ MonoBehaviour:
     normalRate: 70
     rareRate: 27
     epicRate: 3
+  heroList:
+  - {fileID: 11400000, guid: 52cedf96ddb33d749bbeb1c1764db086, type: 2}
+  - {fileID: 11400000, guid: 283b00437eb4ef34497d345fe6f66339, type: 2}
+  - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
 --- !u!114 &1148988337
 MonoBehaviour:
   m_ObjectHideFlags: 0

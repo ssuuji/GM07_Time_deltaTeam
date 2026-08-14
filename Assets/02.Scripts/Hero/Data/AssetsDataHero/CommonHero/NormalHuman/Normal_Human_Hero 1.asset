@@ -12,18 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e48ee36aedb041449b36316992decba, type: 3}
   m_Name: Normal_Human_Hero 1
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
-  heroID: 1001
+  heroID: 8002
   heroName: "\uC77C\uBC18\uD734\uBA3C\uC804\uC0AC"
-  heroGrade: 2
+  heroGrade: 0
   raceType: 0
   jobType: 0
   ultimateSkillName: '-'
   ultimateEffectPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}
-  moveSpeed: 2
-  maxUltimateEnergy: 100
-  basicAttackEnergyGain: 10
-  damageTakenEnergyGain: 5
   heroImage: {fileID: 0}
-  heroPrefab: {fileID: 3672450616889715641, guid: 0a243c005ec1afd478686a76c4242727, type: 3}
-  canUseUltimate: 0
+  heroPrefab: {fileID: 0}

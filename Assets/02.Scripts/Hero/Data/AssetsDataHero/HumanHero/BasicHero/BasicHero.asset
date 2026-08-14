@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e48ee36aedb041449b36316992decba, type: 3}
-  m_Name: Mob_Human_Archer
+  m_Name: BasicHero
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
-  heroID: 9002
-  heroName: "\uC77C\uBC18\uAD81\uC218"
-  heroGrade: 0
+  heroID: 1001
+  heroName: 
+  heroGrade: 2
   raceType: 0
-  jobType: 3
-  ultimateSkillName: "\uC9D1\uC911 \uC800\uACA9"
+  jobType: 0
+  ultimateSkillName: "\uD68C\uC804 \uACF5\uACA9"
   ultimateEffectPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}
   heroImage: {fileID: 0}

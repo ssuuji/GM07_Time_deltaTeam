@@ -14,16 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
   heroID: 8103
   heroName: "\uB178\uB9D0\uC5D8\uD504\uAD81\uC218"
-  heroGrade: 2
-  raceType: 1
+  heroGrade: 0
+  raceType: 0
   jobType: 3
   ultimateSkillName: '-'
   ultimateEffectPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}
-  moveSpeed: 2
-  maxUltimateEnergy: 100
-  basicAttackEnergyGain: 10
-  damageTakenEnergyGain: 5
   heroImage: {fileID: 0}
-  heroPrefab: {fileID: 2407394816044330969, guid: 901794a244328124598b4174fbce313a, type: 3}
-  canUseUltimate: 0
+  heroPrefab: {fileID: 0}
