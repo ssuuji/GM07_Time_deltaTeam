@@ -26,6 +26,14 @@ namespace AFKHero.Battle
         public event Action<BattleUnit> ExecutionStarted;
         public event Action<BattleUnit> ExecutionCompleted;
 
+        public bool CheckCanUseUltimate()
+        {
+            // 데이터에 체크박스가 꺼져있으면 무조건 스킬 사용 불가
+            if (!owner.Data.CanUseUltimate) return false;
+
+            return true;
+        }
+
         public void Initialize(BattleUnit UnitOwner)
         {
             owner = UnitOwner;
@@ -110,4 +118,6 @@ namespace AFKHero.Battle
         }
 #endif
     }
+
+
 }
