@@ -50,6 +50,11 @@ namespace AFKHero.Battle
         [Min(0)]
         [SerializeField] private int damageTakenEnergyGain = 5;
 
+        [Header("스킬 설정")]
+        // 유니티 인스펙터에 체크박스
+        [SerializeField] private bool canUseUltimate = false;
+        public bool CanUseUltimate => canUseUltimate;
+
         public string UnitId=> unitId;
         public string DisplayName => displayName;
         public Sprite Potrait => potrait;

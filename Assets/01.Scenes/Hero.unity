@@ -17456,20 +17456,6 @@ MonoBehaviour:
   formationData: {fileID: 11400000, guid: 37aafa8ae0cb36e4990a140e390206b5, type: 2}
   battleOrigin: {fileID: 1207106779}
   unitContainer: {fileID: 1207106779}
-  allyParty:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 11400000, guid: 00a2658e526439d44a2cfda07f6567e8, type: 2}
-  enemyParty:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 11400000, guid: a94643face8334a46beae8e60e1ba63b, type: 2}
-  spawnOnStart: 1
-  startBattleAfterSpawn: 1
 --- !u!114 &1207106784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20934,87 +20920,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1489117509}
   m_CullTransparentMesh: 1
---- !u!1 &1490909631
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1490909636}
-  - component: {fileID: 1490909633}
-  - component: {fileID: 1490909632}
-  m_Layer: 0
-  m_Name: GameManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1490909632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1490909631}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7279ea745d5a774fa10860a300fd517, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PoolManager
---- !u!114 &1490909633
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1490909631}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e53f8a909a4a9ec439d2576c7b21cdf6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PartyManager
-  partySlots:
-  - data: {fileID: 0}
-    level: 0
-    isUnlocked: 0
-    currentGrade: 0
-  - data: {fileID: 0}
-    level: 0
-    isUnlocked: 0
-    currentGrade: 0
-  - data: {fileID: 0}
-    level: 0
-    isUnlocked: 0
-    currentGrade: 0
-  - data: {fileID: 0}
-    level: 0
-    isUnlocked: 0
-    currentGrade: 0
-  - data: {fileID: 0}
-    level: 0
-    isUnlocked: 0
-    currentGrade: 0
-  totalBonusAttackRate: 0
-  totalBonusHpRate: 0
-  activeSynergyDescriptions: []
---- !u!4 &1490909636
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1490909631}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1496099972
 GameObject:
   m_ObjectHideFlags: 0
@@ -30345,7 +30250,6 @@ CanvasRenderer:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1490909636}
   - {fileID: 999756696}
   - {fileID: 458099199}
   - {fileID: 358041716}
