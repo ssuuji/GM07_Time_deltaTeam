@@ -1,8 +1,9 @@
-﻿using AFKHeroPlayerManager = AFKHero.Player.PlayerManager;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
+using AFKHeroPlayerManager = AFKHero.Player.PlayerManager;
 
 namespace AFKHero.UI
 {
@@ -15,7 +16,7 @@ namespace AFKHero.UI
         [SerializeField] private UIHeroList heroList;            //영웅리스트
                                                                  
         [Header("선택 영웅")]                                     
-        [SerializeField] private Image heroImage;                //영웅 아이콘
+        [SerializeField] private Transform heroPrefabs;          //영웅 프리펩 생성위치
         [SerializeField] private TMP_Text heroLevelText;         //영웅 레벨
         [SerializeField] private TMP_Text heroAttackText;        //영웅 공격력
         [SerializeField] private TMP_Text heroDefenseText;       //영웅 방어력
@@ -24,6 +25,7 @@ namespace AFKHero.UI
         [SerializeField] private TMP_Text levelUpCostText;       //레벨업 비용
                                                                  
         private HeroInstance selectedHero;                       //선택한 영웅
+        private GameObject heroPrefab;                           //영웅 프리펩
 
         private readonly Color32 levelYellow = new Color32(219, 216, 77, 255); //노란색 (레벨업 가능 색)
         private readonly Color32 levelRed    = new Color32(224, 90, 90, 255);  //빨간색 (레벨업 불가능 색)
@@ -46,7 +48,7 @@ namespace AFKHero.UI
         //선택 영웅 UI 표시
         private void SetSelectedHeroUI(bool active)
         {
-            heroImage.gameObject.SetActive(active);       //아이콘
+            heroPrefabs.gameObject.SetActive(active);     //영웅 프리펩
             heroLevelText.gameObject.SetActive(active);   //레벨
             heroAttackText.gameObject.SetActive(active);  //공격력
             heroDefenseText.gameObject.SetActive(active); //방어력
@@ -78,12 +80,40 @@ namespace AFKHero.UI
         {
             if (selectedHero == null || selectedHero.data == null) return;
 
-            heroImage.sprite = selectedHero.data.HeroIcon;           //아이콘
+            SetHeroPrefab(selectedHero);                             //영웅 프리펩
             heroLevelText.text = $"LV. {selectedHero.level}";        //레벨
             heroAttackText.text = selectedHero.Attack.ToString();    //공격력
             heroDefenseText.text = selectedHero.Defense.ToString();  //방어력
 
             UpdateLevelUpCost();                                     //레벨업 비용계산
+        }
+
+        //영웅 프리펩 표시
+        private void SetHeroPrefab(HeroInstance hero)
+        {
+            if (heroPrefab != null)
+            {
+                Destroy(heroPrefab);
+                heroPrefab = null;
+            }
+            if (hero == null || hero.data == null || hero.data.HeroPrefab == null) return;
+
+            //영웅 프리펩 생성
+            heroPrefab = Instantiate(hero.data.HeroPrefab, heroPrefabs);
+
+            //위치 및 크기
+            heroPrefab.transform.localPosition = Vector3.zero;
+            heroPrefab.transform.localRotation = Quaternion.identity;
+            heroPrefab.transform.localScale = Vector3.one * 300f;
+
+            //UI 위에 표시
+            SortingGroup sortingGroup = heroPrefab.GetComponentInChildren<SortingGroup>();
+
+            if (sortingGroup != null)
+            {
+                sortingGroup.sortingLayerName = "UI";
+                sortingGroup.sortingOrder = 10;
+            }
         }
         #endregion
 

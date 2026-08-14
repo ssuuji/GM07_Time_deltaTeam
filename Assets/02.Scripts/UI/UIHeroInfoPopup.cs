@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace AFKHero.UI
@@ -10,7 +11,7 @@ namespace AFKHero.UI
         [SerializeField] private GameObject heroInfoPopup;
 
         [Header("영웅 정보")]
-        [SerializeField] private Image heroImage;               //영웅 이미지
+        [SerializeField] private Transform heroPrefab;          //영웅 프리펩
         [SerializeField] private TMP_Text heroNametext;         //영웅 이름
         [SerializeField] private TMP_Text heroGradetext;        //영웅 등급텍스트
         [SerializeField] private Image heroGradeImage;          //영웅 등급이미지(색변화용)
@@ -28,6 +29,7 @@ namespace AFKHero.UI
         private UIHeroSlotMode currentMode;
 
         private HeroInstance selectedHero;                      //선택한 영웅
+        private GameObject currentHeroPrefab;                   //선택된 영웅 프리펩
 
         //정보창 열기
         public void InfoOpen(HeroInstance hero, UIHeroSlotMode mode)
@@ -49,7 +51,8 @@ namespace AFKHero.UI
         //영웅정보
         private void SetHeroInfo(HeroInstance hero)
         {
-            heroImage.sprite = hero.data.HeroIcon;  //아이콘
+            SetHeroPrefab(hero); //영웅프리펩 표시
+
             heroNametext.text = hero.data.HeroName; //이름
 
             //등급설정
@@ -62,6 +65,26 @@ namespace AFKHero.UI
                 case HeroGrade.RarePlus:   heroGradetext.text = "레어+"; break;
                 case HeroGrade.Epic:       heroGradetext.text = "에픽";  break;
                 case HeroGrade.EpicPlus:   heroGradetext.text = "에픽+"; break;
+            }
+        }
+
+        private void SetHeroPrefab(HeroInstance hero)
+        {
+            if (currentHeroPrefab != null) Destroy(currentHeroPrefab); //기존 영웅 제거
+            if (hero.data.HeroPrefab == null) return;
+
+            currentHeroPrefab = Instantiate(hero.data.HeroPrefab, heroPrefab); //영웅표시
+            currentHeroPrefab.transform.localPosition = Vector3.zero;
+            currentHeroPrefab.transform.localRotation = Quaternion.identity;
+            currentHeroPrefab.transform.localScale = Vector3.one * 300;
+
+            //UI보다 위에 표시
+            SortingGroup sortingGroup = currentHeroPrefab.GetComponentInChildren<SortingGroup>();
+
+            if (sortingGroup != null)
+            {
+                sortingGroup.sortingLayerName = "UI";
+                sortingGroup.sortingOrder = 110;
             }
         }
 
