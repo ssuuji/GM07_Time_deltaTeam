@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dc270139ba327a459ae897ebf2d5b87, type: 3}
   m_Name: Stage2-2
   m_EditorClassIdentifier: Assembly-CSharp::StageInfo
-  stageNumber: 1
-  sectionNumber: 1
+  stageNumber: 2
+  sectionNumber: 2
   isBossStage: 0
   timeLimit: 120
-  enemies: []
+  enemies:
+  - {fileID: 11400000, guid: ba5157846496f0148b68b93b90908a4a, type: 2}
   clearGold: 0
