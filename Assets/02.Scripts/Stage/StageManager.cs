@@ -225,7 +225,7 @@ public class StageManager : MonoBehaviour
 
         // 0814 수정
         // 다시 유닛 재 생성 후 전투
-        StartStage() ;
+        //StartStage() ;
     }
 
     //"다음 스테이지" 버튼에 연결하여 사용하게 될 메서드
