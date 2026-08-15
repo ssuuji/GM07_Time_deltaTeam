@@ -4,7 +4,6 @@ using System.Collections;
 using UnityEngine;
 
 //StageDB를 들고있으면서, 특정 조건에 따라서 현재 스테이지를 다음 스테이지로 넘기게 할 관리자 클래스
-
 public class StageManager : MonoBehaviour
 {
     public static StageManager Instance { get; private set; }
@@ -17,9 +16,9 @@ public class StageManager : MonoBehaviour
     //EnemySpawner의 기능을 BattleSpawner가 일부 흡수하는 방향으로 가야할 것 같음.
 
     [SerializeField] private BattleManager battleManager;
-
     [SerializeField] private BattleSpawner battleSpawner;
 
+    [Header("배경화면 전환")]
     [SerializeField] private StageBackgroundChanger stageBackgroundChanger;
 
     [Header("결과 패널")]
@@ -39,12 +38,12 @@ public class StageManager : MonoBehaviour
     private StageInfo currentStageInfo; // 현재 진행 중인 구간의 데이터
 
 
+    //프로퍼티
     public StageInfo CurrentStageInfo => currentStageInfo;
     public int CurrentStageNumber => currentStageNumber;
     public int CurrentSectionNumber => currentSectionNumber;
     public int LastStageNumber => lastStageNumber;
     public int LastSectionNumber => lastSectionNumber;
-
 
     private void Awake()
     {
@@ -58,10 +57,10 @@ public class StageManager : MonoBehaviour
         }
         DontDestroyOnLoad(this.gameObject);
 
-
         victoryPanel.gameObject.SetActive(false);
         defeatPanel.gameObject.SetActive(false);
     }
+
     private void Start()
     {
         //임시로 이벤트 구독
@@ -74,7 +73,6 @@ public class StageManager : MonoBehaviour
         {
             stageBackgroundChanger.ChangeBackground(currentStageNumber);
         }
-
     }
 
     private void OnDestroy()
@@ -82,14 +80,21 @@ public class StageManager : MonoBehaviour
         battleManager.StateChanged -= HandleBattleResult;
     }
 
-
     //이게 아마도 전투시작 버튼에 연결되어야 하고, Start에서 실행이 되어서는 안 될텐데?
     //그리고, 이게 "재도전" 버튼에도 연결될 수 있을 것 같은데?
     public void StartStage() // 스테이지 구간을 시작
     {
+        //전투가 실행 중일 때 실행하지 않게 할 방법 : BattleManager의 현재 상태에서 전투가 실행되선 안 되는 상태를 알아야 함.       
+        //BattleManager의 현 상태가 Victory, Defeat인 상태로 바뀐 뒤, 다시 preparing으로 전환되는지 확인해야 함.        
+        //이것의 조건이 사실상 BattleManager의 IsBattleRunning() 메서드인데, public으로 바꿔주실 수 있으신가요?
+        if(battleManager.CurrentState == BattleState.Fighting || battleManager.CurrentState == BattleState.UltimateSequence)
+        {
+            Debug.Log("전투가 이미 실행중입니다.");
+            return;
+        }
+
         victoryPanel.gameObject.SetActive(false);
         defeatPanel.gameObject.SetActive(false);
-
 
         //현재 번호에 따라서 StageData에서 Info를 받아온다.
         currentStageInfo = stageData.GetStage(currentStageNumber, currentSectionNumber);
@@ -120,15 +125,12 @@ public class StageManager : MonoBehaviour
         if(PartyManager.Instance == null)
         {
             Debug.LogError("[StageManager] PartyManager를 찾을 수 없습니다.", this);
-
             return; 
         }
-
 
         if(battleManager == null)
         {
             Debug.LogError("[StageManger] BattleSpawner가 연결되지 않았습니다.", this);
-
             return;
         }
 
@@ -169,22 +171,14 @@ public class StageManager : MonoBehaviour
             return;
         }
 
-        //승리 패널부터 우선 활성화
+        //승리 패널 활성화
         victoryPanel.gameObject.SetActive(true);
-
-
-        if(AFKHero.Player.PlayerManager.Instance == null)
-        {
-            Debug.LogError("[StageManager] : PlayerManager의 Instance를 찾을 수 없습니다.");
-            return;
-        }
-
 
         //승리했으니 현 스테이지의 보상에 해당하는 골드를 매니저를 통해 지급 => PlayerManager를 활용하는 것으로 변경
         //골드 이외의 다른 보상이 있더라도 새 클래스를 늘리기보단
         //ClearDia, ClearTicket 필드를 StageInfo에 만드는 것을 고려한다.
         //지급만 총괄하는 메서드를 구현해서 여기서 호출해도 될 듯.
-        AFKHero.Player.PlayerManager.Instance.AddGold(currentStageInfo.ClearGold);
+        TryGiveReward();
 
         //마지막으로 클리어한 스테이지와 섹션의 값을 저장 => 방치 전투에서 활용.
         lastStageNumber = currentStageNumber;
@@ -211,7 +205,6 @@ public class StageManager : MonoBehaviour
     private void HandleDefeat()
     {
         defeatPanel.gameObject.SetActive(true);
-        //
         GameSaveManager.Instance.SaveGame();
     }
 
@@ -256,7 +249,7 @@ public class StageManager : MonoBehaviour
 
     //전투 승리 시, 다음 스테이지로 진행하지 않고 전투를 종료할 메서드
     //사실상 위의 코드에서 StartStage만 실행하지 않는 건데, 이거 어떻게 처리하지?
-    public void EndStageProgress()
+    public void StopStageProgress()
     {
         if(autoClosePanelCoroutine != null)
         {
@@ -265,6 +258,18 @@ public class StageManager : MonoBehaviour
         }
 
         victoryPanel.gameObject.SetActive(false);
+    }
+
+    private void TryGiveReward()
+    {
+        if (AFKHero.Player.PlayerManager.Instance == null)
+        {
+            Debug.LogError("[StageManager] : PlayerManager의 Instance를 찾을 수 없습니다.");
+            return;
+        }
+        AFKHero.Player.PlayerManager.Instance.AddGold(currentStageInfo.ClearGold);
+        AFKHero.Player.PlayerManager.Instance.AddDia(currentStageInfo.ClearDia);
+        AFKHero.Player.PlayerManager.Instance.AddFreeTicket(currentStageInfo.ClearTicket);
     }
 
 

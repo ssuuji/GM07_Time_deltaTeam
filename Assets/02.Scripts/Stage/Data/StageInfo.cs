@@ -26,6 +26,8 @@ public class StageInfo : ScriptableObject
 
     [Header("클리어 보상")]
     [SerializeField] private int clearGold;
+    [SerializeField] private int clearDia;
+    [SerializeField] private int clearTicket;
 
 
 
@@ -35,6 +37,8 @@ public class StageInfo : ScriptableObject
     public bool IsBossStage => isBossStage;
     public float TimeLimit => timeLimit;
     public int ClearGold => clearGold;
+    public int ClearDia => clearDia;
+    public int ClearTicket => clearTicket;
     public List<HeroData> Enemies => enemies;
  
 }
