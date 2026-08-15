@@ -1,34 +1,61 @@
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 namespace AFKHero.Battle
 {
     public sealed class TestBattleSystem : MonoBehaviour
     {
-        [Header("ÀüÅõ °ü¸®ÀÚ")]
+        [Header("ì „íˆ¬ ê´€ë¦¬ì")]
 
-        [Tooltip("ÇöÀç Å×½ºÆ® ¾ÀÀÇ BattleManager¸¦ ¿¬°áÇÕ´Ï´Ù.")]
+        [Tooltip("í˜„ì¬ í…ŒìŠ¤íŠ¸ ì”¬ì˜ BattleManagerë¥¼ ì—°ê²°í•©ë‹ˆë‹¤.")]
         [SerializeField]
         private BattleManager battleManager;
 
-        [Header("Å×½ºÆ® À¯´Ö")]
+        [Header("í…ŒìŠ¤íŠ¸ ì „íˆ¬ ìƒì„±")]
 
-        [Tooltip("±âÀı¡¤Ä§¹¬À» Àû¿ëÇÏ°Å³ª ±Ã±Ø±â¸¦ ¼±ÅÃÇÒ À¯´ÖÀÔ´Ï´Ù.")]
+        [Tooltip("ì‹¤ì œ ìœ ë‹› ìƒì„±ê³¼ ë°°ì¹˜ë¥¼ ë‹´ë‹¹í•˜ëŠ” BattleSpawnerì…ë‹ˆë‹¤.")]
+        [SerializeField]
+        private BattleSpawner battleSpawner;
+
+        [Tooltip("í…ŒìŠ¤íŠ¸ ì „íˆ¬ì— ì¶œì „ì‹œí‚¬ ì•„êµ° HeroDataë¥¼ ìˆœì„œëŒ€ë¡œ ë„£ìŠµë‹ˆë‹¤.")]
+        [SerializeField]
+        private List<HeroData> testAllyHeroes = new();
+
+        [Tooltip("í…ŒìŠ¤íŠ¸ ì „íˆ¬ì— ì¶œì „ì‹œí‚¬ ì êµ° HeroDataë¥¼ ìˆœì„œëŒ€ë¡œ ë„£ìŠµë‹ˆë‹¤.")]
+        [SerializeField]
+        private List<HeroData> testEnemyHeroes = new();
+
+        [Tooltip("í…ŒìŠ¤íŠ¸ ì•„êµ°ì—ê²Œ ì ìš©í•  ë ˆë²¨ì…ë‹ˆë‹¤.")]
+        [SerializeField, Min(1)]
+        private int testAllyLevel = 1;
+
+        [Tooltip("í…ŒìŠ¤íŠ¸ ì êµ°ì—ê²Œ ì ìš©í•  ë ˆë²¨ì…ë‹ˆë‹¤.")]
+        [SerializeField, Min(1)]
+        private int testEnemyLevel = 1;
+
+        [Tooltip("í…ŒìŠ¤íŠ¸ ì „íˆ¬ì˜ ì œí•œì‹œê°„ì…ë‹ˆë‹¤.")]
+        [SerializeField, Min(1f)]
+        private float testBattleTimeLimit = 90f;
+
+        [Header("í…ŒìŠ¤íŠ¸ ìœ ë‹›")]
+
+        [Tooltip("ê¸°ì ˆÂ·ì¹¨ë¬µì„ ì ìš©í•˜ê±°ë‚˜ ê¶ê·¹ê¸°ë¥¼ ì„ íƒí•  ìœ ë‹›ì…ë‹ˆë‹¤.")]
         [SerializeField]
         private BattleUnit testUnit;
 
-        [Header("±ºÁßÁ¦¾î Áö¼Ó½Ã°£")]
+        [Header("êµ°ì¤‘ì œì–´ ì§€ì†ì‹œê°„")]
 
-        [Tooltip("Å×½ºÆ®ÇÒ ±âÀı Áö¼Ó½Ã°£ÀÔ´Ï´Ù.")]
+        [Tooltip("í…ŒìŠ¤íŠ¸í•  ê¸°ì ˆ ì§€ì†ì‹œê°„ì…ë‹ˆë‹¤.")]
         [SerializeField, Min(0.1f)]
         private float stunDuration = 3f;
 
-        [Tooltip("Å×½ºÆ®ÇÒ Ä§¹¬ Áö¼Ó½Ã°£ÀÔ´Ï´Ù.")]
+        [Tooltip("í…ŒìŠ¤íŠ¸í•  ì¹¨ë¬µ ì§€ì†ì‹œê°„ì…ë‹ˆë‹¤.")]
         [SerializeField, Min(0.1f)]
         private float silenceDuration = 3f;
 
         /// <summary>
-        /// ±Ã±Ø±â¸¦ ÀÚµ¿ ¸ğµå·Î º¯°æÇÕ´Ï´Ù.
+        /// ê¶ê·¹ê¸°ë¥¼ ìë™ ëª¨ë“œë¡œ ë³€ê²½í•©ë‹ˆë‹¤.
         /// </summary>
-        [ContextMenu("±Ã±Ø±â/ÀÚµ¿ ¸ğµå·Î º¯°æ")]
+        [ContextMenu("ê¶ê·¹ê¸°/ìë™ ëª¨ë“œë¡œ ë³€ê²½")]
         private void SetAutomaticUltimateMode()
         {
             if (!ValidateBattleManager())
@@ -39,14 +66,14 @@ namespace AFKHero.Battle
             battleManager.SetAutomaticUltimateUse(true);
 
             Debug.Log(
-                "[Å×½ºÆ®] ±Ã±Ø±â¸¦ ÀÚµ¿ ¸ğµå·Î º¯°æÇß½À´Ï´Ù.",
+                "[í…ŒìŠ¤íŠ¸] ê¶ê·¹ê¸°ë¥¼ ìë™ ëª¨ë“œë¡œ ë³€ê²½í–ˆìŠµë‹ˆë‹¤.",
                 battleManager);
         }
 
         /// <summary>
-        /// ±Ã±Ø±â¸¦ ¼öµ¿ ¸ğµå·Î º¯°æÇÕ´Ï´Ù.
+        /// ê¶ê·¹ê¸°ë¥¼ ìˆ˜ë™ ëª¨ë“œë¡œ ë³€ê²½í•©ë‹ˆë‹¤.
         /// </summary>
-        [ContextMenu("±Ã±Ø±â/¼öµ¿ ¸ğµå·Î º¯°æ")]
+        [ContextMenu("ê¶ê·¹ê¸°/ìˆ˜ë™ ëª¨ë“œë¡œ ë³€ê²½")]
         private void SetManualUltimateMode()
         {
             if (!ValidateBattleManager())
@@ -57,15 +84,15 @@ namespace AFKHero.Battle
             battleManager.SetAutomaticUltimateUse(false);
 
             Debug.Log(
-                "[Å×½ºÆ®] ±Ã±Ø±â¸¦ ¼öµ¿ ¸ğµå·Î º¯°æÇß½À´Ï´Ù.",
+                "[í…ŒìŠ¤íŠ¸] ê¶ê·¹ê¸°ë¥¼ ìˆ˜ë™ ëª¨ë“œë¡œ ë³€ê²½í–ˆìŠµë‹ˆë‹¤.",
                 battleManager);
         }
 
         /// <summary>
-        /// testUnitÀ» ¼öµ¿ ±Ã±Ø±â ½ÇÇà ´ë»óÀ¸·Î ¼±ÅÃÇÕ´Ï´Ù.
-        /// ¾Æ±ºÀÌ¸ç ±Ã±Ø±â ¿¡³ÊÁö°¡ °¡µæ Â÷°í ´ë±â¿­¿¡ ÀÖ¾î¾ß ÇÕ´Ï´Ù.
+        /// testUnitì„ ìˆ˜ë™ ê¶ê·¹ê¸° ì‹¤í–‰ ëŒ€ìƒìœ¼ë¡œ ì„ íƒí•©ë‹ˆë‹¤.
+        /// ì•„êµ°ì´ë©° ê¶ê·¹ê¸° ì—ë„ˆì§€ê°€ ê°€ë“ ì°¨ê³  ëŒ€ê¸°ì—´ì— ìˆì–´ì•¼ í•©ë‹ˆë‹¤.
         /// </summary>
-        [ContextMenu("±Ã±Ø±â/Å×½ºÆ® À¯´Ö ¼öµ¿ ¼±ÅÃ")]
+        [ContextMenu("ê¶ê·¹ê¸°/í…ŒìŠ¤íŠ¸ ìœ ë‹› ìˆ˜ë™ ì„ íƒ")]
         private void SelectTestUnitUltimate()
         {
             if (!ValidateBattleManager() ||
@@ -80,23 +107,23 @@ namespace AFKHero.Battle
             if (wasSelected)
             {
                 Debug.Log(
-                    $"[Å×½ºÆ®] {testUnit.name}ÀÇ ±Ã±Ø±â¸¦ ¼±ÅÃÇß½À´Ï´Ù.",
+                    $"[í…ŒìŠ¤íŠ¸] {testUnit.name}ì˜ ê¶ê·¹ê¸°ë¥¼ ì„ íƒí–ˆìŠµë‹ˆë‹¤.",
                     testUnit);
             }
             else
             {
                 Debug.LogWarning(
-                    $"[Å×½ºÆ®] {testUnit.name}ÀÇ ±Ã±Ø±â¸¦ ¼±ÅÃÇÏÁö ¸øÇß½À´Ï´Ù. " +
-                    "¾Æ±º ¿©ºÎ, ¿¡³ÊÁö, ´ë±â¿­, ±âÀı¡¤Ä§¹¬ »óÅÂ¸¦ È®ÀÎÇÏ¼¼¿ä.",
+                    $"[í…ŒìŠ¤íŠ¸] {testUnit.name}ì˜ ê¶ê·¹ê¸°ë¥¼ ì„ íƒí•˜ì§€ ëª»í–ˆìŠµë‹ˆë‹¤. " +
+                    "ì•„êµ° ì—¬ë¶€, ì—ë„ˆì§€, ëŒ€ê¸°ì—´, ê¸°ì ˆÂ·ì¹¨ë¬µ ìƒíƒœë¥¼ í™•ì¸í•˜ì„¸ìš”.",
                     testUnit);
             }
         }
 
         /// <summary>
-        /// testUnit¿¡°Ô ±âÀıÀ» Àû¿ëÇÕ´Ï´Ù.
-        /// ±âÀı Áß¿¡´Â ÀÌµ¿, ±âº» °ø°İ, ±Ã±Ø±â¸¦ »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù.
+        /// testUnitì—ê²Œ ê¸°ì ˆì„ ì ìš©í•©ë‹ˆë‹¤.
+        /// ê¸°ì ˆ ì¤‘ì—ëŠ” ì´ë™, ê¸°ë³¸ ê³µê²©, ê¶ê·¹ê¸°ë¥¼ ì‚¬ìš©í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.
         /// </summary>
-        [ContextMenu("±ºÁßÁ¦¾î/Å×½ºÆ® À¯´Ö ±âÀı")]
+        [ContextMenu("êµ°ì¤‘ì œì–´/í…ŒìŠ¤íŠ¸ ìœ ë‹› ê¸°ì ˆ")]
         private void ApplyStun()
         {
             if (!ValidateTestUnit())
@@ -107,8 +134,8 @@ namespace AFKHero.Battle
             if (testUnit.StatusEffects == null)
             {
                 Debug.LogError(
-                    $"{testUnit.name}¿¡ " +
-                    "UnitStatusEffectController°¡ ¾ø½À´Ï´Ù.",
+                    $"{testUnit.name}ì— " +
+                    "UnitStatusEffectControllerê°€ ì—†ìŠµë‹ˆë‹¤.",
                     testUnit);
 
                 return;
@@ -120,10 +147,10 @@ namespace AFKHero.Battle
         }
 
         /// <summary>
-        /// testUnit¿¡°Ô Ä§¹¬À» Àû¿ëÇÕ´Ï´Ù.
-        /// Ä§¹¬ Áß¿¡´Â ÀÌµ¿°ú ±âº» °ø°İÀÌ °¡´ÉÇÏÁö¸¸ ±Ã±Ø±â´Â »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù.
+        /// testUnitì—ê²Œ ì¹¨ë¬µì„ ì ìš©í•©ë‹ˆë‹¤.
+        /// ì¹¨ë¬µ ì¤‘ì—ëŠ” ì´ë™ê³¼ ê¸°ë³¸ ê³µê²©ì´ ê°€ëŠ¥í•˜ì§€ë§Œ ê¶ê·¹ê¸°ëŠ” ì‚¬ìš©í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.
         /// </summary>
-        [ContextMenu("±ºÁßÁ¦¾î/Å×½ºÆ® À¯´Ö Ä§¹¬")]
+        [ContextMenu("êµ°ì¤‘ì œì–´/í…ŒìŠ¤íŠ¸ ìœ ë‹› ì¹¨ë¬µ")]
         private void ApplySilence()
         {
             if (!ValidateTestUnit())
@@ -134,8 +161,8 @@ namespace AFKHero.Battle
             if (testUnit.StatusEffects == null)
             {
                 Debug.LogError(
-                    $"{testUnit.name}¿¡ " +
-                    "UnitStatusEffectController°¡ ¾ø½À´Ï´Ù.",
+                    $"{testUnit.name}ì— " +
+                    "UnitStatusEffectControllerê°€ ì—†ìŠµë‹ˆë‹¤.",
                     testUnit);
 
                 return;
@@ -147,9 +174,9 @@ namespace AFKHero.Battle
         }
 
         /// <summary>
-        /// testUnit¿¡°Ô Àû¿ëµÈ ¸ğµç ±ºÁßÁ¦¾î¸¦ Áï½Ã ÇØÁ¦ÇÕ´Ï´Ù.
+        /// testUnitì—ê²Œ ì ìš©ëœ ëª¨ë“  êµ°ì¤‘ì œì–´ë¥¼ ì¦‰ì‹œ í•´ì œí•©ë‹ˆë‹¤.
         /// </summary>
-        [ContextMenu("±ºÁßÁ¦¾î/¸ğµç »óÅÂ Áï½Ã ÇØÁ¦")]
+        [ContextMenu("êµ°ì¤‘ì œì–´/ëª¨ë“  ìƒíƒœ ì¦‰ì‹œ í•´ì œ")]
         private void ClearAllStatusEffects()
         {
             if (!ValidateTestUnit())
@@ -160,10 +187,145 @@ namespace AFKHero.Battle
             testUnit.StatusEffects?.ClearAllStatusEffects();
 
             Debug.Log(
-                $"[Å×½ºÆ®] {testUnit.name}ÀÇ ¸ğµç »óÅÂÀÌ»óÀ» ÇØÁ¦Çß½À´Ï´Ù.",
+                $"[í…ŒìŠ¤íŠ¸] {testUnit.name}ì˜ ëª¨ë“  ìƒíƒœì´ìƒì„ í•´ì œí–ˆìŠµë‹ˆë‹¤.",
                 testUnit);
         }
 
+        [ContextMenu("ì „íˆ¬ í…ŒìŠ¤íŠ¸/ì„ íƒí•œ ì˜ì›…ìœ¼ë¡œ ì „íˆ¬ ì‹œì‘")]
+        public void StartSelectedHeroBattle()
+        {
+            // í¸ì§‘ ëª¨ë“œì—ì„œ ì‹¤í–‰í•˜ë©´ ì”¬ì— í…ŒìŠ¤íŠ¸ ìœ ë‹›ì´ ì €ì¥ë  ìˆ˜ ìˆìœ¼ë¯€ë¡œ
+            // ë°˜ë“œì‹œ Play Modeì—ì„œë§Œ ì‹¤í–‰í•˜ë„ë¡ ì œí•œí•©ë‹ˆë‹¤.
+            if (!Application.isPlaying)
+            {
+                Debug.LogWarning(
+                    "[ì „íˆ¬ í…ŒìŠ¤íŠ¸] Play Modeì—ì„œ ì‹¤í–‰í•´ ì£¼ì„¸ìš”.",
+                    this);
+
+                return;
+            }
+
+            if (!ValidateBattleSpawner())
+            {
+                return;
+            }
+
+            List<HeroInstance> allyParty = CreateTestAllyParty();
+
+            if (allyParty.Count == 0)
+            {
+                Debug.LogError(
+                    "[ì „íˆ¬ í…ŒìŠ¤íŠ¸] ì‚¬ìš©í•  ìˆ˜ ìˆëŠ” ì•„êµ° HeroDataê°€ ì—†ìŠµë‹ˆë‹¤.",
+                    this);
+
+                return;
+            }
+
+            if (!ContainsValidHeroData(testEnemyHeroes))
+            {
+                Debug.LogError(
+                    "[ì „íˆ¬ í…ŒìŠ¤íŠ¸] ì‚¬ìš©í•  ìˆ˜ ìˆëŠ” ì êµ° HeroDataê°€ ì—†ìŠµë‹ˆë‹¤.",
+                    this);
+
+                return;
+            }
+
+            bool battleStarted = battleSpawner.SpawnBattle(
+                allyParty,
+                testEnemyHeroes,
+                Mathf.Max(1, testEnemyLevel),
+                Mathf.Max(1f, testBattleTimeLimit));
+
+            if (battleStarted)
+            {
+                Debug.Log(
+                    $"[ì „íˆ¬ í…ŒìŠ¤íŠ¸] ì•„êµ° {allyParty.Count}ëª…ê³¼ " +
+                    $"ì êµ° {testEnemyHeroes.Count}ëª…ì˜ ì „íˆ¬ë¥¼ ì‹œì‘í–ˆìŠµë‹ˆë‹¤.",
+                    this);
+            }
+            else
+            {
+                Debug.LogError(
+                    "[ì „íˆ¬ í…ŒìŠ¤íŠ¸] í…ŒìŠ¤íŠ¸ ì „íˆ¬ ìƒì„±ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤.",
+                    this);
+            }
+        }
+
+        /// <summary>
+        /// HeroData ëª©ë¡ì„ BattleSpawnerê°€ ìš”êµ¬í•˜ëŠ” HeroInstance ëª©ë¡ìœ¼ë¡œ ë³€í™˜í•©ë‹ˆë‹¤.
+        /// í…ŒìŠ¤íŠ¸ ë„ì¤‘ ì›ë³¸ ì˜ì›… ì €ì¥ ë°ì´í„°ê°€ ë³€ê²½ë˜ì§€ ì•Šë„ë¡ ìƒˆ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
+        /// </summary>
+        private List<HeroInstance> CreateTestAllyParty()
+        {
+            List<HeroInstance> party = new();
+
+            if (testAllyHeroes == null)
+            {
+                return party;
+            }
+
+            for (int i = 0; i < testAllyHeroes.Count; i++)
+            {
+                HeroData heroData = testAllyHeroes[i];
+
+                if (heroData == null)
+                {
+                    continue;
+                }
+
+                HeroInstance heroInstance = new HeroInstance(
+                    heroData,
+                    defaultUnlocked: true);
+
+                heroInstance.level = Mathf.Max(1, testAllyLevel);
+                party.Add(heroInstance);
+            }
+
+            return party;
+        }
+
+        /// <summary>
+        /// ëª©ë¡ì— ì‹¤ì œë¡œ ì‚¬ìš©í•  ìˆ˜ ìˆëŠ” HeroDataê°€ í•˜ë‚˜ ì´ìƒ ìˆëŠ”ì§€ ê²€ì‚¬í•©ë‹ˆë‹¤.
+        /// </summary>
+        private static bool ContainsValidHeroData(
+            IReadOnlyList<HeroData> heroes)
+        {
+            if (heroes == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < heroes.Count; i++)
+            {
+                if (heroes[i] != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool ValidateBattleSpawner()
+        {
+            // Game ì”¬ì—ì„œëŠ” BattleSpawnerê°€ ê°™ì€ Battle ì˜¤ë¸Œì íŠ¸ì— ìˆìœ¼ë¯€ë¡œ
+            // Inspector ì—°ê²°ì´ ë¹ ì¡Œì„ ë•Œ ê°™ì€ ì˜¤ë¸Œì íŠ¸ì—ì„œ ìë™ìœ¼ë¡œ ì°¾ìŠµë‹ˆë‹¤.
+            if (battleSpawner == null)
+            {
+                battleSpawner = GetComponent<BattleSpawner>();
+            }
+
+            if (battleSpawner != null)
+            {
+                return true;
+            }
+
+            Debug.LogError(
+                "[ì „íˆ¬ í…ŒìŠ¤íŠ¸] BattleSpawnerê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.",
+                this);
+
+            return false;
+        }
         private bool ValidateBattleManager()
         {
             if (battleManager != null)
@@ -172,7 +334,7 @@ namespace AFKHero.Battle
             }
 
             Debug.LogError(
-                "[Å×½ºÆ®] BattleManager°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.",
+                "[í…ŒìŠ¤íŠ¸] BattleManagerê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.",
                 this);
 
             return false;
@@ -186,13 +348,13 @@ namespace AFKHero.Battle
             }
 
             Debug.LogError(
-                "[Å×½ºÆ®] Å×½ºÆ®ÇÒ BattleUnitÀÌ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.",
+                "[í…ŒìŠ¤íŠ¸] í…ŒìŠ¤íŠ¸í•  BattleUnitì´ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.",
                 this);
 
             return false;
         }
     }
 
-    // ===== [º¯°æ ³¡: ±Ã±Ø±â ¸ğµå ¹× ±ºÁßÁ¦¾î Å×½ºÆ® ±â´É Ãß°¡] =====
+    // ===== [ë³€ê²½ ë: ê¶ê·¹ê¸° ëª¨ë“œ ë° êµ°ì¤‘ì œì–´ í…ŒìŠ¤íŠ¸ ê¸°ëŠ¥ ì¶”ê°€] =====
 }
 

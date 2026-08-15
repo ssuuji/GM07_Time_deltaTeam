@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -9,11 +9,11 @@ namespace AFKHero.Battle
     {
         private const float MinimumDuration = 0.01f;
 
-        [Header("±Ã±Ø±â ¿¬Ãâ")]
+        [Header("ê¶ê·¹ê¸° ì—°ì¶œ")]
         [SerializeField, Min(MinimumDuration)]
         private float ultimateDuration = 1.5f;
 
-        [Header("±Ã±Ø±â ¾Ö´Ï¸ŞÀÌÅÍ")]
+        [Header("ê¶ê·¹ê¸° ì• ë‹ˆë©”ì´í„°")]
         [SerializeField] private Animator animator;
         [SerializeField] private string animationTrigger = "Ultimate";
 
@@ -28,7 +28,7 @@ namespace AFKHero.Battle
 
         public bool CheckCanUseUltimate()
         {
-            // µ¥ÀÌÅÍ¿¡ Ã¼Å©¹Ú½º°¡ ²¨Á®ÀÖÀ¸¸é ¹«Á¶°Ç ½ºÅ³ »ç¿ë ºÒ°¡
+            // ë°ì´í„°ì— ì²´í¬ë°•ìŠ¤ê°€ êº¼ì ¸ìˆìœ¼ë©´ ë¬´ì¡°ê±´ ìŠ¤í‚¬ ì‚¬ìš© ë¶ˆê°€
             if (!owner.Data.CanUseUltimate) return false;
 
             return true;
@@ -40,7 +40,17 @@ namespace AFKHero.Battle
 
             if(owner == null)
             {
-                Debug.LogError("±Ã±Ø±â ÄÁÆ®·Ñ·¯¿¡ BattleUnitÀÌ ºñ¾îÀÖ½À´Ï´Ù.", this);
+                Debug.LogError("ê¶ê·¹ê¸° ì»¨íŠ¸ë¡¤ëŸ¬ì— BattleUnitì´ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.", this);
+            }
+
+            if (animator == null)
+            {
+                animator = GetComponentInChildren<Animator>(true);
+            }
+
+            if (animator == null)
+            {
+                Debug.LogWarning($"[{name}] ê¶ê·¹ê¸° ì• ë‹ˆë©”ì´ì…˜ì„ ì¬ìƒí•  Animatorë¥¼ ì°¾ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.", this);
             }
         }
 
@@ -84,7 +94,7 @@ namespace AFKHero.Battle
             return target.Health.TakeUltimateDamage(finalDamage, owner);
         }
 
-        // »ç¸Á ÀüÅõ Á¾·á ½Ã Äİ¹é ¾øÀÌ ÇöÀç ±Ã±Ø±â Áß´Ü
+        // ì‚¬ë§ ì „íˆ¬ ì¢…ë£Œ ì‹œ ì½œë°± ì—†ì´ í˜„ì¬ ê¶ê·¹ê¸° ì¤‘ë‹¨
         public void CancelUltimate()
         {
             if(executionRoutine != null)

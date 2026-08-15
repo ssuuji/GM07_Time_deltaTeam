@@ -20,6 +20,10 @@ namespace AFKHero.Battle
         private UnitHealth unitHealth;
         private UnitAttackController attackController;
 
+        private BattleManager battleManager;
+
+        private float defaultAnimatorSpeed = 1f;
+
         private int previousHealth;
 
         private void Start()
@@ -37,6 +41,24 @@ namespace AFKHero.Battle
             if(animator == null)
             {
                 animator = GetComponentInChildren<Animator>(true);
+            }
+
+            if (animator != null)
+            {
+                defaultAnimatorSpeed = animator.speed;
+            }
+
+            battleManager = FindFirstObjectByType<BattleManager>();
+
+            if (battleManager != null)
+            {
+                battleManager.UltimateStarted += HandleUltimateStarted;
+                battleManager.UltimateFinished += HandleUltimateFinished;
+                battleManager.StateChanged += HandleBattleStateChanged;
+            }
+            else
+            {
+                Debug.LogWarning($"[{name}] 애니메이션 정지에 사용할 BattleManager를 찾지 못했습니다.", this);
             }
 
             unitHealth = owner.Health;
@@ -95,6 +117,39 @@ namespace AFKHero.Battle
             }
         }
 
+        private void HandleUltimateStarted(BattleUnit ultimateUser)
+        {
+            if (animator == null)
+            {
+                return;
+            }
+
+            bool isUltimateUser = ultimateUser == owner;
+
+            animator.speed = isUltimateUser ? defaultAnimatorSpeed : 0f;
+        }
+
+        private void HandleUltimateFinished(BattleUnit _)
+        {
+            RestoreAnimatorSpeed();
+        }
+
+        private void HandleBattleStateChanged(BattleState state)
+        {
+            if (state != BattleState.UltimateSequence)
+            {
+                RestoreAnimatorSpeed();
+            }
+        }
+
+        private void RestoreAnimatorSpeed()
+        {
+            if (animator != null)
+            {
+                animator.speed = defaultAnimatorSpeed;
+            }
+        }
+
         private void OnDestroy()
         {
             if(unitHealth != null)
@@ -105,6 +160,13 @@ namespace AFKHero.Battle
             if(attackController != null)
             {
                 attackController.BasicAttackStarted -= HandleBasicAttackStarted;
+            }
+
+            if (battleManager != null)
+            {
+                battleManager.UltimateStarted -= HandleUltimateStarted;
+                battleManager.UltimateFinished -= HandleUltimateFinished;
+                battleManager.StateChanged -= HandleBattleStateChanged;
             }
         }
 
