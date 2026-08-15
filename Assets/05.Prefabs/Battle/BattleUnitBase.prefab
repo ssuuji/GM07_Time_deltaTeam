@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1631831749867701458}
   - component: {fileID: 7668931205239459550}
   - component: {fileID: 1936199993569178431}
+  - component: {fileID: 7959533842267578416}
   m_Layer: 0
   m_Name: BattleUnitBase
   m_TagString: Untagged
@@ -38,6 +39,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6190237233806407294}
+  - {fileID: 8729615259221586495}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4895544588523511391
@@ -153,6 +155,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5e0f8737e05c1e4797fae2b675de03b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitStatusEffectController
+--- !u!114 &7959533842267578416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2837454413636055212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc27e7224315e84ca225be5e70cba35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitBattleView
+  animator: {fileID: 0}
+  attackTrigger: 2_Attack
+  hitTrigger: 3_Damaged
+  damageTextPrefab: {fileID: 3775185502458372682, guid: 5d053f06fdaa1f14f91b19ca69091822, type: 3}
+  damageTextAnchor: {fileID: 8729615259221586495}
 --- !u!1 &4036438363417818286
 GameObject:
   m_ObjectHideFlags: 0
@@ -179,6 +198,37 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 461975540215903378}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6433881078221816837
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8729615259221586495}
+  m_Layer: 0
+  m_Name: DamageTextAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8729615259221586495
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6433881078221816837}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -118,18 +118,18 @@ namespace AFKHero.Battle
         {
             HeroData heroData = hero.data;
 
-            if(heroData.HeroPrefab == null)
+            if(heroData.BattleUnitPrefab == null)
             {
-                Debug.LogError($"[{heroData.HeroName}] HeroPrefab이 비어 있습니다.", heroData);
+                Debug.LogError($"[{heroData.HeroName}] Prefab이 비어 있습니다.", heroData);
 
                 return false;
             }
 
             Vector3 spawnPosition = formationData.GetWolrdPosition(team, slotIndex, battleOrigin.position);
 
-            GameObject unitObject = Instantiate(heroData.HeroPrefab, spawnPosition, Quaternion.identity, unitContainer);
+            BattleUnit unit = Instantiate(heroData.BattleUnitPrefab, spawnPosition, Quaternion.identity, unitContainer);
 
-            BattleUnit unit = EnsureBattleComponents(unitObject);
+            GameObject unitObject = unit.gameObject;
 
             unit.Initialize(hero, team, slotIndex, battleManager, bonusHpRate: 0f, bonusAttackRate: 0f);
 
