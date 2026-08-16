@@ -18,4 +18,6 @@ MonoBehaviour:
   timeLimit: 120
   enemies:
   - {fileID: 11400000, guid: dd91f9df2ef134840bb854913b228896, type: 2}
-  clearGold: 0
+  clearGold: 1200
+  clearDia: 0
+  clearTicket: 0
