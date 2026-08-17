@@ -24,7 +24,7 @@ MonoBehaviour:
   maxUltimateEnergy: 100
   basicAttackEnergyGain: 10
   damageTakenEnergyGain: 5
-  heroImage: {fileID: -7946190749211981217, guid: b1bafe575a7564345a6123ed27290e78, type: 3}
+  heroImage: {fileID: -4758733072126557920, guid: 913af84c984f12b4cb853b8f5c268d0a, type: 3}
   heroPrefab: {fileID: 8524663669750099445, guid: a2a01bea0f75bb54281914d81c7695bc, type: 3}
   battleUnitPrefab: {fileID: 5405934589750331299, guid: 8fa9f7594f8f098439f5d311da59d081, type: 3}
   canUseUltimate: 0

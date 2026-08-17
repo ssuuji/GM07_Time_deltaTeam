@@ -56,8 +56,8 @@ namespace AFKHero.UI
             heroNametext.text = hero.data.HeroName; //이름
 
             //등급설정
-            heroGradeImage.color = HeroGradeColor.GetColor(hero.data.HeroGrade); //등급 배경색 설정
-            switch (hero.data.HeroGrade)
+            heroGradeImage.color = HeroGradeColor.GetColor(hero.currentGrade); //등급 배경색 설정
+            switch (hero.currentGrade)
             {
                 case HeroGrade.Normal:     heroGradetext.text = "노멀";  break;
                 case HeroGrade.NormalPlus: heroGradetext.text = "노멀+"; break;

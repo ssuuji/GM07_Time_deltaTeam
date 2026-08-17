@@ -129,10 +129,10 @@ TextureImporter:
       name: Rare_0
       rect:
         serializedVersion: 2
-        x: 21
+        x: 32
         y: 18
-        width: 978
-        height: 1504
+        width: 959
+        height: 1501
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
