@@ -171,6 +171,9 @@ public class StageManager : MonoBehaviour
             return;
         }
 
+        //승리 보상 UI 갱신
+        UIBattleManager.Instance?.UpdateRewardUI(currentStageInfo);
+
         //승리 패널 활성화
         victoryPanel.gameObject.SetActive(true);
 

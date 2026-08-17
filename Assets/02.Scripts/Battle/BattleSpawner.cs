@@ -133,8 +133,6 @@ namespace AFKHero.Battle
 
             unit.Initialize(hero, team, slotIndex, battleManager, bonusHpRate: 0f, bonusAttackRate: 0f);
 
-            UIBattleManager.Instance.SetBattleUnit(slotIndex, unit); //UI연결
-
             if (!unit.IsInitialized)
             {
                 Debug.LogError($"[{heroData.HeroName}] BattleUnit 초기화 실패", unit);
@@ -145,6 +143,11 @@ namespace AFKHero.Battle
 
             battleManager.RegisterUnit(unit);
             spawnedUnits.Add(unit);
+
+            if (team == TeamType.Ally)
+            {
+                UIBattleManager.Instance?.SetBattleUnit(slotIndex, unit); //아군만 하단 전투 UI에 연결
+            }
 
             return true;
         }

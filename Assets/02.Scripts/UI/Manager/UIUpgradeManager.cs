@@ -23,7 +23,11 @@ namespace AFKHero.UI
                                                                  
         [Header("레벨업")]                                        
         [SerializeField] private TMP_Text levelUpCostText;       //레벨업 비용
-                                                                 
+
+        [Header("영웅 합성")]
+        [SerializeField] private Button gradeUpButton;           //영웅 합성 버튼
+        [SerializeField] private TMP_Text gradeUpShardCountText; //(보유 조각 / 필요 조각)
+
         private HeroInstance selectedHero;                       //선택한 영웅
         private GameObject heroPrefab;                           //영웅 프리펩
 
@@ -37,6 +41,7 @@ namespace AFKHero.UI
 
         private void OnEnable()
         {
+            selectedHero = null;
             SetSelectedHeroUI(false);
         }
 
@@ -48,10 +53,12 @@ namespace AFKHero.UI
         //선택 영웅 UI 표시
         private void SetSelectedHeroUI(bool active)
         {
-            heroPrefabs.gameObject.SetActive(active);     //영웅 프리펩
-            heroLevelText.gameObject.SetActive(active);   //레벨
-            heroAttackText.gameObject.SetActive(active);  //공격력
-            heroDefenseText.gameObject.SetActive(active); //방어력
+            heroPrefabs.gameObject.SetActive(active);            //영웅 프리펩
+            heroLevelText.gameObject.SetActive(active);          //레벨
+            heroAttackText.gameObject.SetActive(active);         //공격력
+            heroDefenseText.gameObject.SetActive(active);        //방어력
+            levelUpCostText.gameObject.SetActive(active);        //레벨업 비용
+            gradeUpShardCountText.gameObject.SetActive(active);  //영웅 합성 재료
         }
 
         #region 영웅 리스트
@@ -86,6 +93,7 @@ namespace AFKHero.UI
             heroDefenseText.text = selectedHero.Defense.ToString();  //방어력
 
             UpdateLevelUpCost();                                     //레벨업 비용계산
+            UpdateGradeUpUI();                                       //영웅 승급 UI
         }
 
         //영웅 프리펩 표시
@@ -150,6 +158,62 @@ namespace AFKHero.UI
         #endregion
 
         #region 영웅 등급업
+
+        //영웅 승급 UI 갱신
+        private void UpdateGradeUpUI()
+        {
+            if (selectedHero == null || selectedHero.data == null) return;
+            if (HeroManager.Instance == null) return;
+
+            if (selectedHero.currentGrade >= HeroGrade.EpicPlus) //최고 등급
+            {
+                gradeUpShardCountText.text = "MAX";
+                gradeUpShardCountText.color = levelRed;
+                gradeUpButton.interactable = false;
+                return;
+            }
+
+            HeroGrade requiredGrade = selectedHero.GetRequiredShardGrade(); //현재 승급에 필요한 조각 종류
+            
+            int requiredCount = selectedHero.GetRequiredShardCount();       //현재 승급에 필요한 조각 개수
+            int currentCount = 0;                                           //현재 가지고 있는 조각 개수
+
+            switch (requiredGrade)
+            {
+                case HeroGrade.Normal:
+                    currentCount = HeroManager.Instance.normalShards;
+                    break;
+
+                case HeroGrade.Rare:
+                    currentCount = HeroManager.Instance.rareShards;
+                    break;
+
+                case HeroGrade.Epic:
+                    currentCount = HeroManager.Instance.epicShards;
+                    break;
+            }
+
+            gradeUpShardCountText.text = $"({currentCount} / {requiredCount})";                   //(보유 개수 / 필요 개수)
+            gradeUpShardCountText.color = currentCount >= requiredCount ? levelYellow : levelRed; //가능하면 노란색 표시 아니라면 빨간색 표시
+            gradeUpButton.interactable = currentCount >= requiredCount;                           //조각이 충분하면 버튼 활성화
+        }
+
+
+        //영웅 합성 버튼
+        public void OnClickedGradeUp()
+        {
+            if (selectedHero == null || selectedHero.data == null) return;
+            if (HeroManager.Instance == null) return;
+            if (selectedHero.currentGrade >= HeroGrade.EpicPlus) return;
+
+            
+            bool success = HeroManager.Instance.UpgradeHeroGrade(selectedHero.data.HeroID); //승급 요청
+            if (!success) return;
+
+            UpdateSelectedHero(); //선택 영웅 정보 갱신
+            UpdateHeroList();     //영웅 리스트 갱신
+        }
+
         #endregion
 
     }

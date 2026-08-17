@@ -64,6 +64,7 @@ namespace AFKHero.UI
         //HP 변경
         private void OnHealthChanged(BattleUnit unit, int currentHealth, int maxHealth)
         {
+            Debug.Log($"[BattleHeroSlot] {unit.name} HP UI 갱신 : {currentHealth}/{maxHealth}");
             SetHP(currentHealth, maxHealth);
         }
 
