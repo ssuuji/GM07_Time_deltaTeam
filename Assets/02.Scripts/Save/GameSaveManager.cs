@@ -14,7 +14,14 @@ public class GameSaveManager : MonoBehaviour
     private GameSaveData loadedSaveData;
 
     public GameSaveData LoadedSaveData => loadedSaveData;
-    private string SavePath => Path.Combine(Application.persistentDataPath, saveFileName);
+    private string SavePath
+    {
+        get
+        {
+            string buildPath = Directory.GetParent(Application.dataPath).FullName;
+            return Path.Combine(buildPath, saveFileName);
+        }
+    }
 
     private void Awake()
     {
