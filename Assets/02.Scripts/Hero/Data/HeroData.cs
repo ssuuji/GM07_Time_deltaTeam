@@ -1,5 +1,4 @@
-﻿using Mono.Cecil.Cil;
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewHeroData", menuName = "Game/Hero/Hero Data")]
 public class HeroData : ScriptableObject
