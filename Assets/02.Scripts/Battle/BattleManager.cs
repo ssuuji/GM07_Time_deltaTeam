@@ -28,7 +28,7 @@ namespace AFKHero.Battle
         private readonly UltimateQueue ultimateQueue = new();
 
         // 같은 프레임에 사망해도 승패 중복 방지
-        private bool isBattleResultConfirmed;
+        public bool isBattleResultConfirmed;
 
         // 남은 시간
         private float remainingBattleTime;
