@@ -18,8 +18,12 @@ public class GameSaveManager : MonoBehaviour
     {
         get
         {
-            string buildPath = Directory.GetParent(Application.dataPath).FullName;
-            return Path.Combine(buildPath, saveFileName);
+#if UNITY_EDITOR
+            return Path.Combine(Application.persistentDataPath, saveFileName); //유니티 에디터에서는 기존 저장 위치 사용
+#else
+        string buildPath = Directory.GetParent(Application.dataPath).FullName; //빌드에서는 exe가 있는 폴더에 저장
+        return Path.Combine(buildPath, saveFileName);
+#endif
         }
     }
 
