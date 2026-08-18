@@ -11,43 +11,102 @@ public class HeroInstance
     // 수정된 부분 : 승급 재료로 사용하던 중복 카드 duplicateCount 삭제
     public HeroGrade currentGrade;
 
-    
-    // 장비 슬롯 변수 - 장비 할때 추가하기
-    //public EquipmentData equippedWeapon { get; private set; }
-    //public EquipmentData equippedArmor { get; private set; }
-    //public EquipmentData equippedAccessory { get; private set; }
 
-    // 추가한 내용 : 장비 장착 및 해제 함수
-    //public void EquipItem(EquipmentData equipment)
-    //{
-    //    if (equipment == null) return;
+    // =========================================
+    // 추가된 부분 : 장비 슬롯 및 세트 효과
+    // =========================================
+    public EquipmentData equippedWeapon { get; private set; }
+    public EquipmentData equippedArmor { get; private set; }
+    public EquipmentData equippedPants { get; private set; }
+    public EquipmentData equippedHelmet { get; private set; }
 
-    //    switch (equipment.type)
-    //    {
-    //        case EquipmentType.Weapon: equippedWeapon = equipment; break;
-    //        case EquipmentType.Armor: equippedArmor = equipment; break;
-    //        case EquipmentType.Accessory: equippedAccessory = equipment; break;
-    //    }
-    //    Debug.Log($"[{data.HeroName}] {equipment.equipmentName} 장착 완료!");
-    //}
+    // 장비 장착 함수
+    public void EquipItem(EquipmentData equipment)
+    {
+        if (equipment == null) return;
 
-    //public void UnequipItem(EquipmentType type)
-    //{
-    //    switch (type)
-    //    {
-    //        case EquipmentType.Weapon: equippedWeapon = null; break;
-    //        case EquipmentType.Armor: equippedArmor = null; break;
-    //        case EquipmentType.Accessory: equippedAccessory = null; break;
-    //    }
-    //}
+        switch (equipment.type)
+        {
+            case EquipmentType.Weapon: equippedWeapon = equipment; break;
+            case EquipmentType.Armor: equippedArmor = equipment; break;
+            case EquipmentType.Pants: equippedPants = equipment; break;
+            case EquipmentType.Helmet: equippedHelmet = equipment; break;
+        }
+        Debug.Log($"[{data.HeroName}] {equipment.equipmentName} 장착 완료!");
+    }
 
-    //// 장비가 올려주는 스탯 총합 계산 헬퍼
-    //private int EquipmentBonusAttack => (equippedWeapon?.bonusAttack ?? 0) + 
-    //    (equippedArmor?.bonusAttack ?? 0) + (equippedAccessory?.bonusAttack ?? 0);
-    //private int EquipmentBonusHP => (equippedWeapon?.bonusHP ?? 0) +
-    //    (equippedArmor?.bonusHP ?? 0) + (equippedAccessory?.bonusHP ?? 0);
-    //private int EquipmentBonusDefense => (equippedWeapon?.bonusDefense ?? 0) + 
-    //    (equippedArmor?.bonusDefense ?? 0) + (equippedAccessory?.bonusDefense ?? 0);
+    // 장비 해제 함수
+    public void UnequipItem(EquipmentType type)
+    {
+        switch (type)
+        {
+            case EquipmentType.Weapon: equippedWeapon = null; break;
+            case EquipmentType.Armor: equippedArmor = null; break;
+            case EquipmentType.Pants: equippedPants = null; break;
+            case EquipmentType.Helmet: equippedHelmet = null; break;
+        }
+    }
+
+    // 4개 부위 장비 스탯 보너스 합산
+    private int EquipmentBonusAttack =>
+        (equippedWeapon?.bonusAttack ?? 0) + (equippedArmor?.bonusAttack ?? 0) +
+        (equippedPants?.bonusAttack ?? 0) + (equippedHelmet?.bonusAttack ?? 0);
+
+    private int EquipmentBonusHP =>
+        (equippedWeapon?.bonusHP ?? 0) + (equippedArmor?.bonusHP ?? 0) +
+        (equippedPants?.bonusHP ?? 0) + (equippedHelmet?.bonusHP ?? 0);
+
+    private int EquipmentBonusDefense =>
+        (equippedWeapon?.bonusDefense ?? 0) + (equippedArmor?.bonusDefense ?? 0) +
+        (equippedPants?.bonusDefense ?? 0) + (equippedHelmet?.bonusDefense ?? 0);
+
+    // 장비 고유 ID를 기반으로 4개 부위의 세트 개수 판별
+    public int GetSetCount(string setPrefix)
+    {
+        int count = 0;
+        if (equippedWeapon != null && equippedWeapon.equipmentID.StartsWith(setPrefix)) count++;
+        if (equippedArmor != null && equippedArmor.equipmentID.StartsWith(setPrefix)) count++;
+        if (equippedPants != null && equippedPants.equipmentID.StartsWith(setPrefix)) count++;
+        if (equippedHelmet != null && equippedHelmet.equipmentID.StartsWith(setPrefix)) count++;
+        return count;
+    }
+
+    // =========================================
+    // 장비 스탯이 포함된 최종 전투 스탯
+    // =========================================
+    public int FinalMaxHP
+    {
+        get
+        {
+            int baseWithEquip = MaxHP + EquipmentBonusHP;
+            float multiplier = 1f;
+
+            //세트 2개이상 모이면 15% 증가
+            if (GetSetCount("ReviveSet") >= 2) multiplier += 0.15f;
+
+            if (PartyManager.Instance != null && PartyManager.Instance.IsHeroInParty(this))
+            {
+                multiplier += PartyManager.Instance.totalBonusHpRate;
+            }
+            return Mathf.RoundToInt(baseWithEquip * multiplier);
+        }
+    }
+
+    public int FinalAttack
+    {
+        get
+        {
+            int baseWithEquip = Attack + EquipmentBonusAttack;
+            if (PartyManager.Instance == null || !PartyManager.Instance.IsHeroInParty(this)) return baseWithEquip;
+
+            float multiplier = 1f + PartyManager.Instance.totalBonusAttackRate;
+            return Mathf.RoundToInt(baseWithEquip * multiplier);
+        }
+    }
+
+    public int FinalDefense => Defense + EquipmentBonusDefense;
+
+
     public HeroInstance(HeroData heroData, bool defaultUnlocked = false)
     {
         data = heroData;
@@ -61,9 +120,70 @@ public class HeroInstance
     // ==========================
     // 영웅 자체 기본 스탯
     // ==========================
-    public int MaxHP => data.GetJobStats().hp + (level - 1) * 20;
-    public int Attack => data.GetJobStats().attack + (level - 1) * 5;
-    public int Defense => data.GetJobStats().defense + (level - 1) * 2;
+
+
+    // 현재 등급에 따른 추가 스탯 배율 계산
+    // 태생 등급에 따라 승급 시 추가되는 스탯 가중치를 다르게 부여
+    // 태생 노말 영웅이 풀승급을 하더라도 태생 에픽의 벽을 넘지 못하도록 제어
+    private float GradeMultiplier
+    {
+        get
+        {
+            // 현재 등급과 태생 등급의 차이(승급한 횟수)를 계산
+            // Enum 순서: Normal(0), NormalPlus(1), Rare(2), RarePlus(3), Epic(4), EpicPlus(5)
+            int upgradeCount = (int)currentGrade - (int)data.HeroGrade;
+
+            // 승급을 한 번도 안 했다면 보너스 없음
+            if (upgradeCount <= 0) return 1f;
+
+            float ratePerUpgrade = 0.15f; // 기본적으로 1단계 승급당 15% 증가
+
+            // 태생 등급별 보너스 효율 차등화
+            switch (data.HeroGrade)
+            {
+                case HeroGrade.Normal:
+                    ratePerUpgrade = 0.10f; // 태생 노말은 승급 효율을 10%로 낮춤
+                    break;
+                case HeroGrade.Rare:
+                    ratePerUpgrade = 0.15f; // 태생 레어는 승급 효율 15%
+                    break;
+                case HeroGrade.Epic:
+                    ratePerUpgrade = 0.20f; // 태생 에픽은 승급 효율을 20%로 우대
+                    break;
+            }
+
+            return 1f + (upgradeCount * ratePerUpgrade);
+        }
+    }
+
+    public int MaxHP
+    {
+        get
+        {
+            // 레벨당 성장 수치도 태생 등급에 영향을 받도록 data.GetJobStat기반으로 설계
+            int baseHp = data.GetJobStats().hp + (level - 1) * 20;
+            return Mathf.RoundToInt(baseHp * GradeMultiplier);
+        }
+    }
+
+    public int Attack
+    {
+        get
+        {
+            int baseAttack = data.GetJobStats().attack + (level - 1) * 5;
+            return Mathf.RoundToInt(baseAttack * GradeMultiplier);
+        }
+    }
+
+    public int Defense
+    {
+        get
+        {
+            int baseDefense = data.GetJobStats().defense + (level - 1) * 2;
+            return Mathf.RoundToInt(baseDefense * GradeMultiplier);
+        }
+    }
+
     public float AttackSpeed => data.GetJobStats().attackSpeed;
     public float AttackRange => data.GetJobStats().attackRange;
 
@@ -104,35 +224,6 @@ public class HeroInstance
     //public int FinalDefense => Defense + EquipmentBonusDefense;
 
 
-
-
-    // =========================================
-    // 시너지 적용 스탯
-    // =========================================
-
-    // 최종 체력 = 기본 체력 * (1 + 파티 체력 시너지 퍼센트)
-    public int FinalMaxHP
-    {
-        get
-        {
-            if (PartyManager.Instance == null) return MaxHP;
-
-            float multiplier = 1f + PartyManager.Instance.totalBonusHpRate;
-            return Mathf.RoundToInt(MaxHP * multiplier);
-        }
-    }
-
-    // 최종 공격력 = 기본 공격력 * (1 + 파티 공격력 시너지 퍼센트)
-    public int FinalAttack
-    {
-        get
-        {
-            if (PartyManager.Instance == null) return Attack;
-
-            float multiplier = 1f + PartyManager.Instance.totalBonusAttackRate;
-            return Mathf.RoundToInt(Attack * multiplier);
-        }
-    }
 
     // ===================
     // 레벨업 및 승급
