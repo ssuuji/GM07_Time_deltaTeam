@@ -3,9 +3,10 @@ using UnityEngine;
 // 장비 부위 지정
 public enum EquipmentType
 {
-    Weapon,    // 무기
-    Armor,    // 방어구
-    Accessory   // 장신구
+    Weapon, // 무기
+    Armor,  // 갑옷(상의)
+    Pants,  // 하의
+    Helmet, // 헬멧
 }
 
 [CreateAssetMenu(fileName = "NewEquipment", menuName = "Game Data / Equipment Data")]
