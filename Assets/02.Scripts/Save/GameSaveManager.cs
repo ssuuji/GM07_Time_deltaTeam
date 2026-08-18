@@ -1,4 +1,5 @@
-﻿using AFKHero.Shop;
+﻿using AFKHero.Scene;
+using AFKHero.Shop;
 using Newtonsoft.Json;
 using System.IO;
 using UnityEngine;
@@ -44,7 +45,7 @@ public class GameSaveManager : MonoBehaviour
     private void Start() //임시 : 나중엔 타이틀씬에서 로드 -> 게임씬 불러오기로
     {
         //에디터에서 Game씬을 바로 실행해도 저장데이터 불러올수 있게끔
-        if (SceneManager.GetActiveScene().name == "Game" && loadedSaveData == null)
+        if (IsGameScene(SceneManager.GetActiveScene()) && loadedSaveData == null)
         {
             LoadSaveData();
             ApplyLoadedData();
@@ -62,7 +63,7 @@ public class GameSaveManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        if (SceneManager.GetActiveScene().name != "Game") return;
+        if (!IsGameScene(SceneManager.GetActiveScene())) return;
 
         SaveGame();
     }
@@ -70,7 +71,7 @@ public class GameSaveManager : MonoBehaviour
     //씬 로드 완료 시 호출
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name != "Game") return;
+        if (!IsGameScene(scene)) return;
 
         ApplyLoadedData();
     }
@@ -131,6 +132,12 @@ public class GameSaveManager : MonoBehaviour
         }
 
         return saveData;
+    }
+
+    //저장 파일 존재 여부
+    public bool HasSave()
+    {
+        return File.Exists(SavePath);
     }
 
     #endregion
@@ -211,25 +218,31 @@ public class GameSaveManager : MonoBehaviour
 
     #endregion
 
-    #region 파일관리
+    #region 삭제
 
-    //저장 파일 존재 여부
-    public bool HasSave()
-    {
-        return File.Exists(SavePath);
-    }
-
-
-    //저장 파일 삭제
+    //저장 데이터 초기화
     [ContextMenu("Delete Save")]
-    public void DeleteSave()
+    public void DeleteSaveData()
     {
-        if (!HasSave()) return;
+        if (File.Exists(SavePath))
+        {
+            File.Delete(SavePath);
+            Debug.Log("세이브 데이터 삭제 완료");
+        }
+        else
+        {
+            Debug.Log("삭제할 세이브 데이터가 없습니다.");
+        }
 
-        File.Delete(SavePath);
-
-        Debug.Log($"[GameSaveManager] 저장 파일 삭제 : {SavePath}");
+        loadedSaveData = null;                                            //메모리에 남아있는 저장 데이터도 초기화
+        SceneManager.LoadScene(SceneNames.GetSceneName(SceneType.Title)); //타이틀씬 부터 다시 로드
     }
 
     #endregion
+
+    //씬 이름 체크
+    private bool IsGameScene(Scene scene)
+    {
+        return scene.name == SceneNames.GetSceneName(SceneType.Game);
+    }
 }
