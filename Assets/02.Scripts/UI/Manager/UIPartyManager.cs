@@ -13,8 +13,10 @@ namespace AFKHero.UI
         [SerializeField] private UIHeroList heroList;      //영웅리스트
 
         [Header("파티 배치 슬롯")]
-        [SerializeField] private Image[] partyPlaceImages; //배치자리 이미지
-        [SerializeField] private Transform[] partyHeroPrefabs;    //영웅 프리펩 배치할 위치
+        [SerializeField] private Image[] partyPlaceImages;     //배치자리 이미지
+        [SerializeField] private Transform[] partyHeroPrefabs; //영웅 프리펩 배치할 위치
+        [SerializeField] private Image partyPlaceBackImage_t;  //배치중 표시할 이미지
+        [SerializeField] private Image partyPlaceBackImage_b;  //배치중 표시할 이미지
 
         [Header("시너지")]
         [SerializeField] private UISynergy synergyUI;      //시너지 UI
@@ -56,6 +58,7 @@ namespace AFKHero.UI
 
             UINoticePopup.Instance.Show("배치할 위치를 선택해주세요.");
 
+            SetPlaceBack(true);                                         //주변 어둡게 표시
             SetSlotAlpha(true);                                         //빈자리 UI표시용
         }
 
@@ -79,6 +82,7 @@ namespace AFKHero.UI
                 selectedHero = null;                                      //배치 완료 후 선택 해제
 
                 UINoticePopup.Instance.Hide();                            //알림창 닫기
+                SetPlaceBack(false);                                      //배치중 배경 제거
                 SetSlotAlpha(false);                                      //자리 이미지 원래 상태로
             }
             else
@@ -86,7 +90,6 @@ namespace AFKHero.UI
                 HeroInstance hero = PartyManager.Instance.partySlots[slotIndex]; //임시로 배치되어있는 파티영웅 클릭하면 바로 해제
                 PartyManager.Instance.RemoveHero(hero);
             }
-
 
             UpdatePartySet();                                         //파티 UI 갱신
             synergyUI.UpdateUI();                                     //시너지 UI갱신
@@ -131,6 +134,13 @@ namespace AFKHero.UI
                 sortingGroup.sortingOrder = 10;
             }
 
+        }
+
+        //배치중 배경 표시
+        private void SetPlaceBack(bool active)
+        {
+            partyPlaceBackImage_t.gameObject.SetActive(active);
+            partyPlaceBackImage_b.gameObject.SetActive(active);
         }
 
         #endregion
