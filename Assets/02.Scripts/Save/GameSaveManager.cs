@@ -235,7 +235,7 @@ public class GameSaveManager : MonoBehaviour
         }
 
         loadedSaveData = null;                                            //메모리에 남아있는 저장 데이터도 초기화
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); //씬 다시 로드
+        SceneManager.LoadScene(SceneNames.GetSceneName(SceneType.Title)); //타이틀씬 부터 다시 로드
     }
 
     #endregion
