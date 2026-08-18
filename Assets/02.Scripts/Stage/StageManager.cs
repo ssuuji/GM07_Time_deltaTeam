@@ -102,6 +102,8 @@ public class StageManager : MonoBehaviour
         if(currentStageInfo == null) // 스테이지 데이터가 없으면 진행 중단
         {
             print("스테이지 데이터 null");
+            battleManager.ClearRegisteredUnits();
+            battleSpawner.ClearSpawnedUnits();
             return;
         }
 
@@ -208,6 +210,8 @@ public class StageManager : MonoBehaviour
     private void HandleDefeat()
     {
         defeatPanel.gameObject.SetActive(true);
+        battleManager.ClearRegisteredUnits();
+        battleSpawner.ClearSpawnedUnits();
         GameSaveManager.Instance.SaveGame();
     }
 
@@ -229,6 +233,7 @@ public class StageManager : MonoBehaviour
     public void CloseDefeatPanel()
     {
         defeatPanel.gameObject.SetActive(false);
+       
 
         Debug.Log("패배 패널 닫음");
 
