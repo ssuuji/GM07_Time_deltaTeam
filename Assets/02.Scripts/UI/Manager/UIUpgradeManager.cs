@@ -21,7 +21,8 @@ namespace AFKHero.UI
         [SerializeField] private TMP_Text heroAttackText;        //영웅 공격력
         [SerializeField] private TMP_Text heroDefenseText;       //영웅 방어력
                                                                  
-        [Header("레벨업")]                                        
+        [Header("레벨업")]
+        [SerializeField] private Button levelUpButton;           //레벨업 버튼
         [SerializeField] private TMP_Text levelUpCostText;       //레벨업 비용
 
         [Header("영웅 합성")]
@@ -132,17 +133,20 @@ namespace AFKHero.UI
         {
             if (selectedHero == null) return;
 
-            
             if (selectedHero.level >= 50)
             {
                 levelUpCostText.text = "MAX";        //최고레벨이면 MAX 표시
                 levelUpCostText.color = levelRed;    //빨간색 표시
+                levelUpButton.interactable = false;  //레벨업 버튼 비활성화
                 return;
             }
 
             int cost = selectedHero.LevelUpCost;     //레벨업 비용계산
-            levelUpCostText.text = cost.ToString();  //레벨업 비용표시
-            levelUpCostText.color = AFKHeroPlayerManager.Instance.Gold < cost ? levelRed : levelYellow; 
+            bool canLevelUp = AFKHeroPlayerManager.Instance.Gold >= cost;
+
+            levelUpCostText.text = cost.ToString();                      //레벨업 비용표시
+            levelUpCostText.color = canLevelUp ? levelYellow : levelRed; //가능 여부에 따라 색상
+            levelUpButton.interactable = canLevelUp;                     //골드가 충분하면 버튼 활성화
         }
 
         //레벨업 버튼
