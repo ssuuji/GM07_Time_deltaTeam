@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,27 +6,27 @@ namespace AFKHero.Battle
 {
     public sealed class UltimateQueue
     {
-        // ±Ã±¹±â ´ë±â ¼ø¼­¸¦ º¸°üÇÏ´Â ¸®½ºÆ®
+        // ê¶êµ­ê¸° ëŒ€ê¸° ìˆœì„œë¥¼ ë³´ê´€í•˜ëŠ” ë¦¬ìŠ¤íŠ¸
         private readonly List<BattleUnit> waitingUnits = new();
 
-        // °°Àº À¯´ÖÀÌ ´ë±â¿­¿¡ Áßº¹ µî·Ï °Ë»ç
+        // ê°™ì€ ìœ ë‹›ì´ ëŒ€ê¸°ì—´ì— ì¤‘ë³µ ë“±ë¡ ê²€ì‚¬
         private readonly HashSet<BattleUnit> queueUnits = new();
 
-        // ¼­·Î ´Ù¸¥ ÇÁ·¹ÀÓ¿¡ µé¾î¿Â ¿äÃ» ¼ø¼­ µî·Ï ÇÁ·¹ÀÓ
+        // ì„œë¡œ ë‹¤ë¥¸ í”„ë ˆì„ì— ë“¤ì–´ì˜¨ ìš”ì²­ ìˆœì„œ ë“±ë¡ í”„ë ˆì„
         private readonly Dictionary<BattleUnit, int> queueFrames = new();
 
-        // ÇöÀç ´ë±â ÁßÀÎ ±Ã±Ø±â °³¼ö
+        // í˜„ì¬ ëŒ€ê¸° ì¤‘ì¸ ê¶ê·¹ê¸° ê°œìˆ˜
         public int Count => waitingUnits.Count;
 
-        // ¿ÜºÎ¿¡ ´ë±â ¼ø¼­ Àü´Ş
+        // ì™¸ë¶€ì— ëŒ€ê¸° ìˆœì„œ ì „ë‹¬
         public IReadOnlyList<BattleUnit> WaitingUnits => waitingUnits;
 
-        // À¯´ÖÀÌ ´ë±â¿­¿¡ Á¤»ó µî·ÏµÇ¸é ¾Ë¸²
+        // ìœ ë‹›ì´ ëŒ€ê¸°ì—´ì— ì •ìƒ ë“±ë¡ë˜ë©´ ì•Œë¦¼
         public event Action<BattleUnit> UnitEnqueue;
 
         public event Action QueueChanged;
 
-        // ±Ã±Ø±â ÁØºñµÈ À¯´Ö ´ë±â¿­¿¡ ÇÑ¹ø¸¸ µî·Ï
+        // ê¶ê·¹ê¸° ì¤€ë¹„ëœ ìœ ë‹› ëŒ€ê¸°ì—´ì— í•œë²ˆë§Œ ë“±ë¡
         public bool TryEnqueue(BattleUnit unit, int queueFrame)
         {
             if(!CanEnqueue(unit) || queueUnits.Contains(unit))
@@ -46,7 +46,7 @@ namespace AFKHero.Battle
             return true;
         }
 
-        // Å¥¿¡¼­ ¿ì¼±¼øÀ§°¡ °¡Àå ³ôÀº À¯´ÖÀ» Å¥¿¡¼­ Á¦°Å
+        // íì—ì„œ ìš°ì„ ìˆœìœ„ê°€ ê°€ì¥ ë†’ì€ ìœ ë‹›ì„ íì—ì„œ ì œê±°
         public bool TryDequeue(out BattleUnit unit)
         {
             if(waitingUnits.Count == 0)
@@ -60,7 +60,7 @@ namespace AFKHero.Battle
             return AllRemoveAt(0, out unit);
         }
 
-        // »ç¿ëÀÚ°¡ ¼±ÅÃÇÑ ±Ã±Ø±â¸¦ ´ë±â¿­¿¡¼­ Ã£¾Æ Á¦°Å
+        // ì‚¬ìš©ìê°€ ì„ íƒí•œ ê¶ê·¹ê¸°ë¥¼ ëŒ€ê¸°ì—´ì—ì„œ ì°¾ì•„ ì œê±°
         public bool TryDequeue(BattleUnit requestUnit, out BattleUnit unit)
         {
             int index = waitingUnits.IndexOf(requestUnit);
@@ -74,7 +74,7 @@ namespace AFKHero.Battle
             return AllRemoveAt(index, out unit);
         }
 
-        // ÇöÀç ¿ì¼±¼øÀ§°¡ °¡Àå ³ôÀº À¯´ÖÀ» ²¨³¿ ¼öµ¿¸ğµå¿¡¼­´Â Àû ±Ã±Ø±â´Â ÀÚµ¿ ½ÇÇàÇÒ ¶§ »ç¿ë
+        // í˜„ì¬ ìš°ì„ ìˆœìœ„ê°€ ê°€ì¥ ë†’ì€ ìœ ë‹›ì„ êº¼ëƒ„ ìˆ˜ë™ëª¨ë“œì—ì„œëŠ” ì  ê¶ê·¹ê¸°ëŠ” ìë™ ì‹¤í–‰í•  ë•Œ ì‚¬ìš©
         public bool TryDequeueFirst(TeamType team, out BattleUnit unit)
         {
             for(int i = 0; i < waitingUnits.Count; i++)
@@ -111,13 +111,13 @@ namespace AFKHero.Battle
             return false;
         }
 
-        // ÁöÁ¤ÇÑ À¯´ÖÀÌ ÀÌ¹Ì ±Ã±Ø±â ´ë±â¿­¿¡ ÀÖ´ÂÁö È®ÀÎ
+        // ì§€ì •í•œ ìœ ë‹›ì´ ì´ë¯¸ ê¶ê·¹ê¸° ëŒ€ê¸°ì—´ì— ìˆëŠ”ì§€ í™•ì¸
         public bool Contains(BattleUnit unit)
         {
             return unit != null && queueUnits.Contains(unit);
         }
 
-        // À¯´ÖÀÌ Á×°Å³ª ±Ã±Ø±â¸¦ »ç¿ëÇÒ ¼ö ¾ø´Â À¯´Ö ´ë±â¿­¿¡¼­ Á¦°Å
+        // ìœ ë‹›ì´ ì£½ê±°ë‚˜ ê¶ê·¹ê¸°ë¥¼ ì‚¬ìš©í•  ìˆ˜ ì—†ëŠ” ìœ ë‹› ëŒ€ê¸°ì—´ì—ì„œ ì œê±°
         public bool Remove(BattleUnit unit)
         {
             if(unit == null || !queueUnits.Remove(unit))
@@ -131,7 +131,7 @@ namespace AFKHero.Battle
             return true;
         }
 
-        // Å¥ ºñ¿ì±â
+        // í ë¹„ìš°ê¸°
         public void Clear()
         {
             bool hadWaitingUnit = waitingUnits.Count > 0;
@@ -173,9 +173,9 @@ namespace AFKHero.Battle
                 unit.Energy.IsUltimateReady;
         }
 
-        // À¯´ÖÀÌ Å¥ ¼ø¼­ ¾îµğ¿¡ µé¾î°¥ Áö À§Ä¡ Ã£±â
-        // °°Àº ÇÁ·¹ÀÓÀÌ¸é ¾Æ±º(¿ì¼±) -> Àû
-        // °°Àº Áø¿µÀÌ¸é Æí¼º ½½·Ô ¹øÈ£°¡ ºü¸¥ À¯´Ö ¿ì¼±
+        // ìœ ë‹›ì´ í ìˆœì„œ ì–´ë””ì— ë“¤ì–´ê°ˆ ì§€ ìœ„ì¹˜ ì°¾ê¸°
+        // ê°™ì€ í”„ë ˆì„ì´ë©´ ì•„êµ°(ìš°ì„ ) -> ì 
+        // ê°™ì€ ì§„ì˜ì´ë©´ í¸ì„± ìŠ¬ë¡¯ ë²ˆí˜¸ê°€ ë¹ ë¥¸ ìœ ë‹› ìš°ì„ 
         private int FindInsertIndex(BattleUnit newUnit, int newQueueFrame)
         {
             for (int i = 0; i < waitingUnits.Count; i++) 
@@ -192,7 +192,7 @@ namespace AFKHero.Battle
             return waitingUnits.Count;
         }
 
-        // ±Ã±Ø±â ¿ì¼±¼øÀ§ ºñ±³
+        // ê¶ê·¹ê¸° ìš°ì„ ìˆœìœ„ ë¹„êµ
         private static bool PriorityUltimate(
             BattleUnit newUnit, 
             int newQueueFrame, 

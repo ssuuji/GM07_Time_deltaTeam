@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 namespace AFKHero.Battle
 {
@@ -8,20 +8,20 @@ namespace AFKHero.Battle
 
         public static int CalculateBasicAttackDamage(UnitStats attackerStats, UnitStats defenderStats)
         {
-            if(attackerStats == null)
+            if (attackerStats == null)
             {
-                Debug.LogError("°ø°İ À¯´ÖÀÇ UnitStats°¡ ºñ¾îÀÖ½À´Ï´Ù.");
+                Debug.LogError("ê³µê²© ìœ ë‹›ì˜ UnitStatsê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.");
 
                 return 0;
             }
 
-            if(defenderStats == null)
+            if (defenderStats == null)
             {
-                Debug.LogError("¹æ¾î À¯´ÖÀÇ UnitStats°¡ ºñ¾îÀÖ½À´Ï´Ù");
+                Debug.LogError("ë°©ì–´ ìœ ë‹›ì˜ UnitStatsê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤");
                 return 0;
             }
 
-            if(attackerStats.AttackPower <= 0)
+            if (attackerStats.AttackPower <= 0)
             {
                 return 0;
             }
@@ -29,6 +29,38 @@ namespace AFKHero.Battle
             int damageBeforeMinimum = attackerStats.AttackPower - defenderStats.Defense;
 
             return Mathf.Max(MinimunDamage, damageBeforeMinimum);
+        }
+        public static int CalculateUltimateDamage(
+        UnitStats attackerStats,
+        UnitStats defenderStats,
+        float attackMultiplier,
+        float defenseIgnoreRate = 0f)
+        {
+            if (attackerStats == null || defenderStats == null)
+            {
+                return 0;
+            }
+
+            if (attackerStats.AttackPower <= 0 || attackMultiplier <= 0f)
+            {
+                return 0;
+            }
+
+            int scaledAttack = Mathf.RoundToInt(attackerStats.AttackPower * Mathf.Max(0f, attackMultiplier));
+
+            int appliedDefense = Mathf.RoundToInt(defenderStats.Defense * (1f - Mathf.Clamp01(defenseIgnoreRate)));
+
+            return Mathf.Max(MinimunDamage, scaledAttack - appliedDefense);
+        }
+
+        public static int CalculateUltimateHealing(UnitStats casterStats, float attackMultiPlier)
+        {
+            if(casterStats == null || casterStats.AttackPower <= 0 || attackMultiPlier <= 0f)
+            {
+                return 0;
+            }
+
+            return Mathf.Max(1, Mathf.RoundToInt(casterStats.AttackPower * Mathf.Max(0f, attackMultiPlier)));
         }
     }
 }
