@@ -55,6 +55,23 @@ namespace AFKHero.Battle
             return previousHealth - CurrentHealth;
         }
 
+        public int RestoreHealth(int amount)
+        {
+            if (!IsAlive || amount <= 0)
+            {
+                return 0;
+            }
+
+            int previousHealth = CurrentHealth;
+
+            CurrentHealth = Mathf.Min(
+                MaxHealth,
+                CurrentHealth + amount);
+
+            return CurrentHealth - previousHealth;
+        }
+
+
         public int AddUltimateEnergy(int amount)
         {
             if(!IsAlive || amount <= 0)

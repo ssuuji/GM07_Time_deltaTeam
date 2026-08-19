@@ -24,6 +24,11 @@ namespace AFKHero.Battle
 
         public bool IsDead => isDead;
 
+        // 현재 남아 있는 보호막
+        public int CurrentShield { get; private set; }
+
+        public event Action<BattleUnit, int> ShieldChanged;
+
         //유닛, 현재 체력, 최대 체력, 전달
         public event Action<BattleUnit, int, int> HealthChanged;
 
@@ -32,10 +37,10 @@ namespace AFKHero.Battle
             owner = unitOwner;
             battleManager = manager;
             
-            isDead = 
-                owner == null ||
+            isDead = owner == null ||
                 owner.Stats == null ||
                 !owner.Stats.IsAlive;
+            CurrentShield = 0;
         }
         public int TakeDamage(int finalDamage, BattleUnit attacker)
         {
@@ -86,21 +91,37 @@ namespace AFKHero.Battle
                 return 0;
             }
 
-            int appliedDamage = owner.Stats.ApplyDamage(finalDamage);
+            int absorbedDamage =
+               AbsorbDamageWithShield(finalDamage);
 
-            if(appliedDamage <= 0)
+            int remainingDamage =
+                finalDamage - absorbedDamage;
+
+            int appliedHealthDamage =
+                owner.Stats.ApplyDamage(remainingDamage);
+
+            int totalAppliedDamage =
+                absorbedDamage + appliedHealthDamage;
+
+            if (totalAppliedDamage <= 0)
             {
                 return 0;
             }
 
-            HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth); //체력 변경 알림
+            if (appliedHealthDamage > 0)
+            {
+                HealthChanged?.Invoke(
+                    owner,
+                    CurrentHealth,
+                    MaxHealth);
+            }
 
             if (logDamage)
             {
                 string attackName = attacker != null ? attacker.name : "Unknown";
 
-                Debug.Log($"[피해] {attackName} -> {owner.name} / [데미지] {appliedDamage} / " +
-                    $"[HP] ({owner.Stats.CurrentHealth})/({owner.Stats.MaxHealth})");
+                Debug.Log($"[피해] {attackName} -> {owner.name} / [데미지] {appliedHealthDamage} / " +
+                    $"[보호막 흡수] {absorbedDamage} / [HP] ({owner.Stats.CurrentHealth})/({owner.Stats.MaxHealth})");
             }
 
             if(owner.Stats.IsAlive)
@@ -111,7 +132,93 @@ namespace AFKHero.Battle
             {
                 Die();
             }
-            return appliedDamage;
+            return totalAppliedDamage;
+        }
+
+        // 회복
+        public int RestoreHealthFromUltimate(
+           int amount,
+           BattleUnit healer)
+        {
+            if (isDead ||
+                owner == null ||
+                owner.Stats == null ||
+                !owner.Stats.IsAlive ||
+                healer == null ||
+                healer.Team != owner.Team ||
+                battleManager == null ||
+                battleManager.CurrentUltimateUnit != healer ||
+                amount <= 0)
+            {
+                return 0;
+            }
+
+            int restoredHealth =
+                owner.Stats.RestoreHealth(amount);
+
+            if (restoredHealth <= 0)
+            {
+                return 0;
+            }
+
+            HealthChanged?.Invoke(
+                owner,
+                CurrentHealth,
+                MaxHealth);
+
+            Debug.Log(
+                $"[궁극기 회복] {healer.name} -> {owner.name} / " +
+                $"[회복량] {restoredHealth} / " +
+                $"[HP] {CurrentHealth}/{MaxHealth}",
+                owner);
+
+            return restoredHealth;
+        }
+
+        // 보호막
+        public int AddShieldFromUltimate(
+            int amount,
+            BattleUnit shieldProvider)
+        {
+            if (isDead ||
+                owner == null ||
+                owner.Stats == null ||
+                !owner.Stats.IsAlive ||
+                shieldProvider == null ||
+                shieldProvider.Team != owner.Team ||
+                battleManager == null ||
+                battleManager.CurrentUltimateUnit != shieldProvider ||
+                amount <= 0)
+            {
+                return 0;
+            }
+
+            int previousShield =
+                CurrentShield;
+
+            CurrentShield = Mathf.Min(
+                MaxHealth,
+                CurrentShield + amount);
+
+            int addedShield =
+                CurrentShield - previousShield;
+
+            if (addedShield <= 0)
+            {
+                return 0;
+            }
+
+            ShieldChanged?.Invoke(
+                owner,
+                CurrentShield);
+
+            Debug.Log(
+                $"[궁극기 보호막] {shieldProvider.name} -> {owner.name} / " +
+                $"[추가량] {addedShield} / " +
+                $"[현재 보호막] {CurrentShield}",
+                owner);
+
+            return addedShield;
         }
 
         // 유닛 죽음
@@ -140,6 +247,23 @@ namespace AFKHero.Battle
                 gameObject.SetActive(false);
             }
         }
+        private int AbsorbDamageWithShield(int damage)
+        {
+            if (damage <= 0 || CurrentShield <= 0)
+            {
+                return 0;
+            }
 
+            int absorbedDamage =
+                Mathf.Min(CurrentShield, damage);
+
+            CurrentShield -= absorbedDamage;
+
+            ShieldChanged?.Invoke(
+                owner,
+                CurrentShield);
+
+            return absorbedDamage;
+        }
     }
 }

@@ -396,7 +396,10 @@ namespace AFKHero.Battle
         // 유닛 대기열 등록
         private void HandleUltimateReady(BattleUnit readyUnit)
         {
-            if(CurrentState != BattleState.Fighting || !IsRegisterUnit(readyUnit))
+            if (!IsBattleRunning() ||
+                !IsRegisterUnit(readyUnit) ||
+                readyUnit.UltimateController == null ||
+                !readyUnit.UltimateController.CheckCanUseUltimate())
             {
                 return;
             }
@@ -559,6 +562,7 @@ namespace AFKHero.Battle
                 unit.Energy != null &&
                 unit.Energy.IsUltimateReady &&
                 unit.UltimateController != null &&
+                unit.UltimateController.CheckCanUseUltimate() &&
                 !unit.UltimateController.IsExecuting &&
                 unit.StatusEffects != null &&
                 unit.StatusEffects.CanUseUltimate;
