@@ -8787,20 +8787,25 @@ MonoBehaviour:
   partyContent: {fileID: 1979515863}
   heroList: {fileID: 1250732926}
   partyPlaceImages:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 582334403}
+  - {fileID: 1393263579}
+  - {fileID: 731600621}
+  - {fileID: 1901895611}
+  - {fileID: 347357143}
   partyHeroPrefabs:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1645292949}
+  - {fileID: 1630812684}
+  - {fileID: 1271871571}
+  - {fileID: 652794770}
+  - {fileID: 486105945}
   partyPlaceBackImage_t: {fileID: 1349086828}
   partyPlaceBackImage_b: {fileID: 20261169}
-  removeMarks: []
+  removeMarks:
+  - {fileID: 584493889}
+  - {fileID: 1051710730}
+  - {fileID: 1143176424}
+  - {fileID: 1994336145}
+  - {fileID: 524940766}
   synergyUI: {fileID: 605257019}
 --- !u!114 &605257019
 MonoBehaviour:
