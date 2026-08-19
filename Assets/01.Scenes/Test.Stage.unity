@@ -869,6 +869,7 @@ MonoBehaviour:
   enemySpawner: {fileID: 1373122689}
   battleManager: {fileID: 1787319763}
   battleSpawner: {fileID: 1787319762}
+  stageBackgroundChanger: {fileID: 0}
   victoryPanel: {fileID: 385115466}
   defeatPanel: {fileID: 363549963}
   currentStageNumber: 1
@@ -1041,6 +1042,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Battle.BattleManager
   battleTimeLimit: 30
   ultimateUseMode: 0
+  isBattleResultConfirmed: 0
 --- !u!4 &1787319764
 Transform:
   m_ObjectHideFlags: 0
