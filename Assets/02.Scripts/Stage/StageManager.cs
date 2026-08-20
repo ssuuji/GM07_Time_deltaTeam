@@ -4,6 +4,17 @@ using System.Collections;
 using UnityEngine;
 
 //StageDB를 들고있으면서, 특정 조건에 따라서 현재 스테이지를 다음 스테이지로 넘기게 할 관리자 클래스
+//현재는 BattleManager의 이벤트를 구독하는 방식으로 승패처리가 동작한단 말이지
+//그런데 만약 추가 컨텐츠에서도 BattleManager와 BattleSpawner의 로직을 사용해야 한다면?
+//그 컨텐츠에서 승패처리가 됐을 때도 이게 발동될텐데...
+//이벤트를 사용하지 않고, 자체적으로 승패처리를 할 수 있는 방식으로 리팩토링되어야 하지 않을까?
+//BattleManager와 BattleSpawner는 싱글톤이 아니니까, 다른 오브젝트의 컴포넌트를 참조하면 되려나?
+//StageManager도... 사실은 딱 그냥 DB를 들고 있으면서 넘기는 것만 처리했어야 하지 않았을까.
+//만약 그랬다면, 싱글톤이 아닌 일반 클래스로 만들고, 상속이나 이런 걸로 바꿀 수 있었을지도...
+//근데 여기서 싱글톤이었던 애를 갈아엎으면 고쳐야 될 부분 겁나 많아지잖아.
+//이런 부분을... 조교님이나 강사님, 멘토님한테 물어봐야 할 수도 있을 것 같네.
+//애초에... UIStageManager 이런 클래스로 기능분리를 했어야 했을 듯.
+
 public class StageManager : MonoBehaviour
 {
     public static StageManager Instance { get; private set; }
