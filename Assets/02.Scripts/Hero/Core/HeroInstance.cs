@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+ï»¿using System.Runtime.InteropServices;
 using UnityEngine;
 
 [System.Serializable]
@@ -7,20 +7,21 @@ public class HeroInstance
     public HeroData data;
     public int level;
     public bool isUnlocked;
+    public bool isResonanced;
 
-    // ¼öÁ¤µÈ ºÎºĞ : ½Â±Ş Àç·á·Î »ç¿ëÇÏ´ø Áßº¹ Ä«µå duplicateCount »èÁ¦
+    // ìˆ˜ì •ëœ ë¶€ë¶„ : ìŠ¹ê¸‰ ì¬ë£Œë¡œ ì‚¬ìš©í•˜ë˜ ì¤‘ë³µ ì¹´ë“œ duplicateCount ì‚­ì œ
     public HeroGrade currentGrade;
 
 
     // =========================================
-    // Ãß°¡µÈ ºÎºĞ : Àåºñ ½½·Ô ¹× ¼¼Æ® È¿°ú
+    // ì¶”ê°€ëœ ë¶€ë¶„ : ì¥ë¹„ ìŠ¬ë¡¯ ë° ì„¸íŠ¸ íš¨ê³¼
     // =========================================
     public EquipmentData equippedWeapon { get; private set; }
     public EquipmentData equippedArmor { get; private set; }
     public EquipmentData equippedPants { get; private set; }
     public EquipmentData equippedHelmet { get; private set; }
 
-    // Àåºñ ÀåÂø ÇÔ¼ö
+    // ì¥ë¹„ ì¥ì°© í•¨ìˆ˜
     public void EquipItem(EquipmentData equipment)
     {
         if (equipment == null) return;
@@ -32,10 +33,10 @@ public class HeroInstance
             case EquipmentType.Pants: equippedPants = equipment; break;
             case EquipmentType.Helmet: equippedHelmet = equipment; break;
         }
-        Debug.Log($"[{data.HeroName}] {equipment.equipmentName} ÀåÂø ¿Ï·á!");
+        Debug.Log($"[{data.HeroName}] {equipment.equipmentName} ì¥ì°© ì™„ë£Œ!");
     }
 
-    // Àåºñ ÇØÁ¦ ÇÔ¼ö
+    // ì¥ë¹„ í•´ì œ í•¨ìˆ˜
     public void UnequipItem(EquipmentType type)
     {
         switch (type)
@@ -47,7 +48,7 @@ public class HeroInstance
         }
     }
 
-    // 4°³ ºÎÀ§ Àåºñ ½ºÅÈ º¸³Ê½º ÇÕ»ê
+    // 4ê°œ ë¶€ìœ„ ì¥ë¹„ ìŠ¤íƒ¯ ë³´ë„ˆìŠ¤ í•©ì‚°
     private int EquipmentBonusAttack =>
         (equippedWeapon?.bonusAttack ?? 0) + (equippedArmor?.bonusAttack ?? 0) +
         (equippedPants?.bonusAttack ?? 0) + (equippedHelmet?.bonusAttack ?? 0);
@@ -60,7 +61,7 @@ public class HeroInstance
         (equippedWeapon?.bonusDefense ?? 0) + (equippedArmor?.bonusDefense ?? 0) +
         (equippedPants?.bonusDefense ?? 0) + (equippedHelmet?.bonusDefense ?? 0);
 
-    // Àåºñ °íÀ¯ ID¸¦ ±â¹İÀ¸·Î 4°³ ºÎÀ§ÀÇ ¼¼Æ® °³¼ö ÆÇº°
+    // ì¥ë¹„ ê³ ìœ  IDë¥¼ ê¸°ë°˜ìœ¼ë¡œ 4ê°œ ë¶€ìœ„ì˜ ì„¸íŠ¸ ê°œìˆ˜ íŒë³„
     public int GetSetCount(string setPrefix)
     {
         int count = 0;
@@ -72,7 +73,7 @@ public class HeroInstance
     }
 
     // =========================================
-    // Àåºñ ½ºÅÈÀÌ Æ÷ÇÔµÈ ÃÖÁ¾ ÀüÅõ ½ºÅÈ
+    // ì¥ë¹„ ìŠ¤íƒ¯ì´ í¬í•¨ëœ ìµœì¢… ì „íˆ¬ ìŠ¤íƒ¯
     // =========================================
     public int FinalMaxHP
     {
@@ -81,7 +82,7 @@ public class HeroInstance
             int baseWithEquip = MaxHP + EquipmentBonusHP;
             float multiplier = 1f;
 
-            //¼¼Æ® 2°³ÀÌ»ó ¸ğÀÌ¸é 15% Áõ°¡
+            //ì„¸íŠ¸ 2ê°œì´ìƒ ëª¨ì´ë©´ 15% ì¦ê°€
             if (GetSetCount("ReviveSet") >= 2) multiplier += 0.15f;
 
             if (PartyManager.Instance != null && PartyManager.Instance.IsHeroInParty(this))
@@ -112,43 +113,44 @@ public class HeroInstance
         data = heroData;
         level = 1;
         isUnlocked = defaultUnlocked;
+        isResonanced = false;
 
-        // Ãß°¡µÈ ºÎºĞ : Ã³À½ »ı¼º ½Ã Ã³À½ µî±ŞÀ¸·Î ÃÊ±âÈ­
+        // ì¶”ê°€ëœ ë¶€ë¶„ : ì²˜ìŒ ìƒì„± ì‹œ ì²˜ìŒ ë“±ê¸‰ìœ¼ë¡œ ì´ˆê¸°í™”
         currentGrade = data.HeroGrade;
     }
 
     // ==========================
-    // ¿µ¿õ ÀÚÃ¼ ±âº» ½ºÅÈ
+    // ì˜ì›… ìì²´ ê¸°ë³¸ ìŠ¤íƒ¯
     // ==========================
 
 
-    // ÇöÀç µî±Ş¿¡ µû¸¥ Ãß°¡ ½ºÅÈ ¹èÀ² °è»ê
-    // ÅÂ»ı µî±Ş¿¡ µû¶ó ½Â±Ş ½Ã Ãß°¡µÇ´Â ½ºÅÈ °¡ÁßÄ¡¸¦ ´Ù¸£°Ô ºÎ¿©
-    // ÅÂ»ı ³ë¸» ¿µ¿õÀÌ Ç®½Â±ŞÀ» ÇÏ´õ¶óµµ ÅÂ»ı ¿¡ÇÈÀÇ º®À» ³ÑÁö ¸øÇÏµµ·Ï Á¦¾î
+    // í˜„ì¬ ë“±ê¸‰ì— ë”°ë¥¸ ì¶”ê°€ ìŠ¤íƒ¯ ë°°ìœ¨ ê³„ì‚°
+    // íƒœìƒ ë“±ê¸‰ì— ë”°ë¼ ìŠ¹ê¸‰ ì‹œ ì¶”ê°€ë˜ëŠ” ìŠ¤íƒ¯ ê°€ì¤‘ì¹˜ë¥¼ ë‹¤ë¥´ê²Œ ë¶€ì—¬
+    // íƒœìƒ ë…¸ë§ ì˜ì›…ì´ í’€ìŠ¹ê¸‰ì„ í•˜ë”ë¼ë„ íƒœìƒ ì—í”½ì˜ ë²½ì„ ë„˜ì§€ ëª»í•˜ë„ë¡ ì œì–´
     private float GradeMultiplier
     {
         get
         {
-            // ÇöÀç µî±Ş°ú ÅÂ»ı µî±ŞÀÇ Â÷ÀÌ(½Â±ŞÇÑ È½¼ö)¸¦ °è»ê
-            // Enum ¼ø¼­: Normal(0), NormalPlus(1), Rare(2), RarePlus(3), Epic(4), EpicPlus(5)
+            // í˜„ì¬ ë“±ê¸‰ê³¼ íƒœìƒ ë“±ê¸‰ì˜ ì°¨ì´(ìŠ¹ê¸‰í•œ íšŸìˆ˜)ë¥¼ ê³„ì‚°
+            // Enum ìˆœì„œ: Normal(0), NormalPlus(1), Rare(2), RarePlus(3), Epic(4), EpicPlus(5)
             int upgradeCount = (int)currentGrade - (int)data.HeroGrade;
 
-            // ½Â±ŞÀ» ÇÑ ¹øµµ ¾È Çß´Ù¸é º¸³Ê½º ¾øÀ½
+            // ìŠ¹ê¸‰ì„ í•œ ë²ˆë„ ì•ˆ í–ˆë‹¤ë©´ ë³´ë„ˆìŠ¤ ì—†ìŒ
             if (upgradeCount <= 0) return 1f;
 
-            float ratePerUpgrade = 0.15f; // ±âº»ÀûÀ¸·Î 1´Ü°è ½Â±Ş´ç 15% Áõ°¡
+            float ratePerUpgrade = 0.15f; // ê¸°ë³¸ì ìœ¼ë¡œ 1ë‹¨ê³„ ìŠ¹ê¸‰ë‹¹ 15% ì¦ê°€
 
-            // ÅÂ»ı µî±Şº° º¸³Ê½º È¿À² Â÷µîÈ­
+            // íƒœìƒ ë“±ê¸‰ë³„ ë³´ë„ˆìŠ¤ íš¨ìœ¨ ì°¨ë“±í™”
             switch (data.HeroGrade)
             {
                 case HeroGrade.Normal:
-                    ratePerUpgrade = 0.10f; // ÅÂ»ı ³ë¸»Àº ½Â±Ş È¿À²À» 10%·Î ³·Ãã
+                    ratePerUpgrade = 0.10f; // íƒœìƒ ë…¸ë§ì€ ìŠ¹ê¸‰ íš¨ìœ¨ì„ 10%ë¡œ ë‚®ì¶¤
                     break;
                 case HeroGrade.Rare:
-                    ratePerUpgrade = 0.15f; // ÅÂ»ı ·¹¾î´Â ½Â±Ş È¿À² 15%
+                    ratePerUpgrade = 0.15f; // íƒœìƒ ë ˆì–´ëŠ” ìŠ¹ê¸‰ íš¨ìœ¨ 15%
                     break;
                 case HeroGrade.Epic:
-                    ratePerUpgrade = 0.20f; // ÅÂ»ı ¿¡ÇÈÀº ½Â±Ş È¿À²À» 20%·Î ¿ì´ë
+                    ratePerUpgrade = 0.20f; // íƒœìƒ ì—í”½ì€ ìŠ¹ê¸‰ íš¨ìœ¨ì„ 20%ë¡œ ìš°ëŒ€
                     break;
             }
 
@@ -160,7 +162,7 @@ public class HeroInstance
     {
         get
         {
-            // ·¹º§´ç ¼ºÀå ¼öÄ¡µµ ÅÂ»ı µî±Ş¿¡ ¿µÇâÀ» ¹Şµµ·Ï data.GetJobStat±â¹İÀ¸·Î ¼³°è
+            // ë ˆë²¨ë‹¹ ì„±ì¥ ìˆ˜ì¹˜ë„ íƒœìƒ ë“±ê¸‰ì— ì˜í–¥ì„ ë°›ë„ë¡ data.GetJobStatê¸°ë°˜ìœ¼ë¡œ ì„¤ê³„
             int baseHp = data.GetJobStats().hp + (level - 1) * 20;
             return Mathf.RoundToInt(baseHp * GradeMultiplier);
         }
@@ -188,14 +190,14 @@ public class HeroInstance
     public float AttackRange => data.GetJobStats().attackRange;
 
 
-    // Àåºñ¸¦ Ãß°¡ÇÑ´Ù¸é ¼öÁ¤ÇÒ ³»¿ë: ÃÖÁ¾ ½ºÅÈ ÇÁ·ÎÆÛÆ¼ µ¤¾î¾²±â - ¾Æ·¡ ½Ã³ÊÁö Àû¿ë ½ºÅÈ°ú ±³Ã¼
-    // Àåºñ ½ºÅÈÀ» ¸ÕÀú ´õÇÑ µÚ¿¡ ÆÄÆ¼ ½Ã³ÊÁö »½Æ¢±â¸¦ Àû¿ë
+    // ì¥ë¹„ë¥¼ ì¶”ê°€í•œë‹¤ë©´ ìˆ˜ì •í•  ë‚´ìš©: ìµœì¢… ìŠ¤íƒ¯ í”„ë¡œí¼í‹° ë®ì–´ì“°ê¸° - ì•„ë˜ ì‹œë„ˆì§€ ì ìš© ìŠ¤íƒ¯ê³¼ êµì²´
+    // ì¥ë¹„ ìŠ¤íƒ¯ì„ ë¨¼ì € ë”í•œ ë’¤ì— íŒŒí‹° ì‹œë„ˆì§€ ë»¥íŠ€ê¸°ë¥¼ ì ìš©
 
     //public int FinalMaxHP
     //{
     //    get
     //    {
-    //        int baseWithEquip = MaxHP + EquipmentBonusHP; // ±âº» Ã¼·Â + Àåºñ Ã¼·Â
+    //        int baseWithEquip = MaxHP + EquipmentBonusHP; // ê¸°ë³¸ ì²´ë ¥ + ì¥ë¹„ ì²´ë ¥
 
     //        if (PartyManager.Instance != null && PartyManager.Instance.IsHeroInParty(this))
     //        {
@@ -210,7 +212,7 @@ public class HeroInstance
     //{
     //    get
     //    {
-    //        int baseWithEquip = Attack + EquipmentBonusAttack; // ±âº» °ø°İ·Â + Àåºñ °ø°İ·Â
+    //        int baseWithEquip = Attack + EquipmentBonusAttack; // ê¸°ë³¸ ê³µê²©ë ¥ + ì¥ë¹„ ê³µê²©ë ¥
 
     //        if (PartyManager.Instance != null && PartyManager.Instance.IsHeroInParty(this))
     //        {
@@ -226,17 +228,23 @@ public class HeroInstance
 
 
     // ===================
-    // ·¹º§¾÷ ¹× ½Â±Ş
+    // ë ˆë²¨ì—… ë° ìŠ¹ê¸‰
     // ===================
 
-    // ÇöÀç ·¹º§ ºñ·Ê ·¹º§¾÷ ÇÊ¿ä °ñµå °è»ê
+    // í˜„ì¬ ë ˆë²¨ ë¹„ë¡€ ë ˆë²¨ì—… í•„ìš” ê³¨ë“œ ê³„ì‚°
     public int LevelUpCost => level * 100;
 
     public bool LevelUp()
     {
         if (level >= 50)
         {
-            Debug.LogWarning($"{data.HeroName}Àº(´Â) ÀÌ¹Ì ÃÖ°í ·¹º§(50)ÀÔ´Ï´Ù.");
+            Debug.LogWarning($"{data.HeroName}ì€(ëŠ”) ì´ë¯¸ ìµœê³  ë ˆë²¨(50)ì…ë‹ˆë‹¤.");
+            return false;
+        }
+
+        if(isResonanced)
+        {
+            Debug.LogWarning($"{data.HeroName}ì€(ëŠ”) í˜„ì¬ ê³µëª…ì¤‘ì…ë‹ˆë‹¤.");
             return false;
         }
 
@@ -244,7 +252,7 @@ public class HeroInstance
         return true;
     }
 
-    // Ãß°¡µÈ ºÎºĞ : ÇöÀç µî±Ş¿¡¼­ ´ÙÀ½ µî±ŞÀ¸·Î °¥´ë ÇÊ¿äÇÑ Á¶°¢ ¹İÈ¯
+    // ì¶”ê°€ëœ ë¶€ë¶„ : í˜„ì¬ ë“±ê¸‰ì—ì„œ ë‹¤ìŒ ë“±ê¸‰ìœ¼ë¡œ ê°ˆëŒ€ í•„ìš”í•œ ì¡°ê° ë°˜í™˜
     public HeroGrade GetRequiredShardGrade()
     {
         if (currentGrade == HeroGrade.Normal || currentGrade == HeroGrade.NormalPlus) return HeroGrade.Normal;
@@ -252,31 +260,31 @@ public class HeroInstance
         return HeroGrade.Epic;
     }
 
-    // Ãß°¡µÈ ºÎºĞ : ½Â±Ş ÇÊ¿ä Á¶°¢ °³¼ö ¹İÈ¯
+    // ì¶”ê°€ëœ ë¶€ë¶„ : ìŠ¹ê¸‰ í•„ìš” ì¡°ê° ê°œìˆ˜ ë°˜í™˜
     public int GetRequiredShardCount()
     {
         switch (currentGrade)
         {
-            case HeroGrade.Normal: return 5;   // Normal -> Normal+ (³ë¸» Á¶°¢ 5°³)
-            case HeroGrade.NormalPlus: return 10;  // Normal+ -> Rare (³ë¸» Á¶°¢ 10°³)
-            case HeroGrade.Rare: return 5;   // Rare -> Rare+ (·¹¾î Á¶°¢ 5°³)
-            case HeroGrade.RarePlus: return 10;  // Rare+ -> Epic (·¹¾î Á¶°¢ 10°³)
-            case HeroGrade.Epic: return 10;  // Epic -> Epic+ (¿¡ÇÈ Á¶°¢ 10°³)
+            case HeroGrade.Normal: return 5;   // Normal -> Normal+ (ë…¸ë§ ì¡°ê° 5ê°œ)
+            case HeroGrade.NormalPlus: return 10;  // Normal+ -> Rare (ë…¸ë§ ì¡°ê° 10ê°œ)
+            case HeroGrade.Rare: return 5;   // Rare -> Rare+ (ë ˆì–´ ì¡°ê° 5ê°œ)
+            case HeroGrade.RarePlus: return 10;  // Rare+ -> Epic (ë ˆì–´ ì¡°ê° 10ê°œ)
+            case HeroGrade.Epic: return 10;  // Epic -> Epic+ (ì—í”½ ì¡°ê° 10ê°œ)
             default: return 9999;
         }
     }
 
-    // Ãß°¡µÈ ºÎºĞ : ¿µ¿õ ½Â±Ş ÇÔ¼ö
+    // ì¶”ê°€ëœ ë¶€ë¶„ : ì˜ì›… ìŠ¹ê¸‰ í•¨ìˆ˜
     public void UpgradeGrade()
     {
         if (currentGrade < HeroGrade.EpicPlus)
         {
             currentGrade++;
-            Debug.Log($"{data.HeroName}¿µ¿õÀÌ {currentGrade}µî±ŞÀ¸·Î ½Â±ŞÇß½À´Ï´Ù!");
+            Debug.Log($"{data.HeroName}ì˜ì›…ì´ {currentGrade}ë“±ê¸‰ìœ¼ë¡œ ìŠ¹ê¸‰í–ˆìŠµë‹ˆë‹¤!");
         }
         else
         {
-            Debug.LogWarning("ÀÌ¹Ì ÃÖ°í µî±ŞÀÔ´Ï´Ù.");
+            Debug.LogWarning("ì´ë¯¸ ìµœê³  ë“±ê¸‰ì…ë‹ˆë‹¤.");
         }
     }
 }
