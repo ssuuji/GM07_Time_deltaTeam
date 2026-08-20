@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 850622444799591894}
   - component: {fileID: 5054568782621363963}
+  - component: {fileID: 6239012592920240292}
   m_Layer: 0
   m_Name: Resonance
   m_TagString: Untagged
@@ -71,3 +72,22 @@ MonoBehaviour:
     isResonanced: 0
     currentGrade: 0
   resonanceLevel: 0
+--- !u!114 &6239012592920240292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3856469205470915074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 224d1f04ad2a06d489ed2f576a944f51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIResonanceManager
+  resonanceContent: {fileID: 0}
+  heroList: {fileID: 0}
+  resonancePlaceImages: []
+  resonanceHeroPrefabs: []
+  resonancePlaceBackImage_t: {fileID: 0}
+  resonancePlaceBackImage_b: {fileID: 0}
+  removeMarks: []
