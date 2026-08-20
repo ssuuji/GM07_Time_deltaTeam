@@ -20,7 +20,8 @@ namespace AFKHero.UI
         [SerializeField] private TMP_Text heroLevelText;         //영웅 레벨
         [SerializeField] private TMP_Text heroAttackText;        //영웅 공격력
         [SerializeField] private TMP_Text heroDefenseText;       //영웅 방어력
-                                                                 
+        [SerializeField] private TMP_Text heroHpText;            //영웅 체력
+
         [Header("레벨업")]
         [SerializeField] private Button levelUpButton;           //레벨업 버튼
         [SerializeField] private TMP_Text levelUpCostText;       //레벨업 비용
@@ -58,6 +59,7 @@ namespace AFKHero.UI
             heroLevelText.gameObject.SetActive(active);          //레벨
             heroAttackText.gameObject.SetActive(active);         //공격력
             heroDefenseText.gameObject.SetActive(active);        //방어력
+            if (heroHpText != null) heroHpText.gameObject.SetActive(active); //체력
             levelUpCostText.gameObject.SetActive(active);        //레벨업 비용
             gradeUpShardCountText.gameObject.SetActive(active);  //영웅 합성 재료
         }
@@ -92,6 +94,7 @@ namespace AFKHero.UI
             heroLevelText.text = $"LV. {selectedHero.level}";        //레벨
             heroAttackText.text = selectedHero.Attack.ToString();    //공격력
             heroDefenseText.text = selectedHero.Defense.ToString();  //방어력
+            if (heroHpText != null) heroHpText.text = selectedHero.MaxHP.ToString(); //체력
 
             UpdateLevelUpCost();                                     //레벨업 비용계산
             UpdateGradeUpUI();                                       //영웅 승급 UI
