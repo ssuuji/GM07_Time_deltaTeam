@@ -25,6 +25,9 @@ public class UI_EquipmentPanel : MonoBehaviour
     [Header("간편 장착 버튼")]
     public Button autoEquipButton;
 
+    [Header("새로 추가한 버튼들")]
+    public UnityEngine.UI.Button BulkSellButton;
+
     private void Start()
     {
         if (autoEquipButton != null)

@@ -90,7 +90,7 @@ namespace AFKHero.Battle
 
             attackController.Initialize(this, battleManager, targetFinder, unitMovemnet);
 
-            ultimateController.Initialize(this);
+            ultimateController.Initialize(this, battleManager);
 
             gameObject.name = $"{team}_{Data.HeroName}_{formationSlotIndex}";
             

@@ -25,6 +25,7 @@ namespace AFKHero.Battle
 
         public bool IsDead => isDead;
 
+        // 현재 남아 있는 보호막
         public int CurrentShield { get; private set; }
 
         public event Action<BattleUnit, int> ShieldChanged;
@@ -37,8 +38,7 @@ namespace AFKHero.Battle
             owner = unitOwner;
             battleManager = manager;
             
-            isDead = 
-                owner == null ||
+            isDead = owner == null ||
                 owner.Stats == null ||
                 !owner.Stats.IsAlive;
             CurrentShield = 0;
@@ -92,22 +92,29 @@ namespace AFKHero.Battle
                 return 0;
             }
 
-            // 보호막이 남아 있으면 체력보다 먼저 피해를 흡수
-            int absorbedDamage = AbsorbDamageWithShield(finalDamage);
-            int remainingDamage = finalDamage - absorbedDamage;
+            int absorbedDamage =
+               AbsorbDamageWithShield(finalDamage);
 
-            int appliedHealthDamage = owner.Stats.ApplyDamage(remainingDamage);
+            int remainingDamage =
+                finalDamage - absorbedDamage;
 
-            int totalAppliedDamage = absorbedDamage + appliedHealthDamage;
+            int appliedHealthDamage =
+                owner.Stats.ApplyDamage(remainingDamage);
 
-            if(totalAppliedDamage <= 0)
+            int totalAppliedDamage =
+                absorbedDamage + appliedHealthDamage;
+
+            if (totalAppliedDamage <= 0)
             {
                 return 0;
             }
 
-            if(appliedHealthDamage > 0)
+            if (appliedHealthDamage > 0)
             {
-                HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth);
+                HealthChanged?.Invoke(
+                    owner,
+                    CurrentHealth,
+                    MaxHealth);
             }
 
             if (logDamage)
@@ -129,23 +136,10 @@ namespace AFKHero.Battle
             return totalAppliedDamage;
         }
 
-        private int AbsorbDamageWithShield(int damage)
-        {
-            if (damage <= 0 || CurrentShield <= 0)
-            {
-                return 0;
-            }
-
-            int absorbedDamage = Mathf.Min(CurrentShield, damage);
-
-            CurrentShield -= absorbedDamage;
-
-            ShieldChanged?.Invoke(owner, CurrentShield);
-
-            return absorbedDamage;
-        }
-
-        public int RestoreHealthUltimate(int amount, BattleUnit healer)
+        // 회복
+        public int RestoreHealthFromUltimate(
+           int amount,
+           BattleUnit healer)
         {
             if (isDead ||
                 owner == null ||
@@ -160,52 +154,70 @@ namespace AFKHero.Battle
                 return 0;
             }
 
-            int restoredHealth = owner.Stats.RestoerHealth(amount);
+            int restoredHealth =
+                owner.Stats.RestoreHealth(amount);
 
-            if(restoredHealth <= 0)
+            if (restoredHealth <= 0)
             {
                 return 0;
             }
 
-            HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth);
+            HealthChanged?.Invoke(
+                owner,
+                CurrentHealth,
+                MaxHealth);
 
-            Debug.Log($"[궁극기 회복] {healer.name} -> {owner.name} / [회복량] {restoredHealth} / [HP] {CurrentHealth}/{MaxHealth}",
+            Debug.Log(
+                $"[궁극기 회복] {healer.name} -> {owner.name} / " +
+                $"[회복량] {restoredHealth} / " +
+                $"[HP] {CurrentHealth}/{MaxHealth}",
                 owner);
 
             return restoredHealth;
         }
 
-        private int AddShieldUltimate(int amount, BattleUnit shielder)
+        // 보호막
+        public int AddShieldFromUltimate(
+            int amount,
+            BattleUnit shieldProvider)
         {
             if (isDead ||
                 owner == null ||
                 owner.Stats == null ||
                 !owner.Stats.IsAlive ||
-                shielder == null ||
-                shielder.Team != owner.Team ||
+                shieldProvider == null ||
+                shieldProvider.Team != owner.Team ||
                 battleManager == null ||
-                battleManager.CurrentUltimateUnit != shielder ||
+                battleManager.CurrentUltimateUnit != shieldProvider ||
                 amount <= 0)
             {
                 return 0;
             }
 
-            int previousShield = CurrentShield;
+            int previousShield =
+                CurrentShield;
 
-            CurrentShield = Mathf.Min(MaxHealth, CurrentShield + amount);
+            CurrentShield = Mathf.Min(
+                MaxHealth,
+                CurrentShield + amount);
 
-            int addedShield = CurrentShield - previousShield;
+            int addedShield =
+                CurrentShield - previousShield;
 
             if (addedShield <= 0)
             {
                 return 0;
             }
 
-            ShieldChanged?.Invoke(owner, CurrentShield);
+            ShieldChanged?.Invoke(
+                owner,
+                CurrentShield);
 
             Debug.Log(
-               $"[궁극기 보호막] {shielder.name} -> {owner.name} / [추가량] {addedShield} / [현재 보호막] {CurrentShield}",
-               owner);
+                $"[궁극기 보호막] {shieldProvider.name} -> {owner.name} / " +
+                $"[추가량] {addedShield} / " +
+                $"[현재 보호막] {CurrentShield}",
+                owner);
 
             return addedShield;
         }
@@ -236,6 +248,23 @@ namespace AFKHero.Battle
                 gameObject.SetActive(false);
             }
         }
+        private int AbsorbDamageWithShield(int damage)
+        {
+            if (damage <= 0 || CurrentShield <= 0)
+            {
+                return 0;
+            }
 
+            int absorbedDamage =
+                Mathf.Min(CurrentShield, damage);
+
+            CurrentShield -= absorbedDamage;
+
+            ShieldChanged?.Invoke(
+                owner,
+                CurrentShield);
+
+            return absorbedDamage;
+        }
     }
 }

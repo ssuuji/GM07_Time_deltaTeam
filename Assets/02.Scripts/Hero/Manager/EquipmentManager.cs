@@ -110,4 +110,31 @@ public class EquipmentManager : MonoBehaviour
             EquipToHero(hero, bestItem);
         }
     }
+    // =========================
+    // 일괄 판매 시스템
+    // =========================
+    public void BulkSell()
+    {
+        // 가방에 팔 장비가 있는지 확인
+        if (equipmentInventory.Count == 0)
+        {
+            Debug.Log("가방이 비어있어 판매할 장비가 없습니다!");
+            return;
+        }
+
+        // 골드 계산
+        int sellPricePerItem = 100;
+        int totalEarnedGold = equipmentInventory.Count * sellPricePerItem;
+
+        // PlayerManager를 호출해서 실제로 골드를 추가
+        if (AFKHero.Player.PlayerManager.Instance != null)
+        {
+            AFKHero.Player.PlayerManager.Instance.AddGold(totalEarnedGold);
+        }
+
+        // 가방에 있는 모든 장비 데이터를 제거
+        equipmentInventory.Clear();
+
+        Debug.Log($"[EquipmentManager] 하급 장비 일괄 판매 완료! 총 {totalEarnedGold} 골드 획득.");
+    }
 }

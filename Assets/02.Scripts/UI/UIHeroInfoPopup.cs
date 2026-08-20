@@ -20,6 +20,7 @@ namespace AFKHero.UI
         [SerializeField] private TMP_Text heroLevelText;        //레벨
         [SerializeField] private TMP_Text heroAttackText;       //공격력
         [SerializeField] private TMP_Text heroDefenseText;      //방어력
+        [SerializeField] private TMP_Text heroHpText;           //체력
 
         [Header("궁극기")]
         [SerializeField] private TMP_Text ultimateText;         //궁극기 설명
@@ -94,6 +95,7 @@ namespace AFKHero.UI
             heroLevelText.text = $"LV. {hero.level}";       //레벨
             heroAttackText.text = hero.Attack.ToString();   //공격력
             heroDefenseText.text = hero.Defense.ToString(); //방어력
+            if (heroHpText != null) heroHpText.text = hero.MaxHP.ToString(); //체력
         }
 
         //스킬설명
