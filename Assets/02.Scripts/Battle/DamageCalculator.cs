@@ -2,6 +2,7 @@
 
 namespace AFKHero.Battle
 {
+    // 기본 공격 피해 계산
     public static class DamageCalculator
     {
         private const int MinimunDamage = 1;
@@ -30,11 +31,13 @@ namespace AFKHero.Battle
 
             return Mathf.Max(MinimunDamage, damageBeforeMinimum);
         }
+
+        // 공격력 배율과 방어력 무시 배율 적용하여 궁극기 피해 계산 defenseIgnoreRate 가 1이면 100% 무시 0.5면 50% 무시
         public static int CalculateUltimateDamage(
-        UnitStats attackerStats,
-        UnitStats defenderStats,
-        float attackMultiplier,
-        float defenseIgnoreRate = 0f)
+                UnitStats attackerStats,
+                UnitStats defenderStats,
+                float attackMultiplier,
+                float defenseIgnoreRate = 0f)
         {
             if (attackerStats == null || defenderStats == null)
             {
@@ -46,21 +49,25 @@ namespace AFKHero.Battle
                 return 0;
             }
 
-            int scaledAttack = Mathf.RoundToInt(attackerStats.AttackPower * Mathf.Max(0f, attackMultiplier));
+            int scaledAttack = Mathf.RoundToInt(attackerStats.AttackPower * attackMultiplier);
 
-            int appliedDefense = Mathf.RoundToInt(defenderStats.Defense * (1f - Mathf.Clamp01(defenseIgnoreRate)));
+            int appliedDefense = Mathf.RoundToInt(
+                defenderStats.Defense * (1f - Mathf.Clamp01(defenseIgnoreRate)));
 
             return Mathf.Max(MinimunDamage, scaledAttack - appliedDefense);
         }
 
-        public static int CalculateUltimateHealing(UnitStats casterStats, float attackMultiPlier)
+        // 시전자의 공격력과 회복 배율을 사용하여 궁극기 회복량 계산
+        public static int CalculateUltimateHealing(
+            UnitStats casterStats,
+            float attackMultiplier)
         {
-            if(casterStats == null || casterStats.AttackPower <= 0 || attackMultiPlier <= 0f)
+            if (casterStats == null || casterStats.AttackPower <= 0 || attackMultiplier <= 0f)
             {
                 return 0;
             }
 
-            return Mathf.Max(1, Mathf.RoundToInt(casterStats.AttackPower * Mathf.Max(0f, attackMultiPlier)));
+            return Mathf.Max(1, Mathf.RoundToInt(casterStats.AttackPower * attackMultiplier));
         }
     }
 }

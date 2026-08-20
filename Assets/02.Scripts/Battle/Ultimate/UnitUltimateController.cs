@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using AFKHero.UI;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -17,6 +18,12 @@ namespace AFKHero.Battle
         [SerializeField] private Animator animator;
         [SerializeField] private string animationTrigger = "Ultimate";
 
+        [Header("궁극기 효과 적용 시점")]
+        [SerializeField, Min(MinimumDuration)]
+        private float effectDelay = 0.6f;
+
+        private BattleManager battleManager;
+
         private BattleUnit owner;
         private Coroutine executionRoutine;
         private Action<BattleUnit> completionCallback;
@@ -28,19 +35,24 @@ namespace AFKHero.Battle
 
         public bool CheckCanUseUltimate()
         {
-            // 데이터에 체크박스가 꺼져있으면 무조건 스킬 사용 불가
-            if (!owner.Data.CanUseUltimate) return false;
-
-            return true;
+            return owner != null &&
+                   owner.Data != null &&
+                   owner.Data.CanUseUltimate;
         }
 
-        public void Initialize(BattleUnit UnitOwner)
+        public void Initialize(BattleUnit UnitOwner, BattleManager manager)
         {
             owner = UnitOwner;
+            battleManager = manager;
 
-            if(owner == null)
+            if (owner == null)
             {
                 Debug.LogError("궁극기 컨트롤러에 BattleUnit이 비어있습니다.", this);
+            }
+
+            if (battleManager == null)
+            {
+                Debug.LogError( "궁극기 컨트롤러에 BattleManager가 비어있습니다.", this);
             }
 
             if (animator == null)
@@ -57,8 +69,10 @@ namespace AFKHero.Battle
         public bool TryExecute(Action<BattleUnit> onCompleted)
         {
             if (owner == null ||
+                battleManager == null ||
                 owner.Stats == null ||
                 !owner.Stats.IsAlive ||
+                !CheckCanUseUltimate() ||
                 (owner.StatusEffects != null &&
                 !owner.StatusEffects.CanUseUltimate) ||
                 IsExecuting ||
@@ -82,7 +96,7 @@ namespace AFKHero.Battle
 
         public int ApplyUltimateDamage(BattleUnit target, int finalDamage)
         {
-            if(!IsExecuting ||
+            if (!IsExecuting ||
                owner == null ||
                 target == null ||
                 target.Health == null ||
@@ -97,7 +111,7 @@ namespace AFKHero.Battle
         // 사망 전투 종료 시 콜백 없이 현재 궁극기 중단
         public void CancelUltimate()
         {
-            if(executionRoutine != null)
+            if (executionRoutine != null)
             {
                 StopCoroutine(executionRoutine);
                 executionRoutine = null;
@@ -107,11 +121,37 @@ namespace AFKHero.Battle
 
         private IEnumerator ExecuteRoutine()
         {
-            yield return new WaitForSeconds(Mathf.Max(MinimumDuration, ultimateDuration));
+            float safeDuration =
+                Mathf.Max( MinimumDuration, ultimateDuration);
+
+            float safeEffectDelay =
+                Mathf.Clamp( effectDelay, MinimumDuration, safeDuration);
+
+            // 애니메이션이 실제로 타격하는 시점까지 기다립니다.
+            if (safeEffectDelay > 0f)
+            {
+                yield return new WaitForSeconds(safeEffectDelay);
+            }
+
+            // 직업별 궁극기 효과는 한 번만 실행됩니다.
+            bool effectApplied =  JobUltimateSkill.TryExecute( owner, battleManager);
+
+            if (!effectApplied)
+            {
+                Debug.LogWarning(  $"[{owner.name}] 궁극기를 적용할 대상이 없습니다.", owner);
+            }
+
+            float remainingDuration =  safeDuration - safeEffectDelay;
+
+            if (remainingDuration > 0f)
+            {
+                yield return new WaitForSeconds( remainingDuration);
+            }
 
             executionRoutine = null;
 
             Action<BattleUnit> callback = completionCallback;
+
             completionCallback = null;
 
             ExecutionCompleted?.Invoke(owner);
@@ -124,7 +164,7 @@ namespace AFKHero.Battle
 #if UNITY_EDITOR
         private void Reset()
         {
-            animator = GetComponent<Animator>();    
+            animator = GetComponent<Animator>();
         }
 #endif
     }
