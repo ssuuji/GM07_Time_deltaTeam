@@ -50,9 +50,7 @@ namespace AFKHero.Battle
             HeroInstance heroInstance,
             TeamType team,
             int formationSlotIndex,
-            BattleManager battleManager,
-            float bonusHpRate,
-            float bonusAttackRate)
+            BattleManager battleManager)
         {
             if(heroInstance == null || heroInstance.data == null)
             {
@@ -70,7 +68,7 @@ namespace AFKHero.Battle
             Team = team;
             FormationSlotIndex = formationSlotIndex;
 
-            Stats = new UnitStats(heroInstance, bonusHpRate, bonusAttackRate);
+            Stats = new UnitStats(heroInstance);
 
             FindMissingComponents();
 

@@ -18,26 +18,44 @@ namespace AFKHero.Battle
 
         public bool IsAlive => CurrentHealth > 0;
 
-        public UnitStats(HeroInstance source, float bonusHpRate, float bonusAttackRate)
+        // HeroInstance에서 계산된 스텟(레벨,등급,장비,세트,파티 시너지) -> 전투용 스텟으로 복사
+        public UnitStats(HeroInstance source)
         {
             if(source == null || source.data == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
 
-            MaxHealth = Mathf.RoundToInt(source.MaxHP * (1f + Mathf.Max(0f, bonusHpRate)));
+            MaxHealth = Mathf.Max(
+               1,
+               source.FinalMaxHP);
+
             CurrentHealth = MaxHealth;
 
-            AttackPower = Mathf.RoundToInt(source.Attack * (1f + Mathf.Max(0f, bonusAttackRate)));
+            AttackPower = Mathf.Max(
+                0,
+                source.FinalAttack);
 
-            Defense = source.Defense;
-            AttackRange = source.AttackRange;
+            Defense = Mathf.Max(
+                0,
+                source.FinalDefense);
 
-            AttackInterval = 1f / Mathf.Max(0.01f, source.AttackSpeed);
+            AttackRange = Mathf.Max(
+                0f,
+                source.AttackRange);
 
-            MoveSpeed = source.data.MoveSpeed;
+            AttackInterval =
+                1f / Mathf.Max(
+                    0.01f,
+                    source.AttackSpeed);
 
-            MaxUltimateEnergy = source.data.MaxUltimateEnergy;
+            MoveSpeed = Mathf.Max(
+                0f,
+                source.data.MoveSpeed);
+
+            MaxUltimateEnergy = Mathf.Max(
+                1,
+                source.data.MaxUltimateEnergy);
 
             CurrentUltimateEnergy = 0;
         }
@@ -71,6 +89,22 @@ namespace AFKHero.Battle
             return CurrentHealth - previousHealth;
         }
 
+        public int Revive(int healthAmount)
+        {
+            if(IsAlive ||
+                healthAmount <= 0 ||
+                MaxHealth <= 0)
+            {
+                return 0;
+            }
+
+            CurrentHealth = Mathf.Clamp(
+                healthAmount,
+                1,
+                MaxHealth);
+
+            return CurrentHealth;
+        }
 
         public int AddUltimateEnergy(int amount)
         {

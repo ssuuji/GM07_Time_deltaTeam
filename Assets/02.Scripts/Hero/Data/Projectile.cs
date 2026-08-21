@@ -1,13 +1,16 @@
+Ôªøusing AFKHero.Battle;
 using UnityEngine;
 
 [RequireComponent(typeof(Poolable))]
 public class Projectile : MonoBehaviour
 {
-    [Header("≈ıªÁ√º º≥¡§")]
-    public float speed = 15f; // ≈ıªÁ√º ∫Ò«‡ º”µµ
+    [Header("Ìà¨ÏÇ¨Ï≤¥ ÏÑ§Ï†ï")]
+    public float speed = 15f; // Ìà¨ÏÇ¨Ï≤¥ ÎπÑÌñâ ÏÜçÎèÑ
 
-    private HeroBase target;
-    private int damage;
+    //private HeroBase target;
+    //private int damage;
+    private BattleUnit owner;
+    private BattleUnit target;
     private Poolable poolable;
 
     private void Awake()
@@ -15,30 +18,36 @@ public class Projectile : MonoBehaviour
         poolable = GetComponent<Poolable>();
     }
 
-    // ≈ıªÁ√º πﬂªÁ Ω√ √ ±‚»≠
-    public void Init(HeroBase target, int damage)
+    // Ìà¨ÏÇ¨Ï≤¥ Î∞úÏÇ¨ Ïãú Ï¥àÍ∏∞Ìôî
+    public void Init(BattleUnit projectileOwner, BattleUnit projectileTarget)
     {
-        this.target = target;
-        this.damage = damage;
+        owner = projectileOwner;
+        target = projectileTarget;
     }
 
     private void Update()
     {
-        // ≈∏∞Ÿ¿Ã æ¯∞≈≥™ ¡◊æ˙¥Ÿ∏È ¡ÔΩ√ «Æ∏µ √¢∞Ì∑Œ »∏ºˆ«‘
-        if (target == null || target.stats.currentHP <= 0)
+        // ÌÉÄÍ≤üÏù¥ ÏóÜÍ±∞ÎÇò Ï£ΩÏóàÎã§Î©¥ Ï¶âÏãú ÌíÄÎßÅ Ï∞ΩÍ≥†Î°ú ÌöåÏàòÌï®
+        //if (target == null || target.stats.currentHP <= 0)
+        //{
+        //    poolable.Release();
+        //    return;
+        //}
+        if (!IsLivingUnit(owner) || !IsLivingUnit(target))
         {
-            poolable.Release();
+            ReleaseProjectile();
+
             return;
         }
 
-        // ≈∏∞Ÿ¿ª «‚«ÿ ¿Ãµø«‘
+        // ÌÉÄÍ≤üÏùÑ Ìñ•Ìï¥ Ïù¥ÎèôÌï®
         Vector3 direction = (target.transform.position - transform.position).normalized;
         transform.position += direction * speed * Time.deltaTime;
 
-        // ≈∏∞Ÿ¿ª πŸ∂Û∫∏µµ∑œ »∏¿¸ √≥∏Æ
+        // ÌÉÄÍ≤üÏùÑ Î∞îÎùºÎ≥¥ÎèÑÎ°ù ÌöåÏ†Ñ Ï≤òÎ¶¨
         transform.LookAt(target.transform);
 
-        // ≈∏∞Ÿø° µµ¥ﬁ«ﬂ¥¬¡ˆ ∞≈∏Æ ∞ÀªÁ
+        // ÌÉÄÍ≤üÏóê ÎèÑÎã¨ÌñàÎäîÏßÄ Í±∞Î¶¨ Í≤ÄÏÇ¨
         float distance = Vector3.Distance(transform.position, target.transform.position);
         if (distance <= 0.5f)
         {
@@ -46,12 +55,64 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    // ≈∏∞Ÿ ∏Ì¡ﬂ √≥∏Æ
+    // ÌÉÄÍ≤ü Î™ÖÏ§ë Ï≤òÎ¶¨
     private void HitTarget()
     {
-        target.stats.TakeDamage(damage);
+        //target.stats.TakeDamage(damage);
 
-        // ≈∏∞›¿ª ∏∂ƒ£ ≈ıªÁ√º¥¬ √¢∞Ì∑Œ »∏ºˆ«‘
-        poolable.Release();
+        //// ÌÉÄÍ≤©ÏùÑ ÎßàÏπú Ìà¨ÏÇ¨Ï≤¥Îäî Ï∞ΩÍ≥†Î°ú ÌöåÏàòÌï®
+        //poolable.Release();
+
+
+        if (!IsLivingUnit(owner) ||
+            !IsLivingUnit(target) ||
+            target.Health == null)
+        {
+            ReleaseProjectile();
+
+            return;
+        }
+        int finalDamage =
+           DamageCalculator.CalculateBasicAttackDamage(
+               owner.Stats,
+               target.Stats);
+
+        int appliedDamage =
+            target.Health.TakeDamage(
+                finalDamage,
+                owner);
+
+        if (appliedDamage > 0)
+        {
+            owner.Health?.ApplyLifeStealFromDamage(
+                appliedDamage);
+
+            owner.Energy?.GainFromBasicAttack();
+        }
+
+        ReleaseProjectile();
+    }
+
+    private static bool IsLivingUnit(
+        BattleUnit unit)
+    {
+        return unit != null &&
+               unit.IsInitialized &&
+               unit.Stats != null &&
+               unit.Stats.IsAlive;
+    }
+
+    private void ReleaseProjectile()
+    {
+        owner = null;
+        target = null;
+
+        poolable?.Release();
+    }
+
+    private void OnDisable()
+    {
+        owner = null;
+        target = null;
     }
 }

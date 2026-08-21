@@ -31,7 +31,7 @@ namespace AFKHero.Battle
                 return false;
             }
 
-            if(allyParty == null || enemyParty == null)
+            if (allyParty == null || enemyParty == null)
             {
                 Debug.LogError("아군 또는 적군 데이터가 비어있습니다.", this);
 
@@ -51,7 +51,7 @@ namespace AFKHero.Battle
 
             int enemyCount = SpawnEnemyParty(enemyParty, enemyLevel);
 
-            if(allyCount == 0 || enemyCount == 0)
+            if (allyCount == 0 || enemyCount == 0)
             {
                 Debug.LogError("전투 생성 실패");
 
@@ -70,11 +70,11 @@ namespace AFKHero.Battle
 
             int successCount = 0;
 
-            for(int slotIndex = 0; slotIndex < spawnCount; slotIndex++)
+            for (int slotIndex = 0; slotIndex < spawnCount; slotIndex++)
             {
                 HeroInstance hero = party[slotIndex];
 
-                if(hero == null || hero.data == null)
+                if (hero == null || hero.data == null)
                 {
                     continue;
                 }
@@ -93,18 +93,18 @@ namespace AFKHero.Battle
 
             int successCount = 0;
 
-            for(int slotIndex = 0; slotIndex < spawnCount; slotIndex++)
+            for (int slotIndex = 0; slotIndex < spawnCount; slotIndex++)
             {
                 HeroData enemyData = party[slotIndex];
 
-                if(enemyData == null)
+                if (enemyData == null)
                 {
                     continue;
                 }
 
                 HeroInstance enemyInstance = new HeroInstance(enemyData, true);
 
-                enemyInstance.level =  Mathf.Max(1, enemyLevel);
+                enemyInstance.level = Mathf.Max(1, enemyLevel);
 
                 if (TrySpawnUnit(enemyInstance, TeamType.Enemy, slotIndex))
                 {
@@ -118,7 +118,7 @@ namespace AFKHero.Battle
         {
             HeroData heroData = hero.data;
 
-            if(heroData.BattleUnitPrefab == null)
+            if (heroData.BattleUnitPrefab == null)
             {
                 Debug.LogError($"[{heroData.HeroName}] Prefab이 비어 있습니다.", heroData);
 
@@ -131,7 +131,16 @@ namespace AFKHero.Battle
 
             GameObject unitObject = unit.gameObject;
 
-            unit.Initialize(hero, team, slotIndex, battleManager, bonusHpRate: 0f, bonusAttackRate: 0f);
+            HeroBase heroBase = unitObject.GetComponent<HeroBase>();
+
+            if (heroBase == null)
+            {
+                heroBase =
+                    unitObject.AddComponent<HeroBase>();
+            }
+
+
+            unit.Initialize(hero, team, slotIndex, battleManager);
 
             if (!unit.IsInitialized)
             {
@@ -140,7 +149,7 @@ namespace AFKHero.Battle
                 DestroyUnitObejct(unit);
                 return false;
             }
-
+            heroBase.Init(hero, team == TeamType.Enemy);
             battleManager.RegisterUnit(unit);
             spawnedUnits.Add(unit);
 
@@ -183,16 +192,16 @@ namespace AFKHero.Battle
         // 다음 전투 초기화용
         public void ClearSpawnedUnits()
         {
-            if(battleManager != null)
+            if (battleManager != null)
             {
                 battleManager.ClearRegisteredUnits();
             }
 
-            for(int i = spawnedUnits.Count - 1; i >= 0; i--)
+            for (int i = spawnedUnits.Count - 1; i >= 0; i--)
             {
                 BattleUnit unit = spawnedUnits[i];
 
-                if(unit != null)
+                if (unit != null)
                 {
                     DestroyUnitObejct(unit);
                 }
@@ -203,7 +212,7 @@ namespace AFKHero.Battle
 
         private static void DestroyUnitObejct(BattleUnit unit)
         {
-            if(unit == null)
+            if (unit == null)
             {
                 return;
             }
@@ -212,7 +221,7 @@ namespace AFKHero.Battle
 
             unitObject.SetActive(false);
 
-            if(Application.isPlaying)
+            if (Application.isPlaying)
             {
                 Destroy(unitObject);
             }
@@ -225,7 +234,7 @@ namespace AFKHero.Battle
         // 유효성 검사용
         private bool ValidateDependencies()
         {
-            if(battleManager == null || formationData == null)
+            if (battleManager == null || formationData == null)
             {
                 Debug.LogError("BattleManager 또는 FormationData가 비어 있습니다.", this);
 
@@ -237,7 +246,7 @@ namespace AFKHero.Battle
                 battleOrigin = transform;
             }
 
-            if(unitContainer == null)
+            if (unitContainer == null)
             {
                 unitContainer = transform;
             }
@@ -249,7 +258,7 @@ namespace AFKHero.Battle
         // 유닛 선택 시 기즈모
         private void OnDrawGizmos()
         {
-            if(formationData == null)
+            if (formationData == null)
             {
                 return;
             }
@@ -271,7 +280,7 @@ namespace AFKHero.Battle
         {
             Gizmos.color = color;
 
-            for(int i =0; i < formationData.GetSlotCount(team); i++)
+            for (int i = 0; i < formationData.GetSlotCount(team); i++)
             {
                 Vector3 position = formationData.GetWolrdPosition(team, i, origin);
                 Gizmos.DrawWireSphere(position, 0.25f);

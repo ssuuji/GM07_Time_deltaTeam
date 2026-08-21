@@ -1,222 +1,710 @@
-using UnityEngine;
+ï»¿using UnityEngine;
+using System.Collections.Generic;
+using AFKHero.Battle;
 
 public class HeroBase : MonoBehaviour
 {
-    [Header("¸ó½ºÅÍ Àü¿ë µ¥ÀÌÅÍ")]
+    [Header("ëª¬ìŠ¤í„° ì „ìš© ë°ì´í„°")]
     public HeroData defaultEnemyData;
 
-    // ¿µ¿õ µ¥ÀÌÅÍ ÀÎ½ºÅÏ½º
+    // ì˜ì›… ë°ì´í„° ì¸ìŠ¤í„´ìŠ¤
     public HeroInstance heroInstance { get; private set; }
 
-    // ÀüÅõ ½ºÅÈ Å¬·¡½º ¿¬µ¿¿ëÀ¸·Î ¼±¾ğ
-    public HeroStats stats { get; private set; }
+    public BattleUnit BattleUnit => battleUnit;
 
     public bool isEnemy { get; private set; }
     public bool isNormalMob { get; private set; }
-    private string targetTag; // ÇÇ¾Æ½Äº°¿ë ÅÂ±×
+    private string targetTag; // í”¼ì•„ì‹ë³„ìš© íƒœê·¸
+
+    private BattleUnit battleUnit;
 
     private void Awake()
     {
-        stats = GetComponent<HeroStats>();
+        battleUnit = GetComponent<BattleUnit>();
     }
 
-    // ¿µ¿õ ¼ÒÈ¯ ½Ã ÃÊ±âÈ­
+    // ì˜ì›… ì†Œí™˜ ì‹œ ì´ˆê¸°í™”
     public void Init(HeroInstance instance, bool isEnemyTeam = false, bool isNormalMob = false)
     {
-        this.heroInstance = instance;
-        this.isEnemy = isEnemyTeam;
+        if (instance == null ||
+            instance.data == null)
+        {
+            return;
+        }
+
+        if (battleUnit == null)
+        {
+            battleUnit =
+                GetComponent<BattleUnit>();
+        }
+
+
+
+        heroInstance = instance;
+        isEnemy = isEnemyTeam;
         this.isNormalMob = isNormalMob;
 
-        // Àû±º/¾Æ±º ¿©ºÎ¿¡ µû¶ó º»ÀÎÀÇ Tag¿Í ¸ñÇ¥¹°ÀÇ targetTag¸¦ ÀÚµ¿ ÇÒ´çÇÔ
+        // ì êµ°/ì•„êµ° ì—¬ë¶€ì— ë”°ë¼ ë³¸ì¸ì˜ Tagì™€ ëª©í‘œë¬¼ì˜ targetTagë¥¼ ìë™ í• ë‹¹í•¨
         gameObject.tag = isEnemyTeam ? "Enemy" : "Ally";
-        targetTag = isEnemyTeam ? "Ally" : "Enemy";
+        //targetTag = isEnemyTeam ? "Ally" : "Enemy";
 
-        Debug.Log($"[HeroBase] {instance.data.HeroName} ¼¼ÆÃ ¿Ï·á! (Àû±º: {isEnemyTeam}, ÀÏ¹İ¸÷: {isNormalMob})");
+        Debug.Log($"[HeroBase] {instance.data.HeroName} ì„¸íŒ… ì™„ë£Œ! (ì êµ°: {isEnemyTeam}, ì¼ë°˜ëª¹: {isNormalMob})");
     }
 
 
     // =========================
-    // Åõ»çÃ¼ Ç®¸µ
+    // íˆ¬ì‚¬ì²´ í’€ë§
     // =========================
 
-    // ¿ø°Å¸® ¿µ¿õ ±âº» °ø°İÀ» ±¸ÇöÇÒ ¶§ È£ÃâÇÒ ¼ö ÀÖ´Â Åõ»çÃ¼ »ı¼º ÇÔ¼ö
-    public void SpawnProjectile(HeroBase target)
+    // ì›ê±°ë¦¬ ì˜ì›… ê¸°ë³¸ ê³µê²©ì„ êµ¬í˜„í•  ë•Œ í˜¸ì¶œí•  ìˆ˜ ìˆëŠ” íˆ¬ì‚¬ì²´ ìƒì„± í•¨ìˆ˜
+    public bool SpawnProjectile(HeroBase target)
     {
-        if (heroInstance.data.JobType == JobType.Archer || heroInstance.data.JobType == JobType.Mage)
+        if (!IsLivingHero(this) ||
+            !IsLivingHero(target) ||
+            heroInstance.data.ProjectilePrefab == null ||
+            PoolManager.Instance == null)
         {
-            if (heroInstance.data.ProjectilePrefab != null)
-            {
-                GameObject spawnedObj = PoolManager.Instance.SpawnFromPool
-                    (heroInstance.data.ProjectilePrefab, transform.position, Quaternion.identity);
-
-                Projectile projScript = spawnedObj.GetComponent<Projectile>();
-                if (projScript != null)
-                {
-                    // Å¸°Ù°ú µ¥¹ÌÁö Á¤º¸¸¦ Á¤»óÀûÀ¸·Î Àü´ŞÇÔ
-                    projScript.Init(target, heroInstance.FinalAttack);
-                }
-            }
+            return false;
         }
+
+        JobType jobType = heroInstance.data.JobType;
+
+        if (jobType != JobType.Archer &&
+            jobType != JobType.Mage)
+        {
+            return false;
+        }
+
+        GameObject projectileObject =
+            PoolManager.Instance.SpawnFromPool(
+                heroInstance.data.ProjectilePrefab,
+                transform.position,
+                Quaternion.identity);
+
+        Projectile projectile =
+            projectileObject.GetComponent<Projectile>();
+
+        if (projectile == null)
+        {
+            Debug.LogError(
+                $"[{projectileObject.name}] Projectile ì»´í¬ë„ŒíŠ¸ê°€ ì—†ìŠµë‹ˆë‹¤.",
+                projectileObject);
+
+            return false;
+        }
+
+        projectile.Init(battleUnit, target.battleUnit);
+
+        return true;
+
+        //if (heroInstance.data.JobType == JobType.Archer || heroInstance.data.JobType == JobType.Mage)
+        //{
+        //    if (heroInstance.data.ProjectilePrefab != null)
+        //    {
+        //        GameObject spawnedObj = PoolManager.Instance.SpawnFromPool
+        //            (heroInstance.data.ProjectilePrefab, transform.position, Quaternion.identity);
+
+        //        Projectile projScript = spawnedObj.GetComponent<Projectile>();
+        //        if (projScript != null)
+        //        {
+        //            // íƒ€ê²Ÿê³¼ ë°ë¯¸ì§€ ì •ë³´ë¥¼ ì •ìƒì ìœ¼ë¡œ ì „ë‹¬í•¨
+        //            projScript.Init(target, heroInstance.FinalAttack);
+        //        }
+        //    }
+        //}
     }
 
     // ===============================
-    // ±Ã±Ø±â ·ÎÁ÷ °ü¸®
+    // ê¶ê·¹ê¸° ë¡œì§ ê´€ë¦¬
     // ===============================
 
-    public void ExecuteUltimateEffect()
+    public bool ExecuteUltimateEffect()
     {
-        Debug.Log($"[±Ã±Ø±â È¿°ú ¹ßµ¿!] {heroInstance.data.HeroName} - {heroInstance.data.UltimateSkillName}");
+        if (!IsLivingHero(this) ||
+            heroInstance == null ||
+            heroInstance.data == null)
+        {
+            return false;
+        }
 
-        // ÇÊµå ³» ¸ğµç ¿µ¿õ Å½»ö
+        Debug.Log($"[ê¶ê·¹ê¸° íš¨ê³¼ ë°œë™!] {heroInstance.data.HeroName} - {heroInstance.data.UltimateSkillName}");
+
+        // í•„ë“œ ë‚´ ëª¨ë“  ì˜ì›… íƒìƒ‰
         HeroBase[] allHeroesInField = FindObjectsByType<HeroBase>(FindObjectsSortMode.None);
 
-        // °è»êÇØµĞ ½Ã³ÊÁö Àû¿ë ÃÖÁ¾ ½ºÅÈÀ» °¡Á®¿Í µ¥¹ÌÁö¸¦ °è»êÇÔ
-        int finalAttack = heroInstance.FinalAttack;
-        int finalMaxHp = heroInstance.FinalMaxHP;
+        // ê³„ì‚°í•´ë‘” ì‹œë„ˆì§€ ì ìš© ìµœì¢… ìŠ¤íƒ¯ì„ ê°€ì ¸ì™€ ë°ë¯¸ì§€ë¥¼ ê³„ì‚°í•¨
+        //int finalAttack = heroInstance.FinalAttack;
+        //int finalMaxHp = heroInstance.FinalMaxHP;
 
-        // Á÷¾÷º° ±Ã±Ø±â ºĞ±â
+        // ì§ì—…ë³„ ê¶ê·¹ê¸° ë¶„ê¸°
         switch (heroInstance.data.JobType)
         {
             case JobType.Healer:
-                // Ä¡À¯ÀÇ ºû: °ø°İ·ÂÀÇ 200% ±¤¿ª Èú
-                int healAmount = finalAttack * 2;
-                foreach (var hero in allHeroesInField)
-                {
-                    if (hero.CompareTag("Ally"))
-                    {
-                        hero.stats.Heal(healAmount); // È¸º¹ ÇÔ¼ö È£Ãâ
-
-                        // Èú ÀÌÆåÆ® Ç®¸µ ¹× ÇØÁ¦
-                        if (heroInstance.data.UltimateEffectPrefab != null)
-                        {
-                            GameObject healEffect = PoolManager.Instance.SpawnFromPool
-                                (heroInstance.data.UltimateEffectPrefab, hero.transform.position, Quaternion.identity);
-                            healEffect.GetComponent<Poolable>().ReleaseAfter(1.5f);
-                        }
-                    }
-                }
-                break;
+                return ExecuteHealerUltimate(
+                    allHeroesInField);
 
             case JobType.Warrior:
-                // È¸Àü °ø°İ: ¹İ°æ 3f ³» Àû¿¡°Ô °ø°İ·Â 150% ÇÇÇØ
-                int warriorDamage = Mathf.RoundToInt(finalAttack * 1.5f);
-
-                // È¸Àü ÀÌÆåÆ® Ç®¸µ ¹× ÇØÁ¦
-                if (heroInstance.data.UltimateEffectPrefab != null)
-                {
-                    GameObject spinEffect = PoolManager.Instance.SpawnFromPool
-                        (heroInstance.data.UltimateEffectPrefab, transform.position, Quaternion.identity);
-                    spinEffect.GetComponent<Poolable>().ReleaseAfter(1.0f);
-                }
-
-                foreach (var hero in allHeroesInField)
-                {
-                    if (hero.CompareTag("Enemy"))
-                    {
-                        float distance = Vector3.Distance(transform.position, hero.transform.position);
-                        if (distance <= 3f)
-                        {
-                            hero.stats.TakeDamage(warriorDamage); //µ¥¹ÌÁö ÇÔ¼ö È£Ãâ
-                        }
-                    }
-                }
-                break;
+                return ExecuteWarriorUltimate(
+                    allHeroesInField);
 
             case JobType.Mage:
-                // ¸ŞÅ×¿À: °¡Àå °¡±î¿î Àû ÁÖº¯ 4f¿¡ °ø°İ·Â 200% ÇÇÇØ
-                int mageDamage = finalAttack * 2;
-                HeroBase mageTarget = GetNearestEnemy(allHeroesInField);
-
-                if (mageTarget != null)
-                {
-                    if (heroInstance.data.UltimateEffectPrefab != null)
-                    {
-                        GameObject meteorEffect = PoolManager.Instance.SpawnFromPool
-                            (heroInstance.data.UltimateEffectPrefab, mageTarget.transform.position, Quaternion.identity);
-                        meteorEffect.GetComponent<Poolable>().ReleaseAfter(2.0f);
-                    }
-
-                    foreach (var hero in allHeroesInField)
-                    {
-                        if (hero.CompareTag("Enemy"))
-                        {
-                            float distToMeteor = Vector3.Distance(mageTarget.transform.position, hero.transform.position);
-                            if (distToMeteor <= 4f)
-                            {
-                                hero.stats.TakeDamage(mageDamage);
-                            }
-                        }
-                    }
-                }
-                break;
+                return ExecuteMageUltimate(
+                    allHeroesInField);
 
             case JobType.Archer:
-                // ÁıÁß Àú°İ: °¡Àå ¸Ö¸® ÀÖ´Â Àû¿¡°Ô °ø°İ·Â 300% ´ÜÀÏ ÇÇÇØ
-                int archerDamage = finalAttack * 3;
-                HeroBase archerTarget = GetFurthestEnemy(allHeroesInField);
-
-                if (archerTarget != null)
-                {
-                    if (heroInstance.data.UltimateEffectPrefab != null)
-                    {
-                        GameObject snipeEffect = PoolManager.Instance.SpawnFromPool
-                            (heroInstance.data.UltimateEffectPrefab, archerTarget.transform.position, Quaternion.identity);
-                        snipeEffect.GetComponent<Poolable>().ReleaseAfter(1.0f);
-                    }
-
-                    archerTarget.stats.TakeDamage(archerDamage);
-                }
-                break;
+                return ExecuteArcherUltimate(
+                    allHeroesInField);
 
             case JobType.Tank:
-                // ¼öÈ£ÀÇ ¹æÆĞ: ÃÖ´ë Ã¼·Â 20% º¸È£¸· »ı¼º
-                int shieldAmount = Mathf.RoundToInt(finalMaxHp * 0.2f);
-                if (heroInstance.data.UltimateEffectPrefab != null)
-                {
-                    GameObject shieldEffect = PoolManager.Instance.SpawnFromPool
-                        (heroInstance.data.UltimateEffectPrefab, transform.position, Quaternion.identity);
-                    shieldEffect.GetComponent<Poolable>().ReleaseAfter(2.0f);
-                }
+                return ExecuteTankUltimate(
+                    allHeroesInField);
 
-                stats.AddShield(shieldAmount);
-                break;
+            default:
+                Debug.LogWarning(
+                    $"[{name}] ì§€ì›í•˜ì§€ ì•ŠëŠ” ì§ì—…ì…ë‹ˆë‹¤: " +
+                    $"{heroInstance.data.JobType}",
+                    this);
+
+                return false;
+                // ì¹˜ìœ ì˜ ë¹›: ê³µê²©ë ¥ì˜ 200% ê´‘ì—­ í
+                //int healAmount = finalAttack * 2;
+                //foreach (var hero in allHeroesInField)
+                //{
+                //    if (hero.CompareTag("Ally"))
+                //    {
+                //        hero.stats.Heal(healAmount); // íšŒë³µ í•¨ìˆ˜ í˜¸ì¶œ
+
+                //        // í ì´í™íŠ¸ í’€ë§ ë° í•´ì œ
+                //        if (heroInstance.data.UltimateEffectPrefab != null)
+                //        {
+                //            GameObject healEffect = PoolManager.Instance.SpawnFromPool
+                //                (heroInstance.data.UltimateEffectPrefab, hero.transform.position, Quaternion.identity);
+                //            healEffect.GetComponent<Poolable>().ReleaseAfter(1.5f);
+                //        }
+                //    }
+                //}
+                //break;
+
+                //// íšŒì „ ê³µê²©: ë°˜ê²½ 3f ë‚´ ì ì—ê²Œ ê³µê²©ë ¥ 150% í”¼í•´
+                //int warriorDamage = Mathf.RoundToInt(finalAttack * 1.5f);
+
+                //// íšŒì „ ì´í™íŠ¸ í’€ë§ ë° í•´ì œ
+                //if (heroInstance.data.UltimateEffectPrefab != null)
+                //{
+                //    GameObject spinEffect = PoolManager.Instance.SpawnFromPool
+                //        (heroInstance.data.UltimateEffectPrefab, transform.position, Quaternion.identity);
+                //    spinEffect.GetComponent<Poolable>().ReleaseAfter(1.0f);
+                //}
+
+                //foreach (var hero in allHeroesInField)
+                //{
+                //    if (hero.CompareTag("Enemy"))
+                //    {
+                //        float distance = Vector3.Distance(transform.position, hero.transform.position);
+                //        if (distance <= 3f)
+                //        {
+                //            hero.stats.TakeDamage(warriorDamage); //ë°ë¯¸ì§€ í•¨ìˆ˜ í˜¸ì¶œ
+                //        }
+                //    }
+                //}
+                //break;
+
+                //case JobType.Mage:
+                //    // ë©”í…Œì˜¤: ê°€ì¥ ê°€ê¹Œìš´ ì  ì£¼ë³€ 4fì— ê³µê²©ë ¥ 200% í”¼í•´
+                //    int mageDamage = finalAttack * 2;
+                //    HeroBase mageTarget = GetNearestEnemy(allHeroesInField);
+
+                //    if (mageTarget != null)
+                //    {
+                //        if (heroInstance.data.UltimateEffectPrefab != null)
+                //        {
+                //            GameObject meteorEffect = PoolManager.Instance.SpawnFromPool
+                //                (heroInstance.data.UltimateEffectPrefab, mageTarget.transform.position, Quaternion.identity);
+                //            meteorEffect.GetComponent<Poolable>().ReleaseAfter(2.0f);
+                //        }
+
+                //        foreach (var hero in allHeroesInField)
+                //        {
+                //            if (hero.CompareTag("Enemy"))
+                //            {
+                //                float distToMeteor = Vector3.Distance(mageTarget.transform.position, hero.transform.position);
+                //                if (distToMeteor <= 4f)
+                //                {
+                //                    hero.stats.TakeDamage(mageDamage);
+                //                }
+                //            }
+                //        }
+                //    }
+                //    break;
+
+                //case JobType.Archer:
+                //    // ì§‘ì¤‘ ì €ê²©: ê°€ì¥ ë©€ë¦¬ ìˆëŠ” ì ì—ê²Œ ê³µê²©ë ¥ 300% ë‹¨ì¼ í”¼í•´
+                //    int archerDamage = finalAttack * 3;
+                //    HeroBase archerTarget = GetFurthestEnemy(allHeroesInField);
+
+                //    if (archerTarget != null)
+                //    {
+                //        if (heroInstance.data.UltimateEffectPrefab != null)
+                //        {
+                //            GameObject snipeEffect = PoolManager.Instance.SpawnFromPool
+                //                (heroInstance.data.UltimateEffectPrefab, archerTarget.transform.position, Quaternion.identity);
+                //            snipeEffect.GetComponent<Poolable>().ReleaseAfter(1.0f);
+                //        }
+
+                //        archerTarget.stats.TakeDamage(archerDamage);
+                //    }
+                //    break;
+
+                //case JobType.Tank:
+                //    // ìˆ˜í˜¸ì˜ ë°©íŒ¨: ìµœëŒ€ ì²´ë ¥ 20% ë³´í˜¸ë§‰ ìƒì„±
+                //    int shieldAmount = Mathf.RoundToInt(finalMaxHp * 0.2f);
+                //    if (heroInstance.data.UltimateEffectPrefab != null)
+                //    {
+                //        GameObject shieldEffect = PoolManager.Instance.SpawnFromPool
+                //            (heroInstance.data.UltimateEffectPrefab, transform.position, Quaternion.identity);
+                //        shieldEffect.GetComponent<Poolable>().ReleaseAfter(2.0f);
+                //    }
+
+                //    stats.AddShield(shieldAmount);
+                //    break;
         }
 
     }
 
-    // ===============================
-    // Å¸°Ù Å½»ö ·ÎÁ÷
-    // ===============================
-
-    // ¸¶¹ı»ç¿ë
-    private HeroBase GetNearestEnemy(HeroBase[] allHeroes)
+    // ì¹˜ìœ ì˜ ë¹›: ê³µê²©ë ¥ì˜ 200% ê´‘ì—­ í
+    private bool ExecuteHealerUltimate(
+        HeroBase[] allHeroes)
     {
-        HeroBase nearest = null;
-        float minDist = float.MaxValue;
-        foreach (var h in allHeroes)
+        const float baseHealingMultiplier = 2f;
+
+        float finalMultiplier =
+            baseHealingMultiplier +
+            JobUltimateSkill.GetLevelMultiplierBonus(
+                battleUnit);
+
+        int healingAmount =
+            DamageCalculator.CalculateUltimateHealing(
+                battleUnit.Stats,
+                finalMultiplier);
+
+        bool hasLivingTarget = false;
+
+        foreach (HeroBase hero in allHeroes)
         {
-            if (h.CompareTag("Enemy")) 
+            if (!IsLivingHero(hero) ||
+                !IsSameTeam(hero))
             {
-                float dist = Vector3.Distance(transform.position, h.transform.position);
-                if (dist < minDist) { minDist = dist; nearest = h; }
+                continue;
+            }
+
+            hasLivingTarget = true;
+
+            hero.battleUnit.Health.RestoreHealthFromUltimate(
+                healingAmount,
+                battleUnit);
+
+            JobUltimateSkill.ApplyHealerGradeEffect(
+                battleUnit,
+                hero.battleUnit);
+
+            SpawnUltimateEffect(
+                hero.transform.position,
+                1.5f);
+        }
+
+        return hasLivingTarget;
+    }
+
+    // íšŒì „ ê³µê²©: ë°˜ê²½ 3f ë‚´ ì ì—ê²Œ ê³µê²©ë ¥ 150% í”¼í•´
+    private bool ExecuteWarriorUltimate(
+        HeroBase[] allHeroes)
+    {
+        const float attackRadius = 3f;
+        const float baseDamageMultiplier = 1.5f;
+
+        float finalMultiplier =
+            baseDamageMultiplier +
+            JobUltimateSkill.GetLevelMultiplierBonus(
+                battleUnit);
+
+        float attackRadiusSqr =
+            attackRadius *
+            attackRadius;
+
+        bool appliedAnyDamage = false;
+
+        SpawnUltimateEffect(
+            transform.position,
+            1f);
+
+        foreach (HeroBase hero in allHeroes)
+        {
+            if (!IsLivingHero(hero) ||
+                !IsOpponent(hero))
+            {
+                continue;
+            }
+
+            float distanceSqr =
+                (hero.transform.position -
+                 transform.position).sqrMagnitude;
+
+            if (distanceSqr > attackRadiusSqr)
+            {
+                continue;
+            }
+
+            int appliedDamage =
+                ApplyUltimateDamage(
+                    hero,
+                    finalMultiplier);
+
+            if (appliedDamage <= 0)
+            {
+                continue;
+            }
+
+            appliedAnyDamage = true;
+
+            JobUltimateSkill.ApplyWarriorGradeEffect(
+                battleUnit,
+                hero.battleUnit);
+        }
+
+        return appliedAnyDamage;
+    }
+
+    // ë©”í…Œì˜¤: ê°€ì¥ ê°€ê¹Œìš´ ì  ì£¼ë³€ 4fì— ê³µê²©ë ¥ 200% í”¼í•´
+    private bool ExecuteMageUltimate(
+        HeroBase[] allHeroes)
+    {
+        const float attackRadius = 4f;
+        const float baseDamageMultiplier = 2f;
+
+        HeroBase centerTarget =
+            GetNearestOpponent(
+                allHeroes);
+
+        if (centerTarget == null)
+        {
+            return false;
+        }
+
+        float finalMultiplier =
+            baseDamageMultiplier +
+            JobUltimateSkill.GetLevelMultiplierBonus(
+                battleUnit);
+
+        float attackRadiusSqr =
+            attackRadius *
+            attackRadius;
+
+        bool appliedAnyDamage = false;
+
+        SpawnUltimateEffect(
+            centerTarget.transform.position,
+            2f);
+
+        foreach (HeroBase hero in allHeroes)
+        {
+            if (!IsLivingHero(hero) ||
+                !IsOpponent(hero))
+            {
+                continue;
+            }
+
+            float distanceSqr =
+                (hero.transform.position -
+                 centerTarget.transform.position).sqrMagnitude;
+
+            if (distanceSqr > attackRadiusSqr)
+            {
+                continue;
+            }
+
+            int appliedDamage =
+                ApplyUltimateDamage(
+                    hero,
+                    finalMultiplier);
+
+            if (appliedDamage <= 0)
+            {
+                continue;
+            }
+
+            appliedAnyDamage = true;
+
+            JobUltimateSkill.ApplyMageGradeEffect(
+                battleUnit,
+                hero.battleUnit);
+        }
+
+        return appliedAnyDamage;
+    }
+
+    // ì§‘ì¤‘ ì €ê²©: ê°€ì¥ ë©€ë¦¬ ìˆëŠ” ì ì—ê²Œ ê³µê²©ë ¥ 300% ë‹¨ì¼ í”¼í•´
+    private bool ExecuteArcherUltimate(
+        HeroBase[] allHeroes)
+    {
+        const float baseDamageMultiplier = 3f;
+
+        HeroBase target =
+            GetFarthestOpponent(
+                allHeroes);
+
+        if (target == null)
+        {
+            return false;
+        }
+
+        float finalMultiplier =
+            baseDamageMultiplier +
+            JobUltimateSkill.GetLevelMultiplierBonus(
+                battleUnit);
+
+        float defenseIgnoreRate =
+            JobUltimateSkill.GetArcherDefenseIgnoreRate(
+                battleUnit);
+
+        SpawnUltimateEffect(
+            target.transform.position,
+            1f);
+
+        int appliedDamage =
+            ApplyUltimateDamage(
+                target,
+                finalMultiplier,
+                defenseIgnoreRate);
+
+        return appliedDamage > 0;
+    }
+
+    // ìˆ˜í˜¸ì˜ ë°©íŒ¨: ìµœëŒ€ ì²´ë ¥ 20% ë³´í˜¸ë§‰ ìƒì„±
+    private bool ExecuteTankUltimate(
+        HeroBase[] allHeroes)
+    {
+        const float baseShieldRate = 0.20f;
+
+        float finalShieldRate =
+            baseShieldRate +
+            JobUltimateSkill.GetLevelMultiplierBonus(
+                battleUnit);
+
+        int shieldAmount =
+            Mathf.Max(
+                1,
+                Mathf.RoundToInt(
+                    battleUnit.Stats.MaxHealth *
+                    finalShieldRate));
+
+        battleUnit.Health.AddShieldFromUltimate(
+            shieldAmount,
+            battleUnit);
+
+        SpawnUltimateEffect(
+            transform.position,
+            2f);
+
+        float bonusHealRate =
+            JobUltimateSkill.GetTankBonusHealRate(
+                battleUnit);
+
+        if (bonusHealRate > 0f)
+        {
+            foreach (HeroBase hero in allHeroes)
+            {
+                if (!IsLivingHero(hero) ||
+                    !IsSameTeam(hero))
+                {
+                    continue;
+                }
+
+                int healingAmount =
+                    Mathf.Max(
+                        1,
+                        Mathf.RoundToInt(
+                            hero.battleUnit.Stats.MaxHealth *
+                            bonusHealRate));
+
+                hero.battleUnit.Health.RestoreHealthFromUltimate(
+                    healingAmount,
+                    battleUnit);
             }
         }
+
+        return true;
+    }
+
+    private int ApplyUltimateDamage(
+       HeroBase target,
+       float attackMultiplier,
+       float defenseIgnoreRate = 0f)
+    {
+        if (!IsLivingHero(this) ||
+            !IsLivingHero(target) ||
+            battleUnit.UltimateController == null)
+        {
+            return 0;
+        }
+
+        int finalDamage =
+            DamageCalculator.CalculateUltimateDamage(
+                battleUnit.Stats,
+                target.battleUnit.Stats,
+                attackMultiplier,
+                defenseIgnoreRate);
+
+        return battleUnit.UltimateController.ApplyUltimateDamage(
+            target.battleUnit,
+            finalDamage);
+    }
+
+    // ===============================
+    // íƒ€ê²Ÿ íƒìƒ‰ ë¡œì§
+    // ===============================
+
+    //// ë§ˆë²•ì‚¬ìš©
+    //private HeroBase GetNearestEnemy(HeroBase[] allHeroes)
+    //{
+    //    HeroBase nearest = null;
+    //    float minDist = float.MaxValue;
+    //    foreach (var h in allHeroes)
+    //    {
+    //        if (h.CompareTag("Enemy")) 
+    //        {
+    //            float dist = Vector3.Distance(transform.position, h.transform.position);
+    //            if (dist < minDist) { minDist = dist; nearest = h; }
+    //        }
+    //    }
+    //    return nearest;
+    //}
+
+    //// ê¶ìˆ˜ìš©
+    //private HeroBase GetFurthestEnemy(HeroBase[] allHeroes)
+    //{
+    //    HeroBase furthest = null;
+    //    float maxDist = float.MinValue;
+    //    foreach (var h in allHeroes)
+    //    {
+    //        if (h.CompareTag("Enemy"))
+    //        {
+    //            float dist = Vector3.Distance(transform.position, h.transform.position);
+    //            if (dist > maxDist) { maxDist = dist; furthest = h; }
+    //        }
+    //    }
+    //    return furthest;
+    //}
+
+    // ë§ˆë²•ì‚¬ìš© íƒìƒ‰ ë¡œì§
+    private HeroBase GetNearestOpponent(
+        HeroBase[] allHeroes)
+    {
+        HeroBase nearest = null;
+        float minimumDistanceSqr = float.MaxValue;
+
+        foreach (HeroBase hero in allHeroes)
+        {
+            if (!IsLivingHero(hero) ||
+                !IsOpponent(hero))
+            {
+                continue;
+            }
+
+            float distanceSqr =
+                (hero.transform.position -
+                 transform.position).sqrMagnitude;
+
+            if (distanceSqr < minimumDistanceSqr)
+            {
+                minimumDistanceSqr = distanceSqr;
+                nearest = hero;
+            }
+        }
+
         return nearest;
     }
 
-    // ±Ã¼ö¿ë
-    private HeroBase GetFurthestEnemy(HeroBase[] allHeroes)
+    // ê¶ìˆ˜ìš© íƒìƒ‰ ë¡œì§
+    private HeroBase GetFarthestOpponent(
+        HeroBase[] allHeroes)
     {
-        HeroBase furthest = null;
-        float maxDist = float.MinValue;
-        foreach (var h in allHeroes)
+        HeroBase farthest = null;
+        float maximumDistanceSqr = float.MinValue;
+
+        foreach (HeroBase hero in allHeroes)
         {
-            if (h.CompareTag("Enemy"))
+            if (!IsLivingHero(hero) ||
+                !IsOpponent(hero))
             {
-                float dist = Vector3.Distance(transform.position, h.transform.position);
-                if (dist > maxDist) { maxDist = dist; furthest = h; }
+                continue;
+            }
+
+            float distanceSqr =
+                (hero.transform.position -
+                 transform.position).sqrMagnitude;
+
+            if (distanceSqr > maximumDistanceSqr)
+            {
+                maximumDistanceSqr = distanceSqr;
+                farthest = hero;
             }
         }
-        return furthest;
+
+        return farthest;
+    }
+
+    private bool IsSameTeam(
+        HeroBase other)
+    {
+        return IsLivingHero(other) &&
+               other.battleUnit.Team ==
+               battleUnit.Team;
+    }
+
+    private bool IsOpponent(
+        HeroBase other)
+    {
+        return IsLivingHero(other) &&
+               other.battleUnit.Team !=
+               battleUnit.Team;
+    }
+
+    private static bool IsLivingHero(
+        HeroBase hero)
+    {
+        return hero != null &&
+               hero.battleUnit != null &&
+               hero.battleUnit.IsInitialized &&
+               hero.battleUnit.Stats != null &&
+               hero.battleUnit.Stats.IsAlive &&
+               hero.battleUnit.Health != null;
+    }
+
+    private void SpawnUltimateEffect(
+        Vector3 position,
+        float lifetime)
+    {
+        if (heroInstance == null ||
+            heroInstance.data == null ||
+            heroInstance.data.UltimateEffectPrefab == null ||
+            PoolManager.Instance == null)
+        {
+            return;
+        }
+
+        GameObject effectObject =
+            PoolManager.Instance.SpawnFromPool(
+                heroInstance.data.UltimateEffectPrefab,
+                position,
+                Quaternion.identity);
+
+        Poolable poolable =
+            effectObject.GetComponent<Poolable>();
+
+        if (poolable != null)
+        {
+            poolable.ReleaseAfter(
+                lifetime);
+        }
     }
 }

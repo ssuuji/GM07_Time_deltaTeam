@@ -19,11 +19,6 @@ namespace AFKHero.Battle
         [Header("컷인 시간")]
         [SerializeField, Min(0.1f)] private float cutInDuration = 0.8f;
 
-        [Header("궁극기 이펙트")] 
-        [SerializeField]private Transform effectContainer;
-
-        [SerializeField, Min(0.1f)] private float effectLifetime = 2f;
-
         private Coroutine hideRoutine;
 
         private void Awake()
@@ -86,34 +81,14 @@ namespace AFKHero.Battle
                 skillNameText.text = unit.Data.UltimateSkillName;
             }
 
-            SpawnUltimateEffect(unit);
-
             SetCutInVisible(true);
 
-            if(hideRoutine != null)
+            if (hideRoutine != null)
             {
                 StopCoroutine(hideRoutine);
             }
 
             hideRoutine = StartCoroutine(HideCutInRoutine());
-        }
-
-        private void SpawnUltimateEffect(BattleUnit unit)
-        {
-            GameObject effectPrefab = unit.Data.UltimateEffectPrefab;
-
-            if (effectPrefab == null)
-            {
-                return;
-            }
-
-            GameObject effectObject = Instantiate(
-                effectPrefab,
-                unit.transform.position,
-                Quaternion.identity,
-                effectContainer);
-
-            Destroy(effectObject, effectLifetime);
         }
 
         private IEnumerator HideCutInRoutine()
