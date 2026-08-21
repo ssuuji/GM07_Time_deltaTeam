@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections;
-using AFKHero.UI;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace AFKHero.Battle
@@ -10,7 +8,7 @@ namespace AFKHero.Battle
     {
         private const float MinimumDuration = 0.01f;
 
-        [Header("궁극기 연출")]
+        [Header("궁극기 실행 시간")]
         [SerializeField, Min(MinimumDuration)]
         private float ultimateDuration = 1.5f;
 
@@ -19,15 +17,15 @@ namespace AFKHero.Battle
         [SerializeField] private string animationTrigger = "Ultimate";
 
         [Header("궁극기 효과 적용 시점")]
-        [SerializeField, Min(MinimumDuration)]
+        [SerializeField, Min(0f)]
         private float effectDelay = 0.6f;
 
         private BattleManager battleManager;
-
         private BattleUnit owner;
+        private HeroBase heroBase;
+
         private Coroutine executionRoutine;
         private Action<BattleUnit> completionCallback;
-
         public bool IsExecuting => executionRoutine != null;
 
         public event Action<BattleUnit> ExecutionStarted;
@@ -48,11 +46,15 @@ namespace AFKHero.Battle
             if (owner == null)
             {
                 Debug.LogError("궁극기 컨트롤러에 BattleUnit이 비어있습니다.", this);
+
+                return;
             }
 
             if (battleManager == null)
             {
                 Debug.LogError( "궁극기 컨트롤러에 BattleManager가 비어있습니다.", this);
+
+                return;
             }
 
             if (animator == null)
@@ -60,9 +62,13 @@ namespace AFKHero.Battle
                 animator = GetComponentInChildren<Animator>(true);
             }
 
-            if (animator == null)
+            heroBase = owner.GetComponent<HeroBase>();
+
+            if (heroBase == null)
             {
-                Debug.LogWarning($"[{name}] 궁극기 애니메이션을 재생할 Animator를 찾지 못했습니다.", this);
+                Debug.LogError($"[{owner.name}] HeroBase가 없어 궁극기를 실행할 수 없습니다.", owner);
+
+                return;
             }
         }
 
@@ -70,11 +76,12 @@ namespace AFKHero.Battle
         {
             if (owner == null ||
                 battleManager == null ||
+                heroBase == null ||
                 owner.Stats == null ||
                 !owner.Stats.IsAlive ||
                 !CheckCanUseUltimate() ||
                 (owner.StatusEffects != null &&
-                !owner.StatusEffects.CanUseUltimate) ||
+                 !owner.StatusEffects.CanUseUltimate) ||
                 IsExecuting ||
                 onCompleted == null)
             {
@@ -105,7 +112,14 @@ namespace AFKHero.Battle
                 return 0;
             }
 
-            return target.Health.TakeUltimateDamage(finalDamage, owner);
+            int appliedDamage = target.Health.TakeUltimateDamage(finalDamage, owner);
+
+            if (appliedDamage > 0)
+            {
+                owner.Health?.ApplyLifeStealFromDamage(appliedDamage);
+            }
+
+            return appliedDamage;
         }
 
         // 사망 전투 종료 시 콜백 없이 현재 궁극기 중단
@@ -122,10 +136,10 @@ namespace AFKHero.Battle
         private IEnumerator ExecuteRoutine()
         {
             float safeDuration =
-                Mathf.Max( MinimumDuration, ultimateDuration);
+                Mathf.Max(MinimumDuration, ultimateDuration);
 
             float safeEffectDelay =
-                Mathf.Clamp( effectDelay, MinimumDuration, safeDuration);
+                Mathf.Clamp(effectDelay, 0f, safeDuration);
 
             // 애니메이션이 실제로 타격하는 시점까지 기다립니다.
             if (safeEffectDelay > 0f)
@@ -134,7 +148,7 @@ namespace AFKHero.Battle
             }
 
             // 직업별 궁극기 효과는 한 번만 실행됩니다.
-            bool effectApplied =  JobUltimateSkill.TryExecute( owner, battleManager);
+            bool effectApplied = heroBase.ExecuteUltimateEffect();
 
             if (!effectApplied)
             {
@@ -164,7 +178,7 @@ namespace AFKHero.Battle
 #if UNITY_EDITOR
         private void Reset()
         {
-            animator = GetComponent<Animator>();
+            animator = GetComponentInChildren<Animator>(true);
         }
 #endif
     }
