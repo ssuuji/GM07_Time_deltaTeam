@@ -44,6 +44,16 @@ public class StageManager : MonoBehaviour
     [SerializeField] private int lastStageNumber;
     [SerializeField] private int lastSectionNumber;
 
+
+    // 추가된 부분 : 장비
+    [Header("스테이지 장비 보상 설정")]
+    [Tooltip("장비가 드롭될 확률 (0 ~ 100%)")]
+    [Range(0f, 100f)]
+    public float equipmentDropChance = 30f; // 기본 30% 확률로 설정
+
+    [Tooltip("드롭될 수 있는 장비 목록")]
+    public System.Collections.Generic.List<EquipmentData> possibleEquipmentDrops;
+
     //승리 패널을 자동으로 닫히게 할 코루틴
     private Coroutine autoClosePanelCoroutine;
     private StageInfo currentStageInfo; // 현재 진행 중인 구간의 데이터
@@ -289,6 +299,29 @@ public class StageManager : MonoBehaviour
         AFKHero.Player.PlayerManager.Instance.AddGold(currentStageInfo.ClearGold);
         AFKHero.Player.PlayerManager.Instance.AddDia(currentStageInfo.ClearDia);
         AFKHero.Player.PlayerManager.Instance.AddFreeTicket(currentStageInfo.ClearTicket);
+
+        // 드롭 확률 계산
+        float randomValue = UnityEngine.Random.Range(0f, 100f);
+
+        if (randomValue <= equipmentDropChance)
+        {
+            // 드롭할 장비 리스트가 비어있지 않은지 확인
+            if (possibleEquipmentDrops != null && possibleEquipmentDrops.Count > 0)
+            {
+                // 리스트 안에서 랜덤으로 장비 하나 고르기
+                int randomIndex = UnityEngine.Random.Range(0, possibleEquipmentDrops.Count);
+                EquipmentData droppedItem = possibleEquipmentDrops[randomIndex];
+
+                // 플레이어의 가방에 지급
+                EquipmentManager.Instance.AddEquipment(droppedItem);
+                Debug.Log($"🎉 앗싸! 장비 드롭 성공! 획득한 장비: {droppedItem.equipmentName}");
+            }
+        }
+        else
+        {
+            // 장비가 떨어지지 않음
+            Debug.Log($"아쉽게도 이번 스테이지에서는 장비가 드롭되지 않았습니다. (주사위: {randomValue:F1} / 목표: {equipmentDropChance})");
+        }
     }
 
 

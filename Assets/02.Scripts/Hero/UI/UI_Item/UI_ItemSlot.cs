@@ -30,7 +30,8 @@ public class UI_ItemSlot : MonoBehaviour
         {
             if (iconImage != null) iconImage.sprite = null;
             if (nameText != null) nameText.text = "장비 없음";
-            slotButton.interactable = false;
+
+            slotButton.interactable = true;
         }
 
         slotButton.onClick.RemoveAllListeners();
@@ -39,6 +40,16 @@ public class UI_ItemSlot : MonoBehaviour
 
     private void OnClickSlot()
     {
+        if (myEquipment == null)
+        {
+            // 만약 빈 슬롯을 눌렀을 때 가방 창이 열리게 하고 싶다면
+            // 아래 두 줄의 주석을 지우기
+            // if (mainPanel != null && !mainPanel.gameObject.activeSelf) 
+            //     mainPanel.gameObject.SetActive(true);
+
+            return;
+        }
+
         if (isEquippedSlot)
         {
             EquipmentManager.Instance.equipmentInventory.Add(myEquipment);
@@ -48,6 +59,10 @@ public class UI_ItemSlot : MonoBehaviour
         {
             EquipmentManager.Instance.EquipToHero(targetHero, myEquipment);
         }
-        mainPanel.RefreshUI();
+
+        if (mainPanel != null)
+        {
+            mainPanel.RefreshUI();
+        }
     }
 }

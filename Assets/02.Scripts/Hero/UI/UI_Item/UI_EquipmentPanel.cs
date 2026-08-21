@@ -36,6 +36,11 @@ public class UI_EquipmentPanel : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        RefreshUI();
+    }
+
     private void OnClickAutoEquip()
     {
         if (currentHero != null)
@@ -54,17 +59,7 @@ public class UI_EquipmentPanel : MonoBehaviour
 
     public void RefreshUI()
     {
-        if (currentHero == null) return;
-
-        hpText.text = $"체력: {currentHero.FinalMaxHP}";
-        attackText.text = $"공격력: {currentHero.FinalAttack}";
-        defenseText.text = $"방어력: {currentHero.FinalDefense}";
-
-        weaponSlot.Setup(currentHero.equippedWeapon, currentHero, this, true);
-        armorSlot.Setup(currentHero.equippedArmor, currentHero, this, true);
-        pantsSlot.Setup(currentHero.equippedPants, currentHero, this, true);
-        helmetSlot.Setup(currentHero.equippedHelmet, currentHero, this, true);
-
+        // 영웅 선택 상관없이 가방 먼저 보이기
         foreach (Transform child in inventoryContent)
         {
             Destroy(child.gameObject);
@@ -76,5 +71,18 @@ public class UI_EquipmentPanel : MonoBehaviour
             UI_ItemSlot slot = go.GetComponent<UI_ItemSlot>();
             slot.Setup(equip, currentHero, this, false);
         }
+
+        // 가방을 다 그렸다면 영웅이 있는지 검사
+        if (currentHero == null) return;
+
+        // 영웅이 있다면 스탯과 장착 슬롯 갱신
+        hpText.text = $"체력: {currentHero.FinalMaxHP}";
+        attackText.text = $"공격력: {currentHero.FinalAttack}";
+        defenseText.text = $"방어력: {currentHero.FinalDefense}";
+
+        weaponSlot.Setup(currentHero.equippedWeapon, currentHero, this, true);
+        armorSlot.Setup(currentHero.equippedArmor, currentHero, this, true);
+        pantsSlot.Setup(currentHero.equippedPants, currentHero, this, true);
+        helmetSlot.Setup(currentHero.equippedHelmet, currentHero, this, true);
     }
 }

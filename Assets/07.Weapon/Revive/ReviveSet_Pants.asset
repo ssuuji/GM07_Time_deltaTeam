@@ -15,7 +15,7 @@ MonoBehaviour:
   equipmentID: Revive_Pants
   equipmentName: "\uBD80\uD65C\uAC11\uC637(\uD558\uC758)"
   type: 2
-  equipmentIcon: {fileID: 0}
+  equipmentIcon: {fileID: 3077777526668904967, guid: 4e516a0496c985b479b1b85f168fd05d, type: 3}
   bonusAttack: 0
   bonusHP: 30
   bonusDefense: 30

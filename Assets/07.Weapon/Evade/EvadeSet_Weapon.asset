@@ -15,7 +15,7 @@ MonoBehaviour:
   equipmentID: EvadeSet_Weapon
   equipmentName: "\uD68C\uD53C\uAC80"
   type: 0
-  equipmentIcon: {fileID: 0}
+  equipmentIcon: {fileID: 21300000, guid: df96032537d4c482e9b20c674c73dc45, type: 3}
   bonusAttack: 50
   bonusHP: 0
   bonusDefense: 0

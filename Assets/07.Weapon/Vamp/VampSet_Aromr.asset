@@ -15,7 +15,7 @@ MonoBehaviour:
   equipmentID: Vamp_Armor
   equipmentName: "\uD761\uD608\uAC11\uC637(\uC0C1\uC758)"
   type: 1
-  equipmentIcon: {fileID: 0}
+  equipmentIcon: {fileID: 21300000, guid: 95ba0c61490fd14f3e948ed91e347cd2, type: 3}
   bonusAttack: 0
   bonusHP: 50
   bonusDefense: 50
