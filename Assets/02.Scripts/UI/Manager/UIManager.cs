@@ -157,6 +157,14 @@ namespace AFKHero.UI
         private void UpdateShareView()
         {
             heroTitletxt.text = "공명";
+
+            //배치하지 않았을 때를 위한 예외처리.
+            if(UIResonanceManager.Instance == null)
+            {
+                Debug.LogWarning("[UIManager] : UIResonanceManager가 현재 씬에 없습니다");
+                return;
+            }
+            UIResonanceManager.Instance.UpdateHeroList();
         }
         #endregion
 
