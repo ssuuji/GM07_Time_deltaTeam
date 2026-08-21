@@ -98,6 +98,13 @@ namespace AFKHero.UI
 
             UpdateLevelUpCost();                                     //레벨업 비용계산
             UpdateGradeUpUI();                                       //영웅 승급 UI
+
+            UI_EquipmentPanel equipPanel = FindFirstObjectByType<UI_EquipmentPanel>(FindObjectsInactive.Include);
+            if (equipPanel != null)
+            {
+                equipPanel.currentHero = selectedHero;
+                equipPanel.RefreshUI();
+            }
         }
 
         //영웅 프리펩 표시

@@ -57,6 +57,12 @@ namespace AFKHero.UI
                 case UIHeroSlotMode.Upgrade:
                     if (UIUpgradeManager.Instance == null) return;
                     UIUpgradeManager.Instance.SelectHero(Hero); //상단 영웅 표시
+
+                    UI_EquipmentPanel equipPanel = FindFirstObjectByType<UI_EquipmentPanel>();
+                    if (equipPanel != null && equipPanel.gameObject.activeInHierarchy)
+                    {
+                        equipPanel.OpenPanel(Hero); //장비창 열기
+                    }
                     break;
 
                 //성장탭 - 영웅합성

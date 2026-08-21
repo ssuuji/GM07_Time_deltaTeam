@@ -70,7 +70,8 @@ public class EquipmentManager : MonoBehaviour
         EquipBestItemForType(hero, EquipmentType.Pants);
         EquipBestItemForType(hero, EquipmentType.Helmet);
 
-        Debug.Log($"[{hero.data.HeroName}] 간편 장착 완료!");
+        string heroName = (hero.data != null) ? hero.data.HeroName : "알 수 없는 영웅";
+        Debug.Log($"[{heroName}] 간편 장착 완료!");
     }
 
     private void EquipBestItemForType(HeroInstance hero, EquipmentType type)

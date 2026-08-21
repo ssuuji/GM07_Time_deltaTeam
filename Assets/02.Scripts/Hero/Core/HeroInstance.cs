@@ -9,12 +9,12 @@ public class HeroInstance
     public bool isUnlocked;
     public bool isResonanced;
 
-    // 수정된 부분 : 승급 재료로 사용하던 중복 카드 duplicateCount 삭제
+    // 승급 재료로 사용하던 중복 카드 duplicateCount 삭제
     public HeroGrade currentGrade;
 
 
     // =========================================
-    // 추가된 부분 : 장비 슬롯 및 세트 효과
+    // 장비 슬롯 및 세트 효과
     // =========================================
     public EquipmentData equippedWeapon { get; private set; }
     public EquipmentData equippedArmor { get; private set; }
@@ -33,7 +33,8 @@ public class HeroInstance
             case EquipmentType.Pants: equippedPants = equipment; break;
             case EquipmentType.Helmet: equippedHelmet = equipment; break;
         }
-        Debug.Log($"[{data.HeroName}] {equipment.equipmentName} 장착 완료!");
+        string heroName = data != null ? data.HeroName : "알수없는 영웅";
+        Debug.Log($"[{heroName}] {equipment.equipmentName} 장착 완료!");
     }
 
     // 장비 해제 함수
@@ -123,7 +124,6 @@ public class HeroInstance
     // 영웅 자체 기본 스탯
     // ==========================
 
-
     // 현재 등급에 따른 추가 스탯 배율 계산
     // 태생 등급에 따라 승급 시 추가되는 스탯 가중치를 다르게 부여
     // 태생 노말 영웅이 풀승급을 하더라도 태생 에픽의 벽을 넘지 못하도록 제어
@@ -131,6 +131,8 @@ public class HeroInstance
     {
         get
         {
+            if (data == null) return 1f;
+
             // 현재 등급과 태생 등급의 차이(승급한 횟수)를 계산
             // Enum 순서: Normal(0), NormalPlus(1), Rare(2), RarePlus(3), Epic(4), EpicPlus(5)
             int upgradeCount = (int)currentGrade - (int)data.HeroGrade;
@@ -162,7 +164,8 @@ public class HeroInstance
     {
         get
         {
-            // 레벨당 성장 수치도 태생 등급에 영향을 받도록 data.GetJobStat기반으로 설계
+            if (data == null) return 0; // 추가된 부분: 영웅 데이터가 비어있으면 체력 계산을 스킵하고 0을 반환
+
             int baseHp = data.GetJobStats().hp + (level - 1) * 20;
             return Mathf.RoundToInt(baseHp * GradeMultiplier);
         }
@@ -172,6 +175,8 @@ public class HeroInstance
     {
         get
         {
+            if (data == null) return 0; // 추가된 부분: 영웅 데이터가 비어있으면 공격력 계산을 스킵하고 0을 반환
+
             int baseAttack = data.GetJobStats().attack + (level - 1) * 5;
             return Mathf.RoundToInt(baseAttack * GradeMultiplier);
         }
@@ -181,50 +186,16 @@ public class HeroInstance
     {
         get
         {
+            if (data == null) return 0; // 추가된 부분: 영웅 데이터가 비어있으면 방어력 계산을 스킵하고 0을 반환합니다.
+
             int baseDefense = data.GetJobStats().defense + (level - 1) * 2;
             return Mathf.RoundToInt(baseDefense * GradeMultiplier);
         }
     }
 
-    public float AttackSpeed => data.GetJobStats().attackSpeed;
-    public float AttackRange => data.GetJobStats().attackRange;
-
-
-    // 장비를 추가한다면 수정할 내용: 최종 스탯 프로퍼티 덮어쓰기 - 아래 시너지 적용 스탯과 교체
-    // 장비 스탯을 먼저 더한 뒤에 파티 시너지 뻥튀기를 적용
-
-    //public int FinalMaxHP
-    //{
-    //    get
-    //    {
-    //        int baseWithEquip = MaxHP + EquipmentBonusHP; // 기본 체력 + 장비 체력
-
-    //        if (PartyManager.Instance != null && PartyManager.Instance.IsHeroInParty(this))
-    //        {
-    //            float multiplier = 1f + PartyManager.Instance.totalBonusHpRate;
-    //            return Mathf.RoundToInt(baseWithEquip * multiplier);
-    //        }
-    //        return baseWithEquip;
-    //    }
-    //}
-
-    //public int FinalAttack
-    //{
-    //    get
-    //    {
-    //        int baseWithEquip = Attack + EquipmentBonusAttack; // 기본 공격력 + 장비 공격력
-
-    //        if (PartyManager.Instance != null && PartyManager.Instance.IsHeroInParty(this))
-    //        {
-    //            float multiplier = 1f + PartyManager.Instance.totalBonusAttackRate;
-    //            return Mathf.RoundToInt(baseWithEquip * multiplier);
-    //        }
-    //        return baseWithEquip;
-    //    }
-    //}
-
-    //public int FinalDefense => Defense + EquipmentBonusDefense;
-
+    
+    public float AttackSpeed => (data != null) ? data.GetJobStats().attackSpeed : 0f;
+    public float AttackRange => (data != null) ? data.GetJobStats().attackRange : 0f;
 
 
     // ===================
@@ -252,7 +223,7 @@ public class HeroInstance
         return true;
     }
 
-    // 추가된 부분 : 현재 등급에서 다음 등급으로 갈대 필요한 조각 반환
+    // 현재 등급에서 다음 등급으로 갈대 필요한 조각 반환
     public HeroGrade GetRequiredShardGrade()
     {
         if (currentGrade == HeroGrade.Normal || currentGrade == HeroGrade.NormalPlus) return HeroGrade.Normal;
@@ -260,7 +231,7 @@ public class HeroInstance
         return HeroGrade.Epic;
     }
 
-    // 추가된 부분 : 승급 필요 조각 개수 반환
+    // 승급 필요 조각 개수 반환
     public int GetRequiredShardCount()
     {
         switch (currentGrade)
@@ -274,7 +245,7 @@ public class HeroInstance
         }
     }
 
-    // 추가된 부분 : 영웅 승급 함수
+    // 영웅 승급 함수
     public void UpgradeGrade()
     {
         if (currentGrade < HeroGrade.EpicPlus)
