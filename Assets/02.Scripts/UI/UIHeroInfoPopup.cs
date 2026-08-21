@@ -143,7 +143,14 @@ namespace AFKHero.UI
 
                 //공명탭
                 case UIHeroSlotMode.Share:
-                    ButtonText.text = "레벨업";
+                    if (ResonanceManager.Instance.IsHeroInResonanceSlot(hero)) //선택한 영웅이 파티에 배치되어 있다면
+                    {
+                        ButtonText.text = "배치 해제";
+                    }
+                    else
+                    {
+                        ButtonText.text = "배치";
+                    }
                     break;
             }
         }
@@ -156,17 +163,18 @@ namespace AFKHero.UI
             switch (currentMode)
             {
                 case UIHeroSlotMode.Party:
-                    PlaceButton();          //배치버튼
+                    PlaceButtonForParty();          //배치버튼
                     break;
 
                 case UIHeroSlotMode.Share:
+                    PlaceButtonForResonance();
                     //공명 레벨업 기능 (아직 미구현)
                     break;
             }
         }
 
         //배치 버튼
-        public void PlaceButton()
+        public void PlaceButtonForParty()
         {
             if (selectedHero == null) return;
 
@@ -177,6 +185,22 @@ namespace AFKHero.UI
             else
             {
                 UIPartyManager.Instance.StartPlaceHero(selectedHero); //없으면 배치시작
+            }
+
+            InfoClose();
+        }
+
+        public void PlaceButtonForResonance()
+        {
+            if (selectedHero == null) return;
+
+            if (ResonanceManager.Instance.IsHeroInResonanceSlot(selectedHero))    //배치 되어있는지 확인
+            {
+                UIResonanceManager.Instance.RemoveHero(selectedHero);     //있으면 해제
+            }
+            else
+            {
+                UIResonanceManager.Instance.StartPlaceHero(selectedHero); //없으면 배치시작
             }
 
             InfoClose();

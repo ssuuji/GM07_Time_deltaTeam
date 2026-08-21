@@ -47,6 +47,11 @@ public class ResonanceManager : MonoBehaviour
         }
     }
 
+    private void OnApplicationQuit()
+    {
+        DisableResonance();
+    }
+
     //영웅 배치, 영웅 해제, 공명 슬롯 상태 저장, 로드 이 4개의 메서드 정도는 public으로 두고,
     //그 외의 메서드들은 해당 클래스 내부에서만 실행될 가능성이 높으므로 private으로 변경을 고려한다.
 
@@ -131,18 +136,18 @@ public class ResonanceManager : MonoBehaviour
   
             if(IsHeroInResonanceSlot(hero))
             {
-                //TODO : 공명 상태 = false로 설정 => HeroInstance에 필드 추가 및 공명 상태에서는 레벨업이 되지 않게.
-
+                //슬롯 안에 있는 영웅이라면 공명 적용 X = false로 설정
                 hero.isResonanced = false;
             }
             else
             {
-                //딕셔너리에 키를 영웅으로, 값을 원래 레벨로 등록해둔다. 
+                //딕셔너리에 키를 영웅으로, 값을 원래 레벨로 등록해둔 다음, 
                 originalLevelDict.TryAdd(hero, hero.level);
-
+       
+                //공명 레벨로 덮어씌우기
                 hero.level = resonanceLevel;
-                //TODO : 공명 상태 = true로 설정
 
+                //슬롯 밖에 있는 영웅이라면 공명 적용 O = true로 설정
                 hero.isResonanced = true;
             }   
         }
@@ -167,7 +172,8 @@ public class ResonanceManager : MonoBehaviour
 
 
     //공명 상태를 해제하고, 영웅들의 레벨을 원래대로 복구할 메서드
-    public void DisableResonance()
+    //이걸 우선 OnApplicationQuit에서 한 번 호출해봐야 하나?
+    private void DisableResonance()
     {
         List<HeroInstance> heroes = HeroManager.Instance.GetAllHeroes();
 
@@ -186,8 +192,6 @@ public class ResonanceManager : MonoBehaviour
                      hero.isResonanced = false;
                 }
             }
-
-
         }
         //지금까지 들어있던 저장 레벨들을 모두 비우고, 공명으로 설정할 레벨도 0으로 초기화한다.
         originalLevelDict.Clear();
@@ -197,6 +201,56 @@ public class ResonanceManager : MonoBehaviour
     //TODO
     //공명슬롯 저장
     //공명슬롯 로드
+
+    //PartyManager와는 달리 레벨을 직접 건드는 거라서, 다른 저장/불러오기 방식이 필요하다.
+    //가령, ID와 원본 레벨을 저장해서, 불러오게 한다던가.
+    //UpdateResonance의 기능 분리가 필요할 수도 있음. 원본 레벨을 저장해서 불러올 때, 뭐가 먼저 실행되느냐에 따라
+    //레벨 설정이 꼬일 가능성이 있음.
+
+    /*
+
+    public int[] GetResonanceSaveData()
+    {
+        int[] savedIDs = new int[resonanceSlots.Length];
+        for (int i = 0; i < resonanceSlots.Length; i++)
+        {
+            //슬롯과 슬롯에 있는 data가 null이 아니면 거기에 HeroID를 넣고, null이면 -1을 넣는다.
+
+            savedIDs[i] = (resonanceSlots[i] != null && resonanceSlots[i].data != null) ? resonanceSlots[i].data.HeroID : -1;
+        }
+        return savedIDs;
+    }
+
+    public void LoadResonanceFromData(int[] savedIDs)
+    {
+        //유효한 세이브가 아니라면 return;
+        if (savedIDs == null || savedIDs.Length != resonanceSlots.Length) return;
+
+        for (int i = 0; i < savedIDs.Length;i++)
+        {
+            //저장 데이터 슬롯에서 영웅 ID를 가져온다.
+            int heroID = savedIDs[i];
+
+            if(heroID != -1)
+            {
+                //아이디를 통해 영웅 인스턴스를 가져온다.
+                HeroInstance hero = HeroManager.Instance.GetHeroByID(heroID);
+
+                //null이 아니고, 해금되어 있다면 슬롯에 등록한다. (공명중인지 상태도 체크해야 할지 고민이네.)
+                if (hero != null && hero.isUnlocked)
+                {
+                    resonanceSlots[i] = hero;
+                }
+            }
+            else
+            {
+                resonanceSlots[i] = null;
+            }
+        }
+
+        UpdateResonance();
+    }
+    */
 
 
 }

@@ -27,12 +27,23 @@ public class UIResonanceManager : MonoBehaviour
     private int selectedRemoveSlotIndex = -1;
 
 
+    //흠... 문제는 이 파티클은 공명 창이 열려있을 때만 활성화되어야 할 텐데?
+    [Header("공명 시 연출")]
+    [SerializeField] private ParticleSystem resonanceParticle;
+
+
 
     //싱글톤과는 다른 구조인 것 같은데, 뭘까.
     private void Awake()
     {
         Instance = this;
         heroPrefabs = new GameObject[resonanceHeroPrefabs.Length];
+
+        //시작 시에는 우선 꺼두는 걸로 할 건데, 저장 데이터 로드 시 일치하지 않는지 확인하기.
+        if (resonanceParticle != null)
+        {
+            resonanceParticle.gameObject.SetActive(false);
+        }
     }
 
     private void Start()
@@ -62,15 +73,35 @@ public class UIResonanceManager : MonoBehaviour
     }
 
     //공명 상태가 활성화됐을 경우, 어디선가에서 빤짝이 이펙트를 켜고 끄게 할 메서드
+    //Play와 Stop이 제대로 사용된 건지 모르겠네.
+    //공명 패널을 닫을 때 비활성화되고, 열 때 현재 공명 상태인지를 판별하여 활성화하게끔 해야 함.
     private void ShowResonanceEffect(bool isResonanceOn)
     {
+        if (resonanceParticle == null)
+        {
+            Debug.LogWarning("[UIResonanceManager] : 공명 연출 컴포넌트가 없습니다.");
+            return;
+        }
+        
+
         if (isResonanceOn)
         {
+            Debug.Log("[UIResonanceManager] : 공명이 활성화되어 파티클이 재생됩니다.");
+            resonanceParticle.gameObject.SetActive(true);
+            resonanceParticle.Play();
             //파티클 켜기
+
+            //어차피 공명이 활성화 되었을 때 표시할 거잖아? 그러면... 여기서 그런 식으로 하는게?
+            //resonanceText.text = "현재 공명 레벨 : " + {ResonanceManager.Instance.ResonanceLevel;
         }
         else
         {
+            Debug.Log("[UIResonanceManager] : 공명이 비활성화되어 파티클이 꺼집니다.");
+            resonanceParticle.gameObject.SetActive(false);
+            resonanceParticle.Stop();
             //파티클 끄기
+
+            //resonanceText.text = "현재 공명이 활성화되지 않았습니다."
         }
     }
 
@@ -166,6 +197,7 @@ public class UIResonanceManager : MonoBehaviour
 
         SetPlaceBack(true);
         SetSlotAlpha(true);
+        
     }
 
     private void PlaceHeroToSlot(int slotIndex)
@@ -178,6 +210,7 @@ public class UIResonanceManager : MonoBehaviour
         UINoticePopup.Instance.Hide();
         SetPlaceBack(false);
         SetSlotAlpha(false);
+        UpdateResonanceUI();
     }
 
     public void RemoveHero(HeroInstance hero)
@@ -187,10 +220,12 @@ public class UIResonanceManager : MonoBehaviour
         ResonanceManager.Instance.RemoveHero(hero);
 
         ClearRemoveSelection();
+        UpdateResonanceUI();
     }
 
     //참조 0이던데, 버튼에 연결하신 듯?
-    public void OnClickedPartySlot(int slotIndex)
+    //각 슬롯의 버튼에 연결되어, 영웅이 슬롯에 들어있다면 빼게 할 메서드.
+    public void OnClickedResonanceSlot(int slotIndex)
     {
         if (selectedHero != null)
         {
@@ -213,6 +248,7 @@ public class UIResonanceManager : MonoBehaviour
                 ResonanceManager.Instance.RemoveHero(hero);
 
                 ClearRemoveSelection();
+                UpdateResonanceUI();
                 return;
             }
 
@@ -237,9 +273,7 @@ public class UIResonanceManager : MonoBehaviour
 
             bool hasHero = hero != null && hero.data != null;
 
-
             removeMarks[i].SetActive(hasHero && i == selectedRemoveSlotIndex);
-
         }
     }
 
