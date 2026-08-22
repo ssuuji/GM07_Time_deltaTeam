@@ -314,7 +314,8 @@ public class StageManager : MonoBehaviour
 
                 // 플레이어의 가방에 지급
                 EquipmentManager.Instance.AddEquipment(droppedItem);
-                Debug.Log($"🎉 앗싸! 장비 드롭 성공! 획득한 장비: {droppedItem.equipmentName}");
+                Debug.Log($"장비 드롭 성공! 획득한 장비: {droppedItem.equipmentName}");
+                UIBattleManager.Instance.ShowDroppedEquipmentUI(droppedItem);
             }
         }
         else
