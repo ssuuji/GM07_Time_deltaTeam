@@ -76,9 +76,11 @@ public class UI_EquipmentPanel : MonoBehaviour
         if (currentHero == null) return;
 
         // 영웅이 있다면 스탯과 장착 슬롯 갱신
-        hpText.text = $"체력: {currentHero.FinalMaxHP}";
-        attackText.text = $"공격력: {currentHero.FinalAttack}";
-        defenseText.text = $"방어력: {currentHero.FinalDefense}";
+        if (hpText != null) hpText.text = currentHero.FinalMaxHP.ToString();
+        if (attackText != null) attackText.text = currentHero.FinalAttack.ToString();
+        if (defenseText != null) defenseText.text = currentHero.FinalDefense.ToString();
+
+        if (weaponSlot != null) weaponSlot.Setup(currentHero.equippedWeapon, currentHero, this, true);
 
         weaponSlot.Setup(currentHero.equippedWeapon, currentHero, this, true);
         armorSlot.Setup(currentHero.equippedArmor, currentHero, this, true);

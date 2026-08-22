@@ -10,42 +10,46 @@ namespace AFKHero.UI
         public static UIBattleManager Instance { get; private set; }
 
         [Header("하단 영웅 UI")]
-        [SerializeField] private Transform heroSlotTransform;           //영웅슬롯 생성위치
-        [SerializeField] private UIBattleHeroSlot heroSlotPrefab;       //영웅슬롯 프리펩
+        [SerializeField] private Transform heroSlotTransform;
+        [SerializeField] private UIBattleHeroSlot heroSlotPrefab;
 
         [Header("궁극기 모드")]
-        [SerializeField] private BattleManager battleManager;       //전투 매니저
-        [SerializeField] private TMP_Text ultimateModeText;         //AUTO 표시
+        [SerializeField] private BattleManager battleManager;
+        [SerializeField] private TMP_Text ultimateModeText;
 
-        [Header("현재 스테이지")]                                        
-        [SerializeField] private TMP_Text currentStageText;             //현재 스테이지 표시
+        [Header("현재 스테이지")]
+        [SerializeField] private TMP_Text currentStageText;
 
         [Header("전투 보상")]
-        [SerializeField] private GameObject rewardGoldPanel;            //골드 보상 패널
-        [SerializeField] private GameObject rewardDiaPanel;             //다이아 보상 패널
-        [SerializeField] private GameObject rewardTicketPanel;          //무료 뽑기권 보상 패널
-        [SerializeField] private TMP_Text rewardGoldText;               //골드 보상
-        [SerializeField] private TMP_Text rewardDiaText;                //다이아 보상
-        [SerializeField] private TMP_Text rewardTicketText;             //무료 뽑기권 보상
+        [SerializeField] private GameObject rewardGoldPanel;
+        [SerializeField] private GameObject rewardDiaPanel;
+        [SerializeField] private GameObject rewardTicketPanel;
+        [SerializeField] private TMP_Text rewardGoldText;
+        [SerializeField] private TMP_Text rewardDiaText;
+        [SerializeField] private TMP_Text rewardTicketText;
 
-        private UIBattleHeroSlot[] heroSlots = new UIBattleHeroSlot[5]; //영웅슬롯
-        private readonly Color32 autoYellow = new Color32(255, 220, 60, 255);    //AUTO 색상
-        private readonly Color32 ManualWhite = new Color32(255, 255, 255, 255);  //Manual 색상
+        [Header("전투 보상 (장비)")]
+        [SerializeField] private GameObject rewardEquipPanel;
+        [SerializeField] private TMP_Text rewardEquipText;
+
+        private UIBattleHeroSlot[] heroSlots = new UIBattleHeroSlot[5];
+        private readonly Color32 autoYellow = new Color32(255, 220, 60, 255);
+        private readonly Color32 ManualWhite = new Color32(255, 255, 255, 255);
+
+        // 추가된 부분: 이번 판에 장비가 떨어졌는지 기억
+        private bool isEquipDroppedThisStage = false;
 
         private void Awake()
         {
             Instance = this;
-
             CreateHeroSlots();
         }
 
         private void Start()
         {
             if (battleManager == null) return;
-
             battleManager.UltimateUseModeChanged += UpdateUltimateModeUI;
-            
-            UpdateUltimateModeUI(battleManager.UltimateMode); //현재 설정으로 UI 갱신
+            UpdateUltimateModeUI(battleManager.UltimateMode);
         }
 
         private void OnDestroy()
@@ -56,14 +60,12 @@ namespace AFKHero.UI
             }
         }
 
-        //전투탭 UI 갱신
         public void UpdateBattleUI()
         {
-            UpdateStageUI(); //현재 스테이지 갱신
-            UpdatePartyUI(); //현재 파티 갱신
+            UpdateStageUI();
+            UpdatePartyUI();
         }
 
-        //현재 진행 스테이지 UI 갱신
         public void UpdateStageUI()
         {
             if (StageManager.Instance == null) return;
@@ -72,8 +74,6 @@ namespace AFKHero.UI
             currentStageText.text = $"STAGE {StageManager.Instance.CurrentStageNumber}-{StageManager.Instance.CurrentSectionNumber}";
         }
 
-
-        //하단 영웅 슬롯 생성
         private void CreateHeroSlots()
         {
             for (int i = 0; i < heroSlots.Length; i++)
@@ -82,26 +82,22 @@ namespace AFKHero.UI
             }
         }
 
-        //현재 파티 기준으로 하단 영웅 UI 갱신
         public void UpdatePartyUI()
         {
             if (PartyManager.Instance == null) return;
 
             for (int i = 0; i < heroSlots.Length; i++)
             {
-                HeroInstance hero = PartyManager.Instance.partySlots[i]; //현재 저장된 파티자리 가져오기
-                
-                if (hero == null || hero.data == null) 
+                HeroInstance hero = PartyManager.Instance.partySlots[i];
+                if (hero == null || hero.data == null)
                 {
-                    heroSlots[i].Hide();                                 //빈 파티 자리는 숨기기
+                    heroSlots[i].Hide();
                     continue;
                 }
-
-                heroSlots[i].SetHero(hero);                              //배치된 영웅 표시
+                heroSlots[i].SetHero(hero);
             }
         }
 
-        //전투 유닛연결
         public void SetBattleUnit(int slotIndex, BattleUnit unit)
         {
             if (unit == null) return;
@@ -115,31 +111,47 @@ namespace AFKHero.UI
         {
             if (stageInfo == null) return;
 
-            //골드
             bool hasGold = stageInfo.ClearGold > 0;
             rewardGoldPanel.SetActive(hasGold);
             if (hasGold) rewardGoldText.text = $"+ {stageInfo.ClearGold}";
 
-            //다이아
             bool hasDia = stageInfo.ClearDia > 0;
             rewardDiaPanel.SetActive(hasDia);
             if (hasDia) rewardDiaText.text = $"+ {stageInfo.ClearDia}";
 
-            //무료 뽑기권
             bool hasTicket = stageInfo.ClearTicket > 0;
             rewardTicketPanel.SetActive(hasTicket);
             if (hasTicket) rewardTicketText.text = $"+ {stageInfo.ClearTicket}";
+
+            if (rewardEquipPanel != null)
+            {
+                rewardEquipPanel.SetActive(isEquipDroppedThisStage);
+            }
+
+            // 다음 판을 위해 다시 초기화
+            isEquipDroppedThisStage = false;
         }
 
-        //궁극기 자동 / 수동 변경 버튼
+        //장비 드롭 시 호출
+        public void ShowDroppedEquipmentUI(EquipmentData equip)
+        {
+            if (equip == null || rewardEquipPanel == null) return;
+
+            isEquipDroppedThisStage = true; // 장비 당첨 기록
+            rewardEquipPanel.SetActive(true);
+
+            if (rewardEquipText != null)
+            {
+                rewardEquipText.text = $"+ {equip.equipmentName}";
+            }
+        }
+
         public void OnClickedUltimateMode()
         {
             if (battleManager == null) return;
-
             battleManager.ToggleUltimateUseMode();
         }
 
-        //궁극기 모드 UI 갱신
         private void UpdateUltimateModeUI(UltimateUseMode mode)
         {
             if (ultimateModeText == null) return;
@@ -148,5 +160,4 @@ namespace AFKHero.UI
             ultimateModeText.color = isAuto ? autoYellow : ManualWhite;
         }
     }
-
 }
