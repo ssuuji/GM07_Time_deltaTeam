@@ -9947,6 +9947,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Slot_Pants
       objectReference: {fileID: 0}
+    - target: {fileID: 3562762832305684682, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
+      propertyPath: plusIconObject
+      value: 
+      objectReference: {fileID: 978242128}
     - target: {fileID: 3848525551829292436, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -11645,6 +11649,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Slot_Helmet
       objectReference: {fileID: 0}
+    - target: {fileID: 3562762832305684682, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
+      propertyPath: plusIconObject
+      value: 
+      objectReference: {fileID: 1051078302}
     - target: {fileID: 3848525551829292436, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -20308,7 +20316,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: -697897697
   m_SortingOrder: 100
@@ -22988,7 +22996,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1360103804}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1562331657}
+        m_TargetAssemblyTypeName: AFKHero.UI.UIUpgradeManager, Assembly-CSharp
+        m_MethodName: OnClickedAutoEquip
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1360103804
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26382,6 +26402,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Slot_Armor
       objectReference: {fileID: 0}
+    - target: {fileID: 3562762832305684682, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
+      propertyPath: plusIconObject
+      value: 
+      objectReference: {fileID: 1977022305}
     - target: {fileID: 3848525551829292436, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -27111,7 +27135,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -227, y: -224}
+  m_AnchoredPosition: {x: 0.000015259, y: 157}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1616307464
@@ -36140,6 +36164,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Slot_Weapon
       objectReference: {fileID: 0}
+    - target: {fileID: 3562762832305684682, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
+      propertyPath: plusIconObject
+      value: 
+      objectReference: {fileID: 277501070}
     - target: {fileID: 3848525551829292436, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1

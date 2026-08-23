@@ -48,6 +48,24 @@ namespace AFKHero.Battle
             StartCoroutine(PlayRoutine());
         }
 
+        public void PlayText(string textMessage, Vector3 worldPosition, Color customColor)
+        {
+            if (damageText == null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            transform.position = worldPosition;
+            damageText.text = textMessage; // 전달받은 글자 입력
+
+            // 애니메이션에서 자연스럽게 투명해지도록 기준 색상을 변경
+            originalColor = customColor;
+            damageText.color = originalColor;
+
+            StartCoroutine(PlayRoutine());
+        }
+
         private IEnumerator PlayRoutine()
         {
             Vector3 startPosition = transform.position;

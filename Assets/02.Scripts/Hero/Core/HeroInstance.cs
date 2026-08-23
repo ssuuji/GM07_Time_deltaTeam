@@ -83,9 +83,6 @@ public class HeroInstance
             int baseWithEquip = MaxHP + EquipmentBonusHP;
             float multiplier = 1f;
 
-            //세트 2개이상 모이면 15% 증가
-            if (GetSetCount("ReviveSet") >= 2) multiplier += 0.15f;
-
             if (PartyManager.Instance != null && PartyManager.Instance.IsHeroInParty(this))
             {
                 multiplier += PartyManager.Instance.totalBonusHpRate;
@@ -99,6 +96,7 @@ public class HeroInstance
         get
         {
             int baseWithEquip = Attack + EquipmentBonusAttack;
+
             if (PartyManager.Instance == null || !PartyManager.Instance.IsHeroInParty(this)) return baseWithEquip;
 
             float multiplier = 1f + PartyManager.Instance.totalBonusAttackRate;

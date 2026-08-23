@@ -142,26 +142,15 @@ namespace AFKHero.Battle
 
             return ownerHero.SpawnProjectile(targetHero);
         }
-        private void ApplyBasicAttackImmediately(
-    BattleUnit target)
+        private void ApplyBasicAttackImmediately(BattleUnit target)
         {
-            int finalDamage =
-                DamageCalculator.CalculateBasicAttackDamage(
-                    owner.Stats,
-                    target.Stats);
-
-            int appliedDamage =
-                target.Health.TakeDamage(
-                    finalDamage,
-                    owner);
+            int finalDamage = DamageCalculator.CalculateBasicAttackDamage(owner.Stats, target.Stats);
+            int appliedDamage = target.Health.TakeDamage(finalDamage, owner);
 
             if (appliedDamage <= 0)
             {
                 return;
             }
-
-            owner.Health?.ApplyLifeStealFromDamage(
-                appliedDamage);
 
             owner.Energy?.GainFromBasicAttack();
         }
