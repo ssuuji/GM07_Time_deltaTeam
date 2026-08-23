@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c95de8ae39b59a46812ff5faaa999c1, type: 3}
   m_Name: ReviveSet_Weapon
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
-  equipmentID: Revive_Weapon
+  equipmentID: ReviveSet_Weapon
   equipmentName: "\uBD80\uD65C\uAC80"
   type: 0
   equipmentIcon: {fileID: 21300000, guid: fcd3983f703124c5f9580c4d3b5a5823, type: 3}

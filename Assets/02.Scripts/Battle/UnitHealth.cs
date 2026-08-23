@@ -20,6 +20,8 @@ namespace AFKHero.Battle
         [Header("죽자마자 사라짐")]
         [SerializeField] private bool deactivateOnDeath = true;
 
+        public event Action<BattleUnit> OnEvaded;
+
         [Header("Test 로그 표시")]
         [SerializeField] private bool logDamage = true;
 
@@ -81,14 +83,9 @@ namespace AFKHero.Battle
 
         public int TakeUltimateDamage(int finalDamage, BattleUnit attacker)
         {
-            if (isDead ||
-                owner == null ||
-                owner.Stats == null ||
-                !owner.Stats.IsAlive ||
-                attacker == null ||
-                attacker.Team == owner.Team ||
-                battleManager == null ||
-                battleManager.CurrentUltimateUnit != attacker ||
+            if (isDead || owner == null || owner.Stats == null ||
+                !owner.Stats.IsAlive || attacker == null || attacker.Team == owner.Team ||
+                battleManager == null ||  battleManager.CurrentUltimateUnit != attacker ||
                 finalDamage <= 0)
             {
                 return 0;
@@ -98,57 +95,39 @@ namespace AFKHero.Battle
 
         private int ApplyDamageImmediately(int finalDamage, BattleUnit attacker)
         {
-            if (!CanReceiveDamage(finalDamage))
-            {
-                return 0;
-            }
+            if (!CanReceiveDamage(finalDamage)) return 0;
 
-            if (TryEvadeDamage())
-            {
-                return 0;
-            }
+            // 회피 적용 (성공 시 데미지 무시)
+            if (TryEvadeDamage()) return 0;
 
-            int absorbedDamage =
-                 AbsorbDamageWithShield(finalDamage);
+            int absorbedDamage = AbsorbDamageWithShield(finalDamage);
+            int remainingDamage = finalDamage - absorbedDamage;
+            int appliedHealthDamage = owner.Stats.ApplyDamage(remainingDamage);
+            int totalAppliedDamage = absorbedDamage + appliedHealthDamage;
 
-            int remainingDamage =
-                finalDamage - absorbedDamage;
-
-            int appliedHealthDamage =
-                owner.Stats.ApplyDamage(
-                    remainingDamage);
-
-            int totalAppliedDamage =
-                absorbedDamage +
-                appliedHealthDamage;
-
-            if (totalAppliedDamage <= 0)
-            {
-                return 0;
-            }
+            if (totalAppliedDamage <= 0) return 0;
 
             if (appliedHealthDamage > 0)
             {
-                HealthChanged?.Invoke(
-                    owner,
-                    CurrentHealth,
-                    MaxHealth);
+                HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth);
+
+                // 흡혈 적용 : 내 피가 깎인 만큼 공격자에게 피를 채움
+                if (attacker != null && attacker.Health != null)
+                {
+                    attacker.Health.ApplyLifeStealFromDamage(appliedHealthDamage);
+                }
             }
 
             if (logDamage)
             {
                 string attackerName = attacker != null ? attacker.name : "Unknown";
-
-                Debug.Log(
-                    $"[피해] {attackerName} -> {owner.name} / " +
+                Debug.Log($"[피해] {attackerName} -> {owner.name} / " +
                     $"[체력 피해] {appliedHealthDamage} / " +
-                    $"[보호막 피해] {absorbedDamage} / " +
-                    $"[HP] {CurrentHealth}/{MaxHealth}",
-                    owner);
+                    $"[HP] {CurrentHealth}/{MaxHealth}", owner);
             }
 
-            if (!owner.Stats.IsAlive &&
-                !TryReviveFromSet())
+            // 부활 적용 구간 (죽었을 때 1회 부활)
+            if (!owner.Stats.IsAlive && !TryReviveFromSet())
             {
                 Die();
             }
@@ -191,6 +170,8 @@ namespace AFKHero.Battle
                 return false;
             }
 
+            OnEvaded?.Invoke(owner);
+
             Debug.Log(
                 $"<color=green>[회피 세트]</color> " +
                 $"{owner.name}이 공격을 회피했습니다.",
@@ -202,51 +183,24 @@ namespace AFKHero.Battle
         // 부활세트
         private bool TryReviveFromSet()
         {
-            if (hasRevived ||
-                owner == null ||
-                owner.HeroInstance == null ||
-                owner.Stats == null)
-            {
-                return false;
-            }
+            if (hasRevived || owner == null || owner.HeroInstance == null || owner.Stats == null) return false;
 
-            int setCount =
-                owner.HeroInstance.GetSetCount(
-                    ReviveSetName);
+            int setCount = owner.HeroInstance.GetSetCount(ReviveSetName);
 
-            if (setCount < 4)
-            {
-                return false;
-            }
+            if (setCount < 2) return false; // 2세트부터 부활 가능
 
-            int reviveHealth =
-                Mathf.Max(
-                    1,
-                    Mathf.RoundToInt(
-                        MaxHealth *
-                        ReviveHealthRate));
+            // 4세트면 40% 체력으로, 2세트면 20% 체력으로 부활
+            float reviveRate = (setCount >= 4) ? ReviveHealthRate : 0.20f;
 
-            int restoredHealth =
-                owner.Stats.Revive(
-                    reviveHealth);
+            int reviveHealth = Mathf.Max(1, Mathf.RoundToInt(MaxHealth * reviveRate));
+            int restoredHealth = owner.Stats.Revive(reviveHealth);
 
-            if (restoredHealth <= 0)
-            {
-                return false;
-            }
+            if (restoredHealth <= 0) return false;
 
             hasRevived = true;
+            HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth);
 
-            HealthChanged?.Invoke(
-                owner,
-                CurrentHealth,
-                MaxHealth);
-
-            Debug.Log(
-                $"<color=cyan>[부활 세트]</color> " +
-                $"{owner.name}이 체력 {CurrentHealth}으로 부활했습니다.",
-                owner);
-
+            Debug.Log($"<color=cyan>[부활 세트]</color> {owner.name}이 체력 {CurrentHealth}으로 부활했습니다.", owner);
             return true;
         }
 

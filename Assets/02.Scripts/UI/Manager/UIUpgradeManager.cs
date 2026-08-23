@@ -230,6 +230,17 @@ namespace AFKHero.UI
 
         #endregion
 
+        
+        public void OnClickedAutoEquip()
+        {
+            if (selectedHero == null || selectedHero.data == null) return;
+
+            // 장비 매니저를 호출해서 일괄 장착 실행
+            EquipmentManager.Instance.AutoEquip(selectedHero);
+
+            // 장착 완료 후 현재 창의 스탯 및 장비 슬롯 UI를 갱신
+            UpdateSelectedHero();
+        }
     }
 }
 

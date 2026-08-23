@@ -73,6 +73,9 @@ namespace AFKHero.Battle
             {
                 previousHealth = unitHealth.CurrentHealth;
                 unitHealth.HealthChanged += HandleHealthChanged;
+                // 추가: 회피 신호를 들을 준비
+
+                unitHealth.OnEvaded += HandleEvaded;
             }
 
             if(attackController != null)
@@ -155,6 +158,9 @@ namespace AFKHero.Battle
             if(unitHealth != null)
             {
                 unitHealth.HealthChanged -= HandleHealthChanged;
+
+                // 추가: 스크립트 꺼질 때 듣기 종료
+                unitHealth.OnEvaded -= HandleEvaded;
             }
 
             if(attackController != null)
@@ -170,7 +176,16 @@ namespace AFKHero.Battle
             }
         }
 
+        // : 추가회피 신호를 들었을 때 텍스트를 띄워주는 함수
+        private void HandleEvaded(BattleUnit target)
+        {
+            if (damageTextPrefab != null)
+            {
+                DamageTextView damageText = Instantiate(damageTextPrefab);
 
+                damageText.PlayText("회피!", damageTextAnchor.position, Color.green);
+            }
+        }
 
     }
 }
