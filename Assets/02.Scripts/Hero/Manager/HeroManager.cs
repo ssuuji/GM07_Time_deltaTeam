@@ -63,6 +63,7 @@ public class HeroManager : MonoBehaviour
                 // 최초 획득 시
                 hero.isUnlocked = true;
                 Debug.Log($"[HeroManager] {hero.data.HeroName} 최초 해금 완료!");
+                ResonanceManager.Instance.UpdateResonance();
                 return true;
             }
             else
@@ -76,6 +77,7 @@ public class HeroManager : MonoBehaviour
                 return true;
             }
         }
+
         return false;
     }
 
@@ -96,6 +98,8 @@ public class HeroManager : MonoBehaviour
             bool success = hero.LevelUp();
             if (success)
             {
+                // 0824 수정 : 레벨업 성공 시 공명 상황을 갱신합니다.
+                ResonanceManager.Instance.UpdateResonance();
                 Debug.Log($"[HeroManager] {hero.data.HeroName} 레벨업 완료! (현재 LV.{hero.level})");
             }
             return success;
@@ -164,7 +168,16 @@ public class HeroManager : MonoBehaviour
         var saveData = new Dictionary<int, (int, bool, HeroGrade)>();
         foreach (var kvp in heroDictionary)
         {
-            saveData.Add(kvp.Key, (kvp.Value.level, kvp.Value.isUnlocked, kvp.Value.currentGrade));
+            // 0824 수정 : 공명 적용중인 영웅이라면 원본 레벨 꺼내서 원본 레벨을 저장하게 합니다.
+            if(kvp.Value.isResonanced)
+            {
+                ResonanceManager.Instance.OriginalLevelDict.TryGetValue(kvp.Value, out int originalLevel);
+                saveData.Add(kvp.Key, (originalLevel, kvp.Value.isUnlocked, kvp.Value.currentGrade));
+            }//아니면 기존대로 저장합니다.
+            else
+            {
+                saveData.Add(kvp.Key, (kvp.Value.level, kvp.Value.isUnlocked, kvp.Value.currentGrade));
+            }
         }
         return saveData;
     }
