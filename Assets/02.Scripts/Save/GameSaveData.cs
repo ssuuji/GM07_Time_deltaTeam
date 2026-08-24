@@ -9,6 +9,7 @@ public class GameSaveData
     public HeroManagerSaveData heroSaveData;
     public int[] partySaveData;
     public HeroSummonSaveData heroSummonSaveData;
+    public QuestSaveData questSaveData; 
 }
 
 //스테이지
@@ -51,5 +52,35 @@ public class HeroSummonSaveData
 {
     public int summonLevel;
     public int summonExp;
+}
+
+//퀘스트
+[Serializable]
+public class QuestSaveData
+{
+    public string lastDailyResetDate;
+
+    public List<QuestProgressSaveData> dailyQuestSaveData = new List<QuestProgressSaveData>();
+    public List<QuestProgressSaveData> repeatQuestSaveData = new List<QuestProgressSaveData>();
+
+    public MainQuestSaveData mainQuestSaveData = new MainQuestSaveData();
+}
+
+//일일 / 반복 퀘스트
+[Serializable]
+public class QuestProgressSaveData
+{
+    public string questId;
+    public int currentCount;
+    public bool isRewardClaimed;
+}
+
+//메인 퀘스트
+[Serializable]
+public class MainQuestSaveData
+{
+    public string currentQuestId;
+    public int currentCount;
+    public bool isAllCompleted;
 }
 
