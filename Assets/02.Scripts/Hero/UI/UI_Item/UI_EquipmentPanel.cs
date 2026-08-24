@@ -50,6 +50,12 @@ public class UI_EquipmentPanel : MonoBehaviour
         }
     }
 
+    public void OnClickBulkSell()
+    {
+        EquipmentManager.Instance.BulkSell();
+        RefreshUI();
+    }
+
     public void OpenPanel(HeroInstance hero)
     {
         currentHero = hero;

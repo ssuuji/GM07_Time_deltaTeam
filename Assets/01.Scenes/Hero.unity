@@ -23346,7 +23346,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1332096235}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1711003344}
+        m_TargetAssemblyTypeName: UI_EquipmentPanel, Assembly-CSharp
+        m_MethodName: OnClickBulkSell
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1332096235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25056,6 +25068,7 @@ MonoBehaviour:
   testAllyLevel: 1
   testEnemyLevel: 1
   testBattleTimeLimit: 90
+  testHealthMultiplier: 10
   testUnit: {fileID: 0}
   stunDuration: 3
   silenceDuration: 3
