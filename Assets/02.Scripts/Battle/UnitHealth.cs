@@ -60,6 +60,25 @@ namespace AFKHero.Battle
             hasRevived = false;
             CurrentShield = 0;
         }
+#if UNITY_EDITOR
+            // 테스트 체력을 적용한 뒤 체력 UI가 즉시 갱신되도록 이벤트를 전달합니다.
+        public void ApplyHealthMultiplierForTest(float multiplier)
+        {
+            if (owner == null ||
+                owner.Stats == null)
+            {
+                return;
+            }
+
+            owner.Stats.ApplyHealthMultiplierForTest(
+                multiplier);
+
+            HealthChanged?.Invoke(
+                owner,
+                CurrentHealth,
+                MaxHealth);
+        }
+#endif
         public int TakeDamage(int finalDamage, BattleUnit attacker)
         {
             if (isDead || owner == null || owner.Stats == null || !owner.Stats.IsAlive)
@@ -73,7 +92,7 @@ namespace AFKHero.Battle
             }
 
             // 궁극기 중 피해 처리 정지
-            if (battleManager != null && battleManager.IsDamageApplicationPaused)
+            if (battleManager != null && battleManager.TryDeferDamage(owner, finalDamage, attacker))
             {
                 return 0;
             }
@@ -90,7 +109,33 @@ namespace AFKHero.Battle
             {
                 return 0;
             }
-            return ApplyDamageImmediately(finalDamage, attacker);
+            int appliedDamage =
+                ApplyDamageImmediately(
+                    finalDamage,
+                    attacker);
+
+            // 회피 등으로 피해가 적용되지 않은 경우도 테스트에서 확인합니다.
+            if (appliedDamage <= 0 &&
+                ShouldLogUltimateResult(attacker))
+            {
+                Debug.Log(
+                    $"<color=#FF6B6B>[궁극기 피해]</color> " +
+                    $"{attacker.name} → {owner.name} / " +
+                    $"적용 피해: 0 (회피 또는 무효) / " +
+                    $"대상 HP: {CurrentHealth}/{MaxHealth}",
+                    owner);
+            }
+
+            return appliedDamage;
+        }
+
+        internal int ApplyDeferredDamage(
+            int finalDamage,
+            BattleUnit attacker)
+        {
+            return ApplyDamageImmediately(
+                finalDamage,
+                attacker);
         }
 
         private int ApplyDamageImmediately(int finalDamage, BattleUnit attacker)
@@ -120,10 +165,45 @@ namespace AFKHero.Battle
 
             if (logDamage)
             {
-                string attackerName = attacker != null ? attacker.name : "Unknown";
-                Debug.Log($"[피해] {attackerName} -> {owner.name} / " +
-                    $"[체력 피해] {appliedHealthDamage} / " +
-                    $"[HP] {CurrentHealth}/{MaxHealth}", owner);
+                bool isUltimateDamage =
+               attacker != null &&
+               battleManager != null &&
+               battleManager.CurrentUltimateUnit ==
+               attacker;
+
+                // 일반 공격은 기존 logDamage 설정을 사용하고,
+                // 궁극기는 시전자의 궁극기 디버그 설정을 사용합니다.
+                bool shouldLogDamage =
+                    isUltimateDamage
+                        ? ShouldLogUltimateResult(attacker)
+                        : logDamage;
+
+                if (shouldLogDamage)
+                {
+                    string attackerName =
+                        attacker != null
+                            ? attacker.name
+                            : "Unknown";
+
+                    string damageType =
+                        isUltimateDamage
+                            ? "궁극기 피해"
+                            : "피해";
+
+                    string color =
+                        isUltimateDamage
+                            ? "#FF6B6B"
+                            : "white";
+
+                    Debug.Log(
+                        $"<color={color}>[{damageType}]</color> " +
+                        $"{attackerName} → {owner.name} / " +
+                        $"총 적용 피해: {totalAppliedDamage} / " +
+                        $"체력 피해: {appliedHealthDamage} / " +
+                        $"보호막 흡수: {absorbedDamage} / " +
+                        $"대상 HP: {CurrentHealth}/{MaxHealth}",
+                        owner);
+                }
             }
 
             // 부활 적용 구간 (죽었을 때 1회 부활)
@@ -225,21 +305,24 @@ namespace AFKHero.Battle
             int restoredHealth =
                 owner.Stats.RestoreHealth(amount);
 
-            if (restoredHealth <= 0)
+            if (restoredHealth > 0)
             {
-                return 0;
+                HealthChanged?.Invoke(
+                    owner,
+                    CurrentHealth,
+                    MaxHealth);
             }
 
-            HealthChanged?.Invoke(
-                owner,
-                CurrentHealth,
-                MaxHealth);
-
-            Debug.Log(
-                $"[궁극기 회복] {healer.name} -> {owner.name} / " +
-                $"[회복량] {restoredHealth} / " +
-                $"[HP] {CurrentHealth}/{MaxHealth}",
-                owner);
+            if (ShouldLogUltimateResult(healer))
+            {
+                Debug.Log(
+                    $"<color=#66FF99>[궁극기 회복]</color> " +
+                    $"{healer.name} → {owner.name} / " +
+                    $"요청 회복량: {amount} / " +
+                    $"실제 회복량: {restoredHealth} / " +
+                    $"대상 HP: {CurrentHealth}/{MaxHealth}",
+                    owner);
+            }
 
             return restoredHealth;
         }
@@ -337,22 +420,34 @@ namespace AFKHero.Battle
             int addedShield =
                 CurrentShield - previousShield;
 
-            if (addedShield <= 0)
+            if (addedShield > 0)
             {
-                return 0;
+                ShieldChanged?.Invoke(
+                    owner,
+                    CurrentShield);
             }
 
-            ShieldChanged?.Invoke(
-                owner,
-                CurrentShield);
-
-            Debug.Log(
-                $"[궁극기 보호막] {shieldProvider.name} -> {owner.name} / " +
-                $"[추가량] {addedShield} / " +
-                $"[현재 보호막] {CurrentShield}",
-                owner);
+            if (ShouldLogUltimateResult(shieldProvider))
+            {
+                Debug.Log(
+                    $"<color=#66CCFF>[궁극기 보호막]</color> " +
+                    $"{shieldProvider.name} → {owner.name} / " +
+                    $"요청 보호막: {amount} / " +
+                    $"실제 추가량: {addedShield} / " +
+                    $"현재 보호막: {CurrentShield}",
+                    owner);
+            }
 
             return addedShield;
+        }
+
+        private static bool ShouldLogUltimateResult(
+            BattleUnit caster)
+        {
+            return caster != null &&
+                   caster.UltimateController != null &&
+                   caster.UltimateController
+                       .ShowUltimateDebugLog;
         }
 
         private bool CanReceiveDamage(

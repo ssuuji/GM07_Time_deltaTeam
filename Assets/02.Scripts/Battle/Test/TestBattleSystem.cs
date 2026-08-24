@@ -36,6 +36,11 @@ namespace AFKHero.Battle
         [SerializeField, Min(1f)]
         private float testBattleTimeLimit = 90f;
 
+        [Header("테스트 유닛 체력 배수")]
+        [Tooltip("테스트 전투에 생성되는 아군과 적군의 체력 배율입니다.")]
+        [SerializeField, Min(1f)]
+        private float testHealthMultiplier = 10f;
+
         [Header("테스트 유닛")]
 
         [Tooltip("기절·침묵을 적용하거나 궁극기를 선택할 유닛입니다.")]
@@ -205,7 +210,8 @@ namespace AFKHero.Battle
                 return;
             }
 
-            if (!ValidateBattleSpawner())
+            if (!ValidateBattleSpawner() ||
+                !ValidateBattleManager())
             {
                 return;
             }
@@ -238,6 +244,16 @@ namespace AFKHero.Battle
 
             if (battleStarted)
             {
+#if UNITY_EDITOR
+                ApplyHealthMultiplierToUnits(
+                    battleManager.AllyUnits,
+                    testHealthMultiplier);
+
+                ApplyHealthMultiplierToUnits(
+                    battleManager.EnemyUnits,
+                    testHealthMultiplier);
+#endif
+
                 Debug.Log(
                     $"[전투 테스트] 아군 {allyParty.Count}명과 " +
                     $"적군 {testEnemyHeroes.Count}명의 전투를 시작했습니다.",
@@ -283,6 +299,29 @@ namespace AFKHero.Battle
 
             return party;
         }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// 전투에 등록된 모든 유닛에게 동일한 테스트 체력 배율을 적용합니다.
+        /// </summary>
+        private static void ApplyHealthMultiplierToUnits(
+            IReadOnlyList<BattleUnit> units,
+            float multiplier)
+        {
+            if (units == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < units.Count; i++)
+            {
+                BattleUnit unit = units[i];
+
+                unit?.Health?.ApplyHealthMultiplierForTest(
+                    multiplier);
+            }
+        }
+#endif
 
         /// <summary>
         /// 목록에 실제로 사용할 수 있는 HeroData가 하나 이상 있는지 검사합니다.
@@ -355,6 +394,5 @@ namespace AFKHero.Battle
         }
     }
 
-    // ===== [변경 끝: 궁극기 모드 및 군중제어 테스트 기능 추가] =====
 }
 

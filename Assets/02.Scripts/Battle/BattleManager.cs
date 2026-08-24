@@ -6,6 +6,8 @@ using UnityEngine.XR;
 
 namespace AFKHero.Battle
 {
+    // 이 스크립트가 다른 스크립트보다 먼저 실행되도록 함
+    [DefaultExecutionOrder(-100)]
     public sealed class BattleManager : MonoBehaviour
     {
         // 0초 이하의 제한시간이 설정되지 않게
@@ -26,6 +28,30 @@ namespace AFKHero.Battle
 
         // 궁극기 대기 큐
         private readonly UltimateQueue ultimateQueue = new();
+
+        // 일반 공격 피해 큐
+        private readonly Queue<DeferredDamageRequest> deferredDamageQueue = new();
+
+        // 대기 피해를 적용하는 도중 중복 실행 방지
+        private bool isApplyingDeferredDamages;
+
+        // 일반 공격 피해가 발생했을 때, 대상, 공격자, 최종 피해량 보관
+        private readonly struct DeferredDamageRequest
+        {
+            public BattleUnit Target { get; }
+            public BattleUnit Attacker { get; }
+            public int FinalDamage { get; }
+
+            public DeferredDamageRequest(
+                BattleUnit target,
+                BattleUnit attacker,
+                int finalDamage)
+            {
+                Target = target;
+                Attacker = attacker;
+                FinalDamage = finalDamage;
+            }
+        }
 
         // 같은 프레임에 사망해도 승패 중복 방지
         public bool isBattleResultConfirmed;
@@ -56,7 +82,7 @@ namespace AFKHero.Battle
         public bool IsUltimatePlaying => currentUltimateUnit != null;
 
         // 궁극기 실행 상태일때 데미지 반영 멈춤
-        public bool IsDamageApplicationPaused => IsUltimatePlaying;
+        public bool IsDamageApplicationPaused => CurrentState == BattleState.UltimateSequence;
 
         // 궁극기 제어 상태
         public UltimateUseMode UltimateMode => ultimateUseMode;
@@ -93,12 +119,17 @@ namespace AFKHero.Battle
             ChangeState(BattleState.Preparing);
         }
 
-        private void LateUpdate()
+        private void Update()
         {
-            if(CurrentState == BattleState.Fighting && currentUltimateUnit == null)
+            // 기본 공격보다 먼저 궁극기 시작 여부를 검사
+            if (CurrentState == BattleState.Fighting && currentUltimateUnit == null)
             {
                 TryStartNextUltimate();
             }
+        }
+
+        private void LateUpdate()
+        {
             // 제한시간이 끝나는 마지막 프레임에 공격 결과 판정 반영
             UpdateBattleTimer();
         }
@@ -129,6 +160,81 @@ namespace AFKHero.Battle
             return requesterTeam == TeamType.Ally ? enemyUnits : allyUnits;
         }
 
+        // 일반 피해가 궁극기 컷인 중 발생했다면 즉시 적용하지 않고 저장
+        internal bool TryDeferDamage(
+           BattleUnit target,
+           int finalDamage,
+           BattleUnit attacker)
+        {
+            if (!IsDamageApplicationPaused)
+            {
+                return false;
+            }
+
+            if (target == null ||
+                target.Health == null ||
+                finalDamage <= 0)
+            {
+                return false;
+            }
+
+            deferredDamageQueue.Enqueue(
+                new DeferredDamageRequest(
+                    target,
+                    attacker,
+                    finalDamage));
+
+            return true;
+        }
+
+        private void ApplyDeferredDamages()
+        {
+            if (isApplyingDeferredDamages)
+            {
+                return;
+            }
+
+            isApplyingDeferredDamages = true;
+
+            try
+            {
+                while (deferredDamageQueue.Count > 0 &&
+                       !isBattleResultConfirmed)
+                {
+                    DeferredDamageRequest request =
+                        deferredDamageQueue.Dequeue();
+
+                    // 컷인 도중 대상이 제거되었거나 체력 컴포넌트를 잃었다면
+                    // 해당 피해만 건너뛰고 다음 피해를 처리합니다.
+                    if (request.Target == null ||
+                        request.Target.Health == null)
+                    {
+                        continue;
+                    }
+
+                    int appliedDamage =
+                        request.Target.Health.ApplyDeferredDamage(
+                            request.FinalDamage,
+                            request.Attacker);
+
+                    if (appliedDamage <= 0 ||
+                        request.Attacker == null)
+                    {
+                        continue;
+                    }
+
+                    // 기존 기본 공격은 피해가 적용되어야 에너지를 얻습니다.
+                    // 대기 피해는 처음 TakeDamage()에서 0을 반환했으므로,
+                    // 실제 피해가 적용되는 이 시점에 공격 에너지를 지급합니다.
+                    request.Attacker.Energy?.GainFromBasicAttack();
+                }
+            }
+            finally
+            {
+                isApplyingDeferredDamages = false;
+            }
+        }
+
         // 양 진영에 한 명 이상 등록되어 있다면 전투 시작
         public void StartBattle()
         {
@@ -151,6 +257,8 @@ namespace AFKHero.Battle
             manualSelectUltimateUnit = null;
 
             ultimateQueue.Clear();
+
+            deferredDamageQueue.Clear();
 
             ClearAllUnitStatusEffects();
 
@@ -230,6 +338,8 @@ namespace AFKHero.Battle
             UnsubscribeUltimateReadyInList(enemyUnits);
 
             ultimateQueue.Clear();
+
+            deferredDamageQueue.Clear();
 
             manualSelectUltimateUnit = null;
 
@@ -387,6 +497,8 @@ namespace AFKHero.Battle
             manualSelectUltimateUnit = null;
             ultimateQueue.Clear();
 
+            deferredDamageQueue.Clear();
+
             ClearAllUnitStatusEffects();
 
             ChangeState(resultState);
@@ -409,7 +521,7 @@ namespace AFKHero.Battle
                 return;
             }
 
-            Debug.Log($"궁극기 큐 등록 - {readyUnit.name} | 현재 대기 {ultimateQueue.Count}명", readyUnit);
+            //Debug.Log($"궁극기 큐 등록 - {readyUnit.name} | 현재 대기 {ultimateQueue.Count}명", readyUnit);
 
             LogUltimateQueueOrder();
         }
@@ -521,7 +633,7 @@ namespace AFKHero.Battle
             }
 
             UltimateStarted?.Invoke(nextUnit);
-            Debug.Log($"[궁극기 시작] {nextUnit.name}", nextUnit);
+            //Debug.Log($"[궁극기 시작] {nextUnit.name}", nextUnit);
         }
 
         // 수동 선택 모드 처리
@@ -577,7 +689,9 @@ namespace AFKHero.Battle
 
             currentUltimateUnit = null;
             UltimateFinished?.Invoke(completeUnit);
-            Debug.Log($"[궁극기 종료] {completeUnit}", completeUnit);
+            //Debug.Log($"[궁극기 종료] {completeUnit}", completeUnit);
+
+            ApplyDeferredDamages();
 
             if (isBattleResultConfirmed)
             {
