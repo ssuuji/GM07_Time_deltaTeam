@@ -143,6 +143,8 @@ MonoBehaviour:
   ultimateDuration: 1.5
   animator: {fileID: 0}
   animationTrigger: Ultimate
+  effectDelay: 0.6
+  showUltimateDebugLog: 0
 --- !u!114 &1936199993569178431
 MonoBehaviour:
   m_ObjectHideFlags: 0

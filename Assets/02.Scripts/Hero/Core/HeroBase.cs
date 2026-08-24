@@ -127,7 +127,7 @@ public class HeroBase : MonoBehaviour
             return false;
         }
 
-        Debug.Log($"[궁극기 효과 발동!] {heroInstance.data.HeroName} - {heroInstance.data.UltimateSkillName}");
+        battleUnit.UltimateController?.LogUltimateDebug();
 
         // 필드 내 모든 영웅 탐색
         HeroBase[] allHeroesInField = FindObjectsByType<HeroBase>(FindObjectsSortMode.None);
@@ -136,7 +136,7 @@ public class HeroBase : MonoBehaviour
         //int finalAttack = heroInstance.FinalAttack;
         //int finalMaxHp = heroInstance.FinalMaxHP;
 
-        // 직업별 궁극기 분기
+        // 직업별 궁극기 분기ㅇ
         switch (heroInstance.data.JobType)
         {
             case JobType.Healer:

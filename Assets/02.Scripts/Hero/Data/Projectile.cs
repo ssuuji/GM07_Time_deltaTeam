@@ -84,9 +84,6 @@ public class Projectile : MonoBehaviour
 
         if (appliedDamage > 0)
         {
-            owner.Health?.ApplyLifeStealFromDamage(
-                appliedDamage);
-
             owner.Energy?.GainFromBasicAttack();
         }
 

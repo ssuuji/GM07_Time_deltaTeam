@@ -20,6 +20,10 @@ namespace AFKHero.Battle
         [SerializeField, Min(0f)]
         private float effectDelay = 0.6f;
 
+        [Header("테스트 궁극기 디버그")]
+        [SerializeField]
+        private bool showUltimateDebugLog = true;
+
         private BattleManager battleManager;
         private BattleUnit owner;
         private HeroBase heroBase;
@@ -27,6 +31,8 @@ namespace AFKHero.Battle
         private Coroutine executionRoutine;
         private Action<BattleUnit> completionCallback;
         public bool IsExecuting => executionRoutine != null;
+
+        public bool ShowUltimateDebugLog => showUltimateDebugLog;
 
         public event Action<BattleUnit> ExecutionStarted;
         public event Action<BattleUnit> ExecutionCompleted;
@@ -36,6 +42,77 @@ namespace AFKHero.Battle
             return owner != null &&
                    owner.Data != null &&
                    owner.Data.CanUseUltimate;
+        }
+
+        public void LogUltimateDebug()
+        {
+            if (!showUltimateDebugLog ||
+                owner == null ||
+                owner.Data == null)
+            {
+                return;
+            }
+
+            HeroInstance heroInstance =
+                owner.HeroInstance;
+
+            int heroLevel =
+                heroInstance != null
+                    ? heroInstance.level
+                    : 0;
+
+            string heroGrade =
+                heroInstance != null
+                    ? heroInstance.currentGrade.ToString()
+                    : "없음";
+
+            float levelMultiplierBonus =
+                JobUltimateSkill.GetLevelMultiplierBonus(
+                    owner);
+
+            bool gradeEffectActive =
+                heroInstance != null &&
+                (int)heroInstance.currentGrade >=
+                (int)HeroGrade.Epic;
+
+            string ultimateDescription =
+                GetJobUltimateDescription(
+                    owner.Data.JobType);
+
+            Debug.Log(
+                $"<color=#FFD54F>[궁극기 디버그]</color>\n" +
+                $"사용 유닛: {owner.Data.HeroName} / 진영: {owner.Team}\n" +
+                $"직업: {owner.Data.JobType} / 스킬: {owner.Data.UltimateSkillName}\n" +
+                $"효과: {ultimateDescription}\n" +
+                $"레벨: {heroLevel} / 등급: {heroGrade}\n" +
+                $"레벨 배율 보정: +{levelMultiplierBonus:0.##} / " +
+                $"Epic 추가 효과: {(gradeEffectActive ? "ON" : "OFF")}",
+                owner);
+        }
+
+        private static string GetJobUltimateDescription(
+            JobType jobType)
+        {
+            switch (jobType)
+            {
+                case JobType.Healer:
+                    return "아군 전체 회복 / Epic일 때 기절·침묵 해제";
+
+                case JobType.Warrior:
+                    return "주변 적 광역 피해 / Epic일 때 기절 적용";
+
+                case JobType.Mage:
+                    return "가장 가까운 적 주변 범위 피해 / Epic일 때 침묵 적용";
+
+                case JobType.Archer:
+                    return "가장 먼 적에게 단일 피해 / Epic일 때 방어력 무시";
+
+                case JobType.Tank:
+                    return "자신에게 보호막 적용 / Epic일 때 아군 추가 회복";
+
+                default:
+                    return "등록되지 않은 직업 궁극기";
+            }
         }
 
         public void Initialize(BattleUnit UnitOwner, BattleManager manager)
@@ -113,11 +190,6 @@ namespace AFKHero.Battle
             }
 
             int appliedDamage = target.Health.TakeUltimateDamage(finalDamage, owner);
-
-            if (appliedDamage > 0)
-            {
-                owner.Health?.ApplyLifeStealFromDamage(appliedDamage);
-            }
 
             return appliedDamage;
         }

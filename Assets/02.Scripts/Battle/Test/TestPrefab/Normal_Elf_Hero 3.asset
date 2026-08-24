@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e48ee36aedb041449b36316992decba, type: 3}
-  m_Name: Normal_Human_Hero 1
+  m_Name: Normal_Elf_Hero 3
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
-  heroID: 1001
-  heroName: "\uC77C\uBC18\uD734\uBA3C\uC804\uC0AC"
+  heroID: 8104
+  heroName: "\uB178\uB9D0\uC5D8\uD504\uB9C8\uBC95\uC0AC"
   heroGrade: 2
-  raceType: 0
-  jobType: 0
+  raceType: 1
+  jobType: 2
   ultimateSkillName: '-'
   ultimateEffectPrefab: {fileID: 0}
   projectilePrefab: {fileID: 0}
@@ -24,7 +24,7 @@ MonoBehaviour:
   maxUltimateEnergy: 100
   basicAttackEnergyGain: 10
   damageTakenEnergyGain: 5
-  heroImage: {fileID: -873614289842364833, guid: 655fdf40bae1154478a5b2cbf16d816b, type: 3}
-  heroPrefab: {fileID: 8487797251143642690, guid: f5c7ed8c35cd2a844b41d32ba4e0be33, type: 3}
-  battleUnitPrefab: {fileID: 5405934589750331299, guid: f8d9dcb20e3426244bc970e64979ee7f, type: 3}
-  canUseUltimate: 1
+  heroImage: {fileID: 3273932013099932636, guid: b9c8937285aecbf4d8aeb009940aceb0, type: 3}
+  heroPrefab: {fileID: 80884005916195462, guid: 73b2b1d1fe5dc734ca8b4287996d4d29, type: 3}
+  battleUnitPrefab: {fileID: 5405934589750331299, guid: 6a04bee1c65c84f4faf637423d6bbb66, type: 3}
+  canUseUltimate: 0

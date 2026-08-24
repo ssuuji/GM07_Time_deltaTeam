@@ -60,6 +60,25 @@ namespace AFKHero.Battle
             CurrentUltimateEnergy = 0;
         }
 
+#if UNITY_EDITOR
+
+        // TestBattleSystem에서 생성한 유닛의 체력만 임시로 증가시킵니다.
+        // 빌드에서는 포함되지 않으며 공격력과 방어력에는 영향을 주지 않음
+        public void ApplyHealthMultiplierForTest(float multiplier)
+        {
+            float safeMultiplier =
+                Mathf.Max(1f, multiplier);
+
+            MaxHealth =
+                Mathf.Max(
+                    1,
+                    Mathf.RoundToInt(
+                        MaxHealth * safeMultiplier));
+
+            CurrentHealth = MaxHealth;
+        }
+#endif
+
         public int ApplyDamage(int damage)
         {
             if(!IsAlive || damage <= 0)

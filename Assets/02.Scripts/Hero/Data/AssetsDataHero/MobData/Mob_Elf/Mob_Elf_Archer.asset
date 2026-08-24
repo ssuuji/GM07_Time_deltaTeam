@@ -27,4 +27,4 @@ MonoBehaviour:
   heroImage: {fileID: 0}
   heroPrefab: {fileID: 0}
   battleUnitPrefab: {fileID: 0}
-  canUseUltimate: 0
+  canUseUltimate: 1

@@ -50,7 +50,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2837454413636055212, guid: c642787722d62f843b009b535bebf167, type: 3}
       propertyPath: m_Name
-      value: _BattleUnit 3
+      value: Normal_Human_BattleUnit 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6819456675092145052, guid: c642787722d62f843b009b535bebf167, type: 3}
+      propertyPath: logDamage
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7668931205239459550, guid: c642787722d62f843b009b535bebf167, type: 3}
+      propertyPath: showUltimateDebugLog
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
