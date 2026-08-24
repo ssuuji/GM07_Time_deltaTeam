@@ -34,6 +34,11 @@ public class UI_EquipmentPanel : MonoBehaviour
         {
             autoEquipButton.onClick.AddListener(OnClickAutoEquip);
         }
+
+        if (BulkSellButton != null)
+        {
+            BulkSellButton.onClick.AddListener(OnClickBulkSell);
+        }
     }
 
     private void OnEnable()
@@ -48,6 +53,12 @@ public class UI_EquipmentPanel : MonoBehaviour
             EquipmentManager.Instance.AutoEquip(currentHero);
             RefreshUI();
         }
+    }
+
+    public void OnClickBulkSell()
+    {
+        EquipmentManager.Instance.BulkSell();
+        RefreshUI();
     }
 
     public void OpenPanel(HeroInstance hero)

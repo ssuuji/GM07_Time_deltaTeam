@@ -64,36 +64,82 @@ public class EquipmentManager : MonoBehaviour
     {
         if (hero == null) return;
 
-        // 4가지 부위를 순회하며 가장 좋은 장비를 찾아 장착
-        EquipBestItemForType(hero, EquipmentType.Weapon);
-        EquipBestItemForType(hero, EquipmentType.Armor);
-        EquipBestItemForType(hero, EquipmentType.Pants);
-        EquipBestItemForType(hero, EquipmentType.Helmet);
+        // 현재 영웅이 가장 많이 장착한 목표 세트 찾기
+        string preferredSet = GetPreferredSet(hero);
+
+        // 목표 세트 가산점을 부여하며 4가지 부위 교체 검사
+        EquipBestItemForType(hero, EquipmentType.Weapon, preferredSet);
+        EquipBestItemForType(hero, EquipmentType.Armor, preferredSet);
+        EquipBestItemForType(hero, EquipmentType.Pants, preferredSet);
+        EquipBestItemForType(hero, EquipmentType.Helmet, preferredSet);
 
         string heroName = (hero.data != null) ? hero.data.HeroName : "알 수 없는 영웅";
-        Debug.Log($"[{heroName}] 간편 장착 완료!");
+        Debug.Log($"[{heroName}] 간편 장착 완료! (유지 목표 세트: {preferredSet})");
     }
+    private string GetPreferredSet(HeroInstance hero)
+    {
+        Dictionary<string, int> setCounts = new Dictionary<string, int>();
 
-    private void EquipBestItemForType(HeroInstance hero, EquipmentType type)
+        CountSet(hero.equippedWeapon, setCounts);
+        CountSet(hero.equippedArmor, setCounts);
+        CountSet(hero.equippedPants, setCounts);
+        CountSet(hero.equippedHelmet, setCounts);
+
+        string bestSet = "None";
+        int maxCount = 0;
+
+        foreach (var kvp in setCounts)
+        {
+            if (kvp.Value > maxCount)
+            {
+                maxCount = kvp.Value;
+                bestSet = kvp.Key;
+            }
+        }
+
+        return bestSet;
+    }
+    private void CountSet(EquipmentData equip, Dictionary<string, int> counts)
+    {
+        if (equip != null && !string.IsNullOrEmpty(equip.equipmentID))
+        {
+            string[] parts = equip.equipmentID.Split('_');
+            if (parts.Length > 0 && parts[0].EndsWith("Set"))
+            {
+                string setName = parts[0];
+                if (counts.ContainsKey(setName)) counts[setName]++;
+                else counts[setName] = 1;
+            }
+        }
+    }
+    private void EquipBestItemForType(HeroInstance hero, EquipmentType type, string preferredSet)
     {
         EquipmentData bestItem = null;
-        int maxStat = -1;
+        int maxScore = -1;
 
-        // 인벤토리에서 해당 부위 장비 중 합산 스탯이 가장 높은 장비 찾기
+        // 인벤토리에서 가장 '점수'가 높은 장비 찾기
         foreach (var item in equipmentInventory)
         {
             if (item.type == type)
             {
-                int itemStat = item.bonusAttack + item.bonusDefense + item.bonusHP;
-                if (itemStat > maxStat)
+                // 기본 점수 = 깡스탯 합계
+                int score = item.bonusAttack + item.bonusDefense + item.bonusHP;
+
+                // 영웅이 맞추고 있는 목표 세트 장비라면 추가 점수
+                if (preferredSet != "None" && !string.IsNullOrEmpty(item.equipmentID) && item.equipmentID.StartsWith(preferredSet))
                 {
-                    maxStat = itemStat;
+                    score += 10000;
+                }
+
+                if (score > maxScore)
+                {
+                    maxScore = score;
                     bestItem = item;
                 }
             }
         }
 
-        // 현재 끼고 있는 장비의 스탯 확인
+        // 현재 끼고 있는 장비의 점수 계산
         EquipmentData currentEquip = null;
         switch (type)
         {
@@ -103,14 +149,29 @@ public class EquipmentManager : MonoBehaviour
             case EquipmentType.Helmet: currentEquip = hero.equippedHelmet; break;
         }
 
-        int currentStat = currentEquip != null ? (currentEquip.bonusAttack + currentEquip.bonusDefense + currentEquip.bonusHP) : -1;
+        int currentScore = -1;
+        if (currentEquip != null)
+        {
+            currentScore = currentEquip.bonusAttack + 
+                currentEquip.bonusDefense + 
+                currentEquip.bonusHP;
 
-        // 더 좋은 장비가 인벤토리에 있다면 교체 장착
-        if (bestItem != null && maxStat > currentStat)
+            // 현재 장비도 목표 세트라면 방어용 점수 부여
+            if (preferredSet != "None" && !string.IsNullOrEmpty(currentEquip.equipmentID)
+                && currentEquip.equipmentID.StartsWith(preferredSet))
+            {
+                currentScore += 10000;
+            }
+        }
+
+        // 인벤토리에 더 점수가 높은 장비가 있다면 교체
+        if (bestItem != null && maxScore > currentScore)
         {
             EquipToHero(hero, bestItem);
         }
     }
+
+    
     // =========================
     // 일괄 판매 시스템
     // =========================
