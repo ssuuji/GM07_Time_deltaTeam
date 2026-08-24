@@ -8,6 +8,7 @@ public class GameSaveData
     public PlayerSaveData playerSaveData;
     public HeroManagerSaveData heroSaveData;
     public int[] partySaveData;
+    public int[] resonanceSaveData;
     public HeroSummonSaveData heroSummonSaveData;
     public QuestSaveData questSaveData; 
 }

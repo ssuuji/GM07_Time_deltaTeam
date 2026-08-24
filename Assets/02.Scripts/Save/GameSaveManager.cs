@@ -120,10 +120,16 @@ public class GameSaveManager : MonoBehaviour
             saveData.heroSaveData.epicShards = HeroManager.Instance.epicShards;
         }
 
-        //파티
+        //파티 슬롯
         if (PartyManager.Instance != null)
         {
             saveData.partySaveData = PartyManager.Instance.GetPartySaveData();
+        }
+
+        //공명 슬롯
+        if (ResonanceManager.Instance != null)
+        {
+            saveData.resonanceSaveData = ResonanceManager.Instance.GetResonanceSaveData();
         }
 
         //상점 : 소환 제단
@@ -208,10 +214,15 @@ public class GameSaveManager : MonoBehaviour
             HeroManager.Instance.epicShards = loadedSaveData.heroSaveData.epicShards;
         }
 
-        //파티
+        //파티 슬롯
         if (PartyManager.Instance != null && loadedSaveData.partySaveData != null)
         {
             PartyManager.Instance.LoadPartyFromData(loadedSaveData.partySaveData);
+        }
+
+        if (ResonanceManager.Instance != null && loadedSaveData.resonanceSaveData != null)
+        {
+            ResonanceManager.Instance.LoadResonanceFromData(loadedSaveData.resonanceSaveData);
         }
 
         //상점 : 소환 제단

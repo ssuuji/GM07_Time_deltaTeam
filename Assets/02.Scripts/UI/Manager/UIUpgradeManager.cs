@@ -152,9 +152,18 @@ namespace AFKHero.UI
             }
 
             int cost = selectedHero.LevelUpCost;     //레벨업 비용계산
-            bool canLevelUp = AFKHeroPlayerManager.Instance.Gold >= cost;
+            bool canLevelUp = AFKHeroPlayerManager.Instance.Gold >= cost && !selectedHero.isResonanced;
 
-            levelUpCostText.text = cost.ToString();                      //레벨업 비용표시
+            if (selectedHero.isResonanced)
+            {
+                levelUpCostText.text = "공명 시 레벨업 불가";
+            }
+            else
+            {
+                levelUpCostText.text = cost.ToString();
+            }
+            
+            //레벨업 비용표시
             levelUpCostText.color = canLevelUp ? levelYellow : levelRed; //가능 여부에 따라 색상
             levelUpButton.interactable = canLevelUp;                     //골드가 충분하면 버튼 활성화
         }
@@ -166,7 +175,9 @@ namespace AFKHero.UI
             if (selectedHero.level >= 50) return;                                            //최고레벨이면 return
             if (!AFKHeroPlayerManager.Instance.TryUseGold(selectedHero.LevelUpCost)) return; //비용이 부족하면 return
 
-            selectedHero.LevelUp(); //레벨업
+            //selectedHero.LevelUp(); //레벨업
+
+            HeroManager.Instance.LevelUpHero(selectedHero.data.HeroID);
             UpdateSelectedHero();   //영웅UI 갱신
         }
         #endregion
