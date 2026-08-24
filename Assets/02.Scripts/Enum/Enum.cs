@@ -67,4 +67,50 @@ namespace AFKHero.UI
         Share            //공명탭 : 정보창 -> 레벨업
     }
 }
+////////////////////////////////////
+
+
+
 /////////////////////////////////
+//////////// Quest //////////////
+namespace AFKHero.Quest
+{
+    //퀘스트 타입
+    public enum QuestType
+    {
+        Daily,   //일일 ( 매일 자정 00:00 초기화 )
+        Repeat,  //반복 ( 상시 누적 / 진행도 이월 )
+        Main     //메인 ( 초반 가이드 겸 장기 미션 )
+    }
+
+    //퀘스트 완료 조건
+    public enum QuestConditionType
+    {
+        DailyLogin,            //일일접속
+        HeroSummon,            //영웅 소환
+        HeroLevelUp,           //영웅 레벨업
+        EnemyKill,             //적 처치
+        DailyQuestRewardClaim, //일일퀘스트 보상받기
+        StageClear,            //스테이지 클리어
+        PartyDeploy,           //영웅 파티 배치
+    }
+
+    //퀘스트 보상 타입
+    public enum RewardType
+    {
+        Gold,                  //골드
+        Dia,                   //다이아
+        FreeTicket             //무료뽑기권
+    }
+
+    //메인퀘스트 - 목적지
+    public enum GuideTarget
+    {
+        Party,        //파티
+        HeroUpgrade,  //성장 (레벨업)
+        HeroSummon,   //영웅소환 (상점)
+        None          //이동없음 (전투? 화면 그대로)
+    }
+}
+/////////////////////////////////
+

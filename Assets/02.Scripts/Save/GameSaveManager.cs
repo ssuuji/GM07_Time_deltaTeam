@@ -1,4 +1,5 @@
-﻿using AFKHero.Scene;
+﻿using AFKHero.Quest;
+using AFKHero.Scene;
 using AFKHero.Shop;
 using Newtonsoft.Json;
 using System.IO;
@@ -131,6 +132,12 @@ public class GameSaveManager : MonoBehaviour
             saveData.heroSummonSaveData = HeroSummonManager.Instance.CreateHeroSummonSaveData();
         }
 
+        //퀘스트
+        if (QuestManager.Instance != null)
+        {
+            saveData.questSaveData = QuestManager.Instance.CreateQuestSaveData();
+        }
+
         return saveData;
     }
 
@@ -211,6 +218,12 @@ public class GameSaveManager : MonoBehaviour
         if (HeroSummonManager.Instance != null && loadedSaveData.heroSummonSaveData != null)
         {
             HeroSummonManager.Instance.LoadHeroSummonSaveData(loadedSaveData.heroSummonSaveData);
+        }
+
+        //퀘스트
+        if (QuestManager.Instance != null)
+        {
+            QuestManager.Instance.LoadQuestSaveData(loadedSaveData.questSaveData);
         }
 
         Debug.Log("[GameSaveManager] 저장 데이터 적용 완료");

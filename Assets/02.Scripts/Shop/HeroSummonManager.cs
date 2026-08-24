@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AFKHero.Quest;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -108,6 +109,8 @@ namespace AFKHero.Shop
                 summonExp++;                             //소환제단의 레벨 게이지 증가
                 CheckLevelUp();                          //소환제단의 레벨 체크
             }
+
+            QuestManager.Instance?.AddProgress(QuestConditionType.HeroSummon, result.Count);
 
             OnSummonInfoChanged?.Invoke();               //소환후 제단정보 변경 이벤트
             return result;
