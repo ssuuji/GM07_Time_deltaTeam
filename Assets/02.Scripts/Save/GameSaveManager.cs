@@ -1,6 +1,8 @@
 ﻿using AFKHero.Quest;
+using AFKHero.Save;
 using AFKHero.Scene;
 using AFKHero.Shop;
+using AFKHero.UI;
 using Newtonsoft.Json;
 using System.IO;
 using UnityEngine;
@@ -144,6 +146,12 @@ public class GameSaveManager : MonoBehaviour
             saveData.questSaveData = QuestManager.Instance.CreateQuestSaveData();
         }
 
+        //방치 보상
+        if (OfflineRewardManager.Instance != null)
+        {
+            saveData.offlineRewardSaveData = OfflineRewardManager.Instance.CreateOfflineRewardSaveData();
+        }
+
         return saveData;
     }
 
@@ -235,6 +243,22 @@ public class GameSaveManager : MonoBehaviour
         if (QuestManager.Instance != null)
         {
             QuestManager.Instance.LoadQuestSaveData(loadedSaveData.questSaveData);
+        }
+
+        //방치 보상
+        if (OfflineRewardManager.Instance != null)
+        {
+            OfflineRewardManager.Instance.LoadOfflineRewardSaveData(loadedSaveData.offlineRewardSaveData);
+
+            if (loadedSaveData.stageSaveData != null)
+            {
+                OfflineRewardManager.Instance.CalculateOfflineReward(loadedSaveData.stageSaveData.lastStageNumber,loadedSaveData.stageSaveData.lastSectionNumber);
+            }
+
+            if (UIOfflineReward.Instance != null)
+            {
+                UIOfflineReward.Instance.ShowOfflineReward(); //오프라인보상 판넬 표시
+            }
         }
 
         Debug.Log("[GameSaveManager] 저장 데이터 적용 완료");
