@@ -28,6 +28,9 @@ public class UI_EquipmentPanel : MonoBehaviour
     [Header("새로 추가한 버튼들")]
     public UnityEngine.UI.Button BulkSellButton;
 
+    [Header("장비 정보 팝업창")]
+    public UI_ItemPopup itemPopup;
+
     private void Start()
     {
         if (autoEquipButton != null)
@@ -71,7 +74,7 @@ public class UI_EquipmentPanel : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (EquipmentData equip in EquipmentManager.Instance.equipmentInventory)
+        foreach (EquipmentInstance equip in EquipmentManager.Instance.equipmentInventory)
         {
             GameObject go = Instantiate(itemSlotPrefab, inventoryContent);
             UI_ItemSlot slot = go.GetComponent<UI_ItemSlot>();
@@ -86,11 +89,10 @@ public class UI_EquipmentPanel : MonoBehaviour
         if (attackText != null) attackText.text = currentHero.FinalAttack.ToString();
         if (defenseText != null) defenseText.text = currentHero.FinalDefense.ToString();
 
+        // 장착된 슬롯도 갱신
         if (weaponSlot != null) weaponSlot.Setup(currentHero.equippedWeapon, currentHero, this, true);
-
-        weaponSlot.Setup(currentHero.equippedWeapon, currentHero, this, true);
-        armorSlot.Setup(currentHero.equippedArmor, currentHero, this, true);
-        pantsSlot.Setup(currentHero.equippedPants, currentHero, this, true);
-        helmetSlot.Setup(currentHero.equippedHelmet, currentHero, this, true);
+        if (armorSlot != null) armorSlot.Setup(currentHero.equippedArmor, currentHero, this, true);
+        if (pantsSlot != null) pantsSlot.Setup(currentHero.equippedPants, currentHero, this, true);
+        if (helmetSlot != null) helmetSlot.Setup(currentHero.equippedHelmet, currentHero, this, true);
     }
 }

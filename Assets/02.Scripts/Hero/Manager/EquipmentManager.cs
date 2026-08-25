@@ -5,8 +5,7 @@ public class EquipmentManager : MonoBehaviour
 {
     public static EquipmentManager Instance { get; private set; }
 
-    // 플레이어가 획득한 장비 가방 (인벤토리)
-    public List<EquipmentData> equipmentInventory = new List<EquipmentData>();
+    public List<EquipmentInstance> equipmentInventory = new List<EquipmentInstance>();
 
     private void Awake()
     {
@@ -22,22 +21,24 @@ public class EquipmentManager : MonoBehaviour
     }
 
     // 장비 획득 (가방에 추가)
-    public void AddEquipment(EquipmentData newEquipment)
+    public void AddEquipment(EquipmentInstance newEquipment)
     {
         if (newEquipment == null) return;
 
         equipmentInventory.Add(newEquipment);
-        Debug.Log($"[EquipmentManager] {newEquipment.equipmentName} 획득!");
+
+        Debug.Log($"[EquipmentManager] {newEquipment.BaseData.equipmentName} 획득! (등급: {newEquipment.Grade})");
     }
 
     // 영웅에게 장비 착용 시도
-    public void EquipToHero(HeroInstance hero, EquipmentData equipmentToEquip)
+    public void EquipToHero(HeroInstance hero, EquipmentInstance equipmentToEquip)
     {
         if (hero == null || equipmentToEquip == null) return;
         if (!equipmentInventory.Contains(equipmentToEquip)) return;
 
-        EquipmentData existingEquip = null;
-        switch (equipmentToEquip.type)
+        EquipmentInstance existingEquip = null;
+
+        switch (equipmentToEquip.BaseData.type)
         {
             case EquipmentType.Weapon: existingEquip = hero.equippedWeapon; break;
             case EquipmentType.Armor: existingEquip = hero.equippedArmor; break;
@@ -49,7 +50,7 @@ public class EquipmentManager : MonoBehaviour
         if (existingEquip != null)
         {
             equipmentInventory.Add(existingEquip);
-            Debug.Log($"[EquipmentManager] 기존 장비 {existingEquip.equipmentName} 탈착 후 가방으로 반환");
+            Debug.Log($"[EquipmentManager] 기존 장비 {existingEquip.BaseData.equipmentName} 탈착 후 가방으로 반환");
         }
 
         // 새 장비 장착 후 인벤토리에서 제거
@@ -76,15 +77,16 @@ public class EquipmentManager : MonoBehaviour
 
     private void EquipBestItemForType(HeroInstance hero, EquipmentType type)
     {
-        EquipmentData bestItem = null;
+        EquipmentInstance bestItem = null;
         int maxStat = -1;
 
         // 인벤토리에서 해당 부위 장비 중 합산 스탯이 가장 높은 장비 찾기
         foreach (var item in equipmentInventory)
         {
-            if (item.type == type)
+            if (item.BaseData.type == type)
             {
-                int itemStat = item.bonusAttack + item.bonusDefense + item.bonusHP;
+                int itemStat = item.Attack + item.Defense + item.HP;
+
                 if (itemStat > maxStat)
                 {
                     maxStat = itemStat;
@@ -94,7 +96,7 @@ public class EquipmentManager : MonoBehaviour
         }
 
         // 현재 끼고 있는 장비의 스탯 확인
-        EquipmentData currentEquip = null;
+        EquipmentInstance currentEquip = null;
         switch (type)
         {
             case EquipmentType.Weapon: currentEquip = hero.equippedWeapon; break;
@@ -103,7 +105,7 @@ public class EquipmentManager : MonoBehaviour
             case EquipmentType.Helmet: currentEquip = hero.equippedHelmet; break;
         }
 
-        int currentStat = currentEquip != null ? (currentEquip.bonusAttack + currentEquip.bonusDefense + currentEquip.bonusHP) : -1;
+        int currentStat = currentEquip != null ? (currentEquip.Attack + currentEquip.Defense + currentEquip.HP) : -1;
 
         // 더 좋은 장비가 인벤토리에 있다면 교체 장착
         if (bestItem != null && maxStat > currentStat)
@@ -111,6 +113,7 @@ public class EquipmentManager : MonoBehaviour
             EquipToHero(hero, bestItem);
         }
     }
+
     // =========================
     // 일괄 판매 시스템
     // =========================
@@ -123,9 +126,14 @@ public class EquipmentManager : MonoBehaviour
             return;
         }
 
-        // 골드 계산
-        int sellPricePerItem = 100;
-        int totalEarnedGold = equipmentInventory.Count * sellPricePerItem;
+        int totalEarnedGold = 0;
+        // 장비 등급에 따라 골드 계산
+        foreach (var item in equipmentInventory)
+        {
+            if (item.Grade == EquipmentGrade.Epic) totalEarnedGold += 1000;
+            else if (item.Grade == EquipmentGrade.Rare) totalEarnedGold += 300;
+            else totalEarnedGold += 100;
+        }
 
         // PlayerManager를 호출해서 실제로 골드를 추가
         if (AFKHero.Player.PlayerManager.Instance != null)
@@ -136,6 +144,6 @@ public class EquipmentManager : MonoBehaviour
         // 가방에 있는 모든 장비 데이터를 제거
         equipmentInventory.Clear();
 
-        Debug.Log($"[EquipmentManager] 하급 장비 일괄 판매 완료! 총 {totalEarnedGold} 골드 획득.");
+        Debug.Log($"[EquipmentManager] 장비 일괄 판매 완료! 총 {totalEarnedGold} 골드 획득.");
     }
 }

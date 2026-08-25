@@ -14,12 +14,18 @@ public class EquipmentData : ScriptableObject
 {
     [Header("장비 기본 정보")]
     public string equipmentID;     // 장비 고유 ID
-    public string equipmentName;    // 장비 이름
+    public string equipmentName;   // 장비 이름
     public EquipmentType type;     // 장비 부위
-    public Sprite equipmentIcon;    // UI 표시용 아이콘
+    public Sprite equipmentIcon;   // UI 표시용 아이콘
 
-    [Header("장비 스탯 보너스")]
-    public int bonusAttack;         // 올려주는 공격력
-    public int bonusHP;           // 올려주는 체력
-    public int bonusDefense;        // 올려주는 방어력
+    // 고정 스탯에서 랜덤 스탯 범위로 수정
+    [Header("랜덤 스탯 범위")]
+    public int minAttack;
+    public int maxAttack;
+
+    public int minHP;
+    public int maxHP;
+
+    public int minDefense;
+    public int maxDefense;
 }

@@ -312,9 +312,15 @@ public class StageManager : MonoBehaviour
                 int randomIndex = UnityEngine.Random.Range(0, possibleEquipmentDrops.Count);
                 EquipmentData droppedItem = possibleEquipmentDrops[randomIndex];
 
-                // 플레이어의 가방에 지급
-                EquipmentManager.Instance.AddEquipment(droppedItem);
-                Debug.Log($"장비 드롭 성공! 획득한 장비: {droppedItem.equipmentName}");
+                // 주사위를 굴려 진짜 장비 객체로 탄생
+                EquipmentInstance newEquip = new EquipmentInstance(droppedItem);
+
+                // 플레이어의 가방에 '진짜 장비' 지급
+                EquipmentManager.Instance.AddEquipment(newEquip);
+
+                Debug.Log($"장비 드롭 성공! 획득한 장비: {droppedItem.equipmentName} (등급: {newEquip.Grade})");
+
+                // UIBattleManager 쪽은 기존 설계도를 요구할 수 있으니 그대로 둡니다.
                 UIBattleManager.Instance.ShowDroppedEquipmentUI(droppedItem);
             }
         }
