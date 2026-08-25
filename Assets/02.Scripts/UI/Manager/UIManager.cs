@@ -1,10 +1,13 @@
-﻿using TMPro;
+﻿using AFKHero.Quest;
+using TMPro;
 using UnityEngine;
 
 namespace AFKHero.UI
 {
     public class UIManager : MonoBehaviour
     {
+        public static UIManager Instance { get; private set; }
+
         [Header("메인 탭 Panel")]
         [SerializeField] private GameObject heroPanel;         //영웅탭 패널
         [SerializeField] private GameObject shopPanel;         //상점탭 패널     //전투탭은 기본배경(?) 이므로 제외
@@ -19,6 +22,11 @@ namespace AFKHero.UI
         private UIHeroTab defaultHeroView = UIHeroTab.Party;   //게임 시작 시 영웅 내부 탭의 "파티"를 기본으로 함.
         public UIMainTab CurrentView { get; private set; }     //현재 화면
         public UIHeroTab CurrentHeroView { get; private set; } //현재 영웅 내부 탭 화면
+
+        private void Awake()
+        {
+            Instance = this;
+        }
 
         private void Start()
         {
@@ -189,6 +197,38 @@ namespace AFKHero.UI
         }
 
         #endregion
+
+        #endregion
+
+        #region 퀘스트 가이드
+
+        //메인 퀘스트의 목적지 화면 열기
+        public void OpenGuideTarget(GuideTarget guideTarget)
+        {
+            switch (guideTarget)
+            {
+                //파티
+                case GuideTarget.Party:
+                    CurrentHeroView = UIHeroTab.Party; //영웅 내부 탭을 파티로 설정
+                    OpenView(UIMainTab.Hero);          //영웅탭 열기
+                    break;
+
+                //영웅 성장
+                case GuideTarget.HeroUpgrade:
+                    CurrentHeroView = UIHeroTab.Upgrade; //영웅 내부 탭을 성장으로 설정
+                    OpenView(UIMainTab.Hero);            //영웅탭 열기
+                    break;
+
+                //영웅 소환
+                case GuideTarget.HeroSummon:
+                    OpenView(UIMainTab.Shop); //상점탭 열기
+                    break;
+
+                //이동할 목적지 없음
+                case GuideTarget.None:
+                    break;
+            }
+        }
 
         #endregion
 

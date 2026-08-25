@@ -28,28 +28,47 @@ namespace AFKHero.UI
         [SerializeField] private Transform content;           //퀘스트목록 content
         [SerializeField] private UIQuestSlot questSlotPrefab; //퀘스트 슬롯 프리펩
 
+        [Header("메인 퀘스트")]
+        [SerializeField] private Image mainQuestBackground;      //메인 퀘스트 배경
+        [SerializeField] private TMP_Text mainQuestNumberText;   //메인 퀘스트 번호
+        [SerializeField] private TMP_Text mainQuestText;         //퀘스트 이름 / 진행도
+        [SerializeField] private Image mainRewardImage;          //보상 이미지
+        [SerializeField] private TMP_Text mainRewardText;        //보상 수량
+        [SerializeField] private Sprite goldSprite;
+        [SerializeField] private Sprite diaSprite;
+        [SerializeField] private Sprite freeTicketSprite;
+        private readonly Color progressingColor = new Color32(0, 0, 0, 100);       //진행중 배경 #000000
+        private readonly Color completedColor = new Color32(0, 158, 255, 100);     //완료 배경 #009EFF
+
 
         private void Start()
         {
             if (QuestManager.Instance != null)
             {
-                QuestManager.Instance.OnQuestChanged += RefreshQuestList; //퀘스트 상태 변경 이벤트
+                QuestManager.Instance.OnQuestChanged += RefreshQuestUI; //퀘스트 상태 변경 이벤트
             }
-
+            UpdateMainQuestUI(); //게임 시작 시 메인 퀘스트 표시
         }
 
         private void OnDestroy()
         {
             if (QuestManager.Instance != null)
             {
-                QuestManager.Instance.OnQuestChanged -= RefreshQuestList;
+                QuestManager.Instance.OnQuestChanged -= RefreshQuestUI;
             }
 
         }
 
         #region 퀘스트 목록
 
-        //현재 열려있는 퀘스트 목록 갱신
+        //전체 퀘스트 UI 갱신
+        private void RefreshQuestUI()
+        {
+            UpdateMainQuestUI(); //메인 퀘스트 갱신
+            RefreshQuestList();  //일일 / 반복 퀘스트 목록 갱신
+        }
+
+        //일일 / 반복 퀘스트 목록 갱신
         private void RefreshQuestList()
         {
             if (!questPanel.activeSelf) return;
@@ -147,6 +166,96 @@ namespace AFKHero.UI
         {
             dailyText.color = currentQuestType == QuestType.Daily ? selectedTextColor : unselectedTextColor;
             repeatText.color = currentQuestType == QuestType.Repeat ? selectedTextColor : unselectedTextColor;
+        }
+
+        //현재 퀘스트 탭 보상 모두 받기
+        public void OnClickedClaimAll()
+        {
+            if (QuestManager.Instance == null) return;
+
+            QuestManager.Instance.ClaimAllRewards(currentQuestType);
+        }
+        #endregion
+
+        #region 메인퀘스트
+
+        //현재 메인 퀘스트 UI 갱신
+        private void UpdateMainQuestUI()
+        {
+            if (QuestManager.Instance == null) return;
+
+            QuestData currentMainQuest = QuestManager.Instance.GetCurrentMainQuest(); //현재 메인 퀘스트
+
+            if (currentMainQuest == null)
+            {
+                mainQuestNumberText.text = "";
+                mainQuestText.text = "";
+                mainRewardText.text = "";
+                return;
+            }
+
+            int currentCount = QuestManager.Instance.GetCurrentCount(currentMainQuest); //현재 진행도
+            bool isCompleted = currentCount >= currentMainQuest.TargetCount;            //퀘스트 완료 여부
+
+            mainQuestNumberText.text = $"[메인-{currentMainQuest.Order}]"; //메인 퀘스트 순서
+
+            mainQuestText.text = $"{currentMainQuest.QuestName}\n" +
+                                 $"( {currentCount} / {currentMainQuest.TargetCount} )";   //퀘스트명 + 진행도
+
+            mainQuestBackground.color = isCompleted ? completedColor : progressingColor; //완료 여부에 따라 배경색 변경
+
+            UpdateMainQuestReward(currentMainQuest); //보상 UI 갱신
+        }
+
+        //메인 퀘스트 보상 UI 갱신
+        private void UpdateMainQuestReward(QuestData questData)
+        {
+            if (questData.Rewards == null || questData.Rewards.Count == 0)
+            {
+                mainRewardImage.gameObject.SetActive(false);
+                mainRewardText.text = "";
+                return;
+            }
+
+            QuestReward reward = questData.Rewards[0]; //첫 번째 보상
+
+            mainRewardImage.gameObject.SetActive(true);
+            mainRewardText.text = reward.Amount.ToString(); //보상 수량
+
+            switch (reward.RewardType)
+            {
+                case RewardType.Gold:
+                    mainRewardImage.sprite = goldSprite;
+                    break;
+
+                case RewardType.Dia:
+                    mainRewardImage.sprite = diaSprite;
+                    break;
+
+                case RewardType.FreeTicket:
+                    mainRewardImage.sprite = freeTicketSprite;
+                    break;
+            }
+        }
+
+        //메인 퀘스트 버튼
+        public void OnClickedGuide()
+        {
+            if (QuestManager.Instance == null) return;
+
+            QuestData currentMainQuest = QuestManager.Instance.GetCurrentMainQuest(); //현재 메인 퀘스트
+
+            if (currentMainQuest == null) return;
+
+            //완료 상태면 보상 수령
+            if (QuestManager.Instance.CanClaimReward(currentMainQuest))
+            {
+                QuestManager.Instance.ClaimReward(currentMainQuest);
+                return;
+            }
+
+            //진행중이면 가이드 목적지로 이동
+            UIManager.Instance?.OpenGuideTarget(currentMainQuest.GuideTarget);
         }
         #endregion
     }
