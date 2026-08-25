@@ -9,6 +9,13 @@ namespace AFKHero.Battle
         private const string ReviveSetName = "ReviveSet";
         private const string VampSetName = "VampSet";
 
+        //  추가 : 콤보 세트용 이름과 스택 저장 변수
+        private const string ComboSetName = "ComboSet";
+        private int comboStack = 0;
+
+        // 추가 : 콤보가 터졌을 때 텍스트를 띄우기 위한 신호
+        public event Action<BattleUnit, BattleUnit, int> OnComboExploded;
+
         private const float TwoSetEvadeChance = 0.15f;
         private const float FourSetEvadeChance = 0.30f;
 
@@ -30,6 +37,11 @@ namespace AFKHero.Battle
 
         private bool isDead;
         private bool hasRevived;
+
+        // 무적 시간
+        private float invincibleUntilTime;
+
+        public bool IsInvincible => Time.time < invincibleUntilTime;
 
         // 유닛에 현재 체력이 들어가 있지않으면 현재 체력 0 대입
         public int CurrentHealth => owner != null && owner.Stats != null
@@ -59,9 +71,32 @@ namespace AFKHero.Battle
 
             hasRevived = false;
             CurrentShield = 0;
+            invincibleUntilTime = 0f;
         }
+
+        internal void UltimateCutInInvincibility(
+            float duration)
+        {
+            if (duration <= 0f ||
+                isDead ||
+                owner == null ||
+                owner.Stats == null ||
+                !owner.Stats.IsAlive)
+            {
+                return;
+            }
+
+            float nextEndTime =
+                Time.time + duration;
+
+            invincibleUntilTime =
+                Mathf.Max(
+                    invincibleUntilTime,
+                    nextEndTime);
+        }
+
 #if UNITY_EDITOR
-            // 테스트 체력을 적용한 뒤 체력 UI가 즉시 갱신되도록 이벤트를 전달합니다.
+        // 테스트 체력을 적용한 뒤 체력 UI가 즉시 갱신되도록 이벤트를 전달합니다.
         public void ApplyHealthMultiplierForTest(float multiplier)
         {
             if (owner == null ||
@@ -91,8 +126,7 @@ namespace AFKHero.Battle
                 return 0;
             }
 
-            // 궁극기 중 피해 처리 정지
-            if (battleManager != null && battleManager.TryDeferDamage(owner, finalDamage, attacker))
+            if (IsInvincible)
             {
                 return 0;
             }
@@ -102,13 +136,20 @@ namespace AFKHero.Battle
 
         public int TakeUltimateDamage(int finalDamage, BattleUnit attacker)
         {
-            if (isDead || owner == null || owner.Stats == null ||
-                !owner.Stats.IsAlive || attacker == null || attacker.Team == owner.Team ||
-                battleManager == null ||  battleManager.CurrentUltimateUnit != attacker ||
+            if (isDead ||
+                owner == null ||
+                owner.Stats == null ||
+                !owner.Stats.IsAlive ||
+                IsInvincible ||
+                attacker == null ||
+                attacker.Team == owner.Team ||
+                battleManager == null ||
+                battleManager.CurrentUltimateUnit != attacker ||
                 finalDamage <= 0)
             {
                 return 0;
             }
+
             int appliedDamage =
                 ApplyDamageImmediately(
                     finalDamage,
@@ -127,15 +168,6 @@ namespace AFKHero.Battle
             }
 
             return appliedDamage;
-        }
-
-        internal int ApplyDeferredDamage(
-            int finalDamage,
-            BattleUnit attacker)
-        {
-            return ApplyDamageImmediately(
-                finalDamage,
-                attacker);
         }
 
         private int ApplyDamageImmediately(int finalDamage, BattleUnit attacker)
@@ -160,6 +192,9 @@ namespace AFKHero.Battle
                 if (attacker != null && attacker.Health != null)
                 {
                     attacker.Health.ApplyLifeStealFromDamage(appliedHealthDamage);
+
+                    // 추가 : 내가 맞았으니, 날 때린 공격자의 스택을 1 올려줌
+                    attacker.Health.AddAttackStack(owner);
                 }
             }
 
@@ -504,5 +539,36 @@ namespace AFKHero.Battle
 
             return absorbedDamage;
         }
+
+        public void AddAttackStack(BattleUnit target)
+        {
+            if (isDead || owner == null || owner.HeroInstance == null) return;
+
+            int setCount = owner.HeroInstance.GetSetCount(ComboSetName);
+            if (setCount < 2) return; // 2세트부터 발동
+
+            comboStack++; // 스택 누적
+
+            // 4세트면 2타마다, 2세트면 3타마다 터짐
+            int requiredHits = (setCount >= 4) ? 2 : 3;
+
+            if (comboStack >= requiredHits)
+            {
+                comboStack = 0; // 조건 달성 시 스택 초기화
+
+                if (target != null && target.Stats != null && target.Stats.IsAlive)
+                {
+                    // 공격력의 150% 만큼 추가 피해 계산
+                    int extraDamage = Mathf.RoundToInt(owner.HeroInstance.FinalAttack * 1.5f);
+                    target.Stats.ApplyDamage(extraDamage);
+
+                    // 화면에 "폭발" 텍스트를 띄우기 위해 밖으로 신호 발송
+                    OnComboExploded?.Invoke(owner, target, extraDamage);
+
+                    Debug.Log($"<color=orange>[콤보 공격]</color> {owner.name}이 {target.name}에게 {extraDamage}의 고정 피해를 입혔습니다!");
+                }
+            }
+        }
+
     }
 }
