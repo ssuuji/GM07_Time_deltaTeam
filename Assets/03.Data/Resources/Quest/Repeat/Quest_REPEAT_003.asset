@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Quest.QuestData
   questId: REPEAT_003
   questType: 1
-  questName: "\uC601\uC6C5 \uC18C\uD658 30\uD68C"
-  description: "\uC601\uC6C5\uC744 30\uD68C \uC18C\uD658\uD558\uC138\uC694."
+  questName: "\uC801 50\uB9C8\uB9AC \uCC98\uCE58"
+  description: "\uC801\uC744 50\uB9C8\uB9AC \uCC98\uCE58\uD558\uC138\uC694."
   isEnabled: 1
-  conditionType: 1
-  targetCount: 30
+  conditionType: 3
+  targetCount: 50
   targetStageNumber: 1
   targetSectionNumber: 1
   rewards:

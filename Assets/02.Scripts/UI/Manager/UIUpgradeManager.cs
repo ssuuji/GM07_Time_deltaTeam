@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using AFKHero.Quest;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -178,6 +179,8 @@ namespace AFKHero.UI
             //selectedHero.LevelUp(); //레벨업
 
             HeroManager.Instance.LevelUpHero(selectedHero.data.HeroID);
+
+            QuestManager.Instance?.AddProgress(QuestConditionType.HeroLevelUp);              //영웅 레벨업 퀘스트 진행도 증가
             UpdateSelectedHero();   //영웅UI 갱신
         }
         #endregion

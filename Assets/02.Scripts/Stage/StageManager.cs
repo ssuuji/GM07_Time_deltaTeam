@@ -1,4 +1,5 @@
 ﻿using AFKHero.Battle;
+using AFKHero.Quest;
 using AFKHero.UI;
 using System.Collections;
 using UnityEngine;
@@ -209,6 +210,8 @@ public class StageManager : MonoBehaviour
         //마지막으로 클리어한 스테이지와 섹션의 값을 저장 => 방치 전투에서 활용.
         lastStageNumber = currentStageNumber;
         lastSectionNumber = currentSectionNumber;
+
+        QuestManager.Instance?.OnStageClear(currentStageNumber, currentSectionNumber); //스테이지 클리어 퀘스트 진행
 
         //보스 스테이지가 아닌 상태에서 승리 시 섹션의 숫자만 증가시킨다.
         if (!currentStageInfo.IsBossStage)

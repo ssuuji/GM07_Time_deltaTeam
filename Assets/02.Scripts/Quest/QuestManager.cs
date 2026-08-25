@@ -196,6 +196,8 @@ namespace AFKHero.Quest
             UpdateDailyQuest(conditionType, amount);  //일일
             UpdateRepeatQuest(conditionType, amount); //반복
             UpdateMainQuest(conditionType, amount);   //메인
+
+            OnQuestChanged?.Invoke(); //진행도 변경 후 UI 갱신
         }
 
         //일일 퀘스트 진행도 증가
@@ -242,18 +244,23 @@ namespace AFKHero.Quest
         }
 
         //스테이지 클리어 퀘스트 (스테이지와 섹션 비교를 위해 별도처리)
+        //스테이지 클리어
         public void OnStageClear(int stageNumber, int sectionNumber)
         {
             if (isMainQuestAllCompleted) return;
 
             QuestData currentQuest = GetQuestData(currentMainQuestId);
 
-            if (currentQuest == null) return;
+            if (currentQuest == null || !currentQuest.IsEnabled) return;
             if (currentQuest.ConditionType != QuestConditionType.StageClear) return;
+
+            //현재 메인 퀘스트의 목표 스테이지가 아니라면 종료
             if (currentQuest.TargetStageNumber != stageNumber) return;
             if (currentQuest.TargetSectionNumber != sectionNumber) return;
 
-            currentMainQuestCount = 1; //목표스테이지를 클리어했다면 조건 완료 ( 스테이지 클리어 이므로 조건값이 항상 1 )
+            currentMainQuestCount = currentQuest.TargetCount; //메인 퀘스트 완료
+
+            OnQuestChanged?.Invoke(); //퀘스트 UI 갱신
         }
 
         #endregion
@@ -288,6 +295,14 @@ namespace AFKHero.Quest
             }
 
             return quests;
+        }
+
+        //현재 진행중인 메인 퀘스트 반환
+        public QuestData GetCurrentMainQuest()
+        {
+            if (isMainQuestAllCompleted) return null;
+
+            return GetQuestData(currentMainQuestId);
         }
 
         //현재 진행도 반환 (slider, 텍스트 갱신)
@@ -345,16 +360,22 @@ namespace AFKHero.Quest
 
             switch (questData.QuestType)
             {
-                //일일
                 case QuestType.Daily:
                     if (!dailyQuestProgress.TryGetValue(questData.QuestId, out QuestProgress dailyProgress)) return false;
 
-                    return dailyProgress.currentCount >= questData.TargetCount && !dailyProgress.isRewardClaimed; //목표수치 달성 + 보상받지 않은 상태
-                //반복
+                    return dailyProgress.currentCount >= questData.TargetCount &&
+                           !dailyProgress.isRewardClaimed;
+
                 case QuestType.Repeat:
                     if (!repeatQuestProgress.TryGetValue(questData.QuestId, out QuestProgress repeatProgress)) return false;
 
-                    return repeatProgress.currentCount >= questData.TargetCount; //목표수치 달성
+                    return repeatProgress.currentCount >= questData.TargetCount;
+
+                case QuestType.Main:
+                    if (isMainQuestAllCompleted) return false;
+                    if (currentMainQuestId != questData.QuestId) return false;
+
+                    return currentMainQuestCount >= questData.TargetCount;
             }
 
             return false;
@@ -378,6 +399,10 @@ namespace AFKHero.Quest
                 //반복
                 case QuestType.Repeat:
                     ClaimRepeatReward(questData);
+                    break;
+                //메인
+                case QuestType.Main:
+                    ClaimMainQuestReward(questData);
                     break;
             }
 
@@ -431,6 +456,105 @@ namespace AFKHero.Quest
             
             progress.currentCount -= questData.TargetCount; //목표 수치만큼 차감하고 초과 진행도 유지
         }
+
+        //메인 퀘스트 보상 수령
+        private void ClaimMainQuestReward(QuestData questData)
+        {
+            GiveQuestReward(questData); //현재 메인 퀘스트 보상 지급
+            MoveToNextMainQuest(questData.Order); //다음 메인 퀘스트로 이동
+        }
+
+        //다음 메인 퀘스트로 이동
+        private void MoveToNextMainQuest(int currentOrder)
+        {
+            QuestData nextMainQuest = null;
+
+            foreach (QuestData quest in questDataList)
+            {
+                if (quest == null || !quest.IsEnabled) continue;
+                if (quest.QuestType != QuestType.Main) continue;
+                if (quest.Order <= currentOrder) continue;
+
+                //현재 퀘스트보다 Order가 높으면서 가장 가까운 퀘스트 찾기
+                if (nextMainQuest == null || quest.Order < nextMainQuest.Order)
+                {
+                    nextMainQuest = quest;
+                }
+            }
+
+            //다음 메인 퀘스트가 존재
+            if (nextMainQuest != null)
+            {
+                currentMainQuestId = nextMainQuest.QuestId; //다음 메인 퀘스트
+                currentMainQuestCount = 0;                  //진행도 초기화
+
+                CheckCurrentMainQuestProgress();            //이미 달성한 조건인지 확인
+
+                OnQuestChanged?.Invoke();                   //변경된 메인 퀘스트 UI 갱신
+                return;
+            }
+
+            //다음 퀘스트가 없다면 메인 퀘스트 전체 완료
+            currentMainQuestId = "";
+            currentMainQuestCount = 0;
+            isMainQuestAllCompleted = true;
+        }
+
+        //현재 메인 퀘스트가 이미 달성된 조건인지 확인
+        private void CheckCurrentMainQuestProgress()
+        {
+            if (isMainQuestAllCompleted) return;
+
+            QuestData currentQuest = GetQuestData(currentMainQuestId);
+
+            if (currentQuest == null || !currentQuest.IsEnabled) return;
+
+            switch (currentQuest.ConditionType)
+            {
+                case QuestConditionType.StageClear:
+                    if (StageManager.Instance == null) return;
+
+                    int lastStage = StageManager.Instance.LastStageNumber;
+                    int lastSection = StageManager.Instance.LastSectionNumber;
+
+                    bool isCleared =
+                        lastStage > currentQuest.TargetStageNumber ||
+                        (lastStage == currentQuest.TargetStageNumber &&
+                         lastSection >= currentQuest.TargetSectionNumber);
+
+                    if (isCleared)
+                    {
+                        currentMainQuestCount = currentQuest.TargetCount; //이미 클리어했다면 완료 처리
+                    }
+
+                    break;
+            }
+        }
+
+        //현재 타입에서 받을 수 있는 퀘스트 보상 모두 수령
+        public void ClaimAllRewards(QuestType questType)
+        {
+            List<QuestData> quests = GetQuestList(questType);
+
+            foreach (QuestData quest in quests)
+            {
+                if (!CanClaimReward(quest)) continue;
+
+                switch (quest.QuestType)
+                {
+                    case QuestType.Daily:
+                        ClaimDailyReward(quest);
+                        break;
+
+                    case QuestType.Repeat:
+                        ClaimRepeatReward(quest);
+                        break;
+                }
+            }
+
+            OnQuestChanged?.Invoke(); //모든 보상 수령 후 UI 갱신
+        }
+
 
         #endregion
     }

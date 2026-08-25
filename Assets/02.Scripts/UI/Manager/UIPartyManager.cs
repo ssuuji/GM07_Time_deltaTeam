@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using AFKHero.Quest;
+using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 
@@ -157,8 +158,9 @@ namespace AFKHero.UI
         {
             if (selectedHero == null) return;
 
-            PartyManager.Instance.PlaceHero(slotIndex, selectedHero); //선택한 자리에 영웅 배치
-            selectedHero = null;                                      //배치 완료 후 선택 해제
+            PartyManager.Instance.PlaceHero(slotIndex, selectedHero);           //선택한 자리에 영웅 배치
+            QuestManager.Instance?.AddProgress(QuestConditionType.PartyDeploy); //파티 배치 퀘스트 진행도 증가
+            selectedHero = null;                                                //배치 완료 후 선택 해제
 
             UINoticePopup.Instance.Hide(); //알림창 닫기
             SetPlaceBack(false);           //배치중 배경 제거
