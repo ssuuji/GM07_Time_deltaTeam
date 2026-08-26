@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c95de8ae39b59a46812ff5faaa999c1, type: 3}
+  m_Name: ComboSet_Pants
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
+  equipmentID: ComboSet_Pants
+  equipmentName: "\uCF64\uBCF4\uAC11\uC637(\uD558\uC758)"
+  type: 2
+  equipmentIcon: {fileID: -8867875760497662050, guid: 137ed591608a107449e950c5e02861f2, type: 3}
+  minAttack: 0
+  maxAttack: 0
+  minHP: 100
+  maxHP: 400
+  minDefense: 10
+  maxDefense: 80

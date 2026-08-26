@@ -63,7 +63,11 @@ public class HeroManager : MonoBehaviour
                 // 최초 획득 시
                 hero.isUnlocked = true;
                 Debug.Log($"[HeroManager] {hero.data.HeroName} 최초 해금 완료!");
-                ResonanceManager.Instance.UpdateResonance();
+                // 안전 장치 추가! ResonanceManager가 있을 때만 실행
+                if (ResonanceManager.Instance != null)
+                {
+                    ResonanceManager.Instance.UpdateResonance();
+                }
                 return true;
             }
             else

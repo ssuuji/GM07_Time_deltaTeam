@@ -7,15 +7,16 @@ public class UI_ItemSlot : MonoBehaviour
     public Image iconImage;
     public TextMeshProUGUI nameText;
     public Button slotButton;
-
     public GameObject plusIconObject;
 
-    private EquipmentData myEquipment;
+    // 슬롯이 보관하는 장비를 'EquipmentInstance'로 변경했습니다.
+    private EquipmentInstance myEquipment;
     private HeroInstance targetHero;
     private UI_EquipmentPanel mainPanel;
     private bool isEquippedSlot;
 
-    public void Setup(EquipmentData equipData, HeroInstance hero, UI_EquipmentPanel panel, bool isEquipped)
+    // 매개변수 타입도 EquipmentInstance로 변경
+    public void Setup(EquipmentInstance equipData, HeroInstance hero, UI_EquipmentPanel panel, bool isEquipped)
     {
         myEquipment = equipData;
         targetHero = hero;
@@ -26,14 +27,13 @@ public class UI_ItemSlot : MonoBehaviour
         {
             if (iconImage != null)
             {
-                iconImage.sprite = myEquipment.equipmentIcon;
-                iconImage.gameObject.SetActive(true); // 혹시 꺼져있을까봐 켜주기
+                // 아이콘과 이름은 원본 설계도 안에서 꺼내옵니다.
+                iconImage.sprite = myEquipment.BaseData.equipmentIcon;
+                iconImage.gameObject.SetActive(true);
             }
-            if (nameText != null) nameText.text = myEquipment.equipmentName;
+            if (nameText != null) nameText.text = myEquipment.BaseData.equipmentName;
 
-            // 장비가 장착되면 [+] 마크 끄기
             if (plusIconObject != null) plusIconObject.SetActive(false);
-
             slotButton.interactable = true;
         }
         else
@@ -41,16 +41,10 @@ public class UI_ItemSlot : MonoBehaviour
             if (iconImage != null)
             {
                 iconImage.sprite = null;
-                // 투명한 흰색 네모가 보이지 않게 아예 꺼버립니다.
                 iconImage.gameObject.SetActive(false);
             }
-
-            // "New Text" 같은 글씨가 빈 슬롯에 뜨지 않게 깔끔하게 지우기
             if (nameText != null) nameText.text = "";
-
-            // 빈 슬롯이면 다시 [+] 마크 켜기
             if (plusIconObject != null) plusIconObject.SetActive(true);
-
             slotButton.interactable = true;
         }
 
@@ -60,28 +54,12 @@ public class UI_ItemSlot : MonoBehaviour
 
     private void OnClickSlot()
     {
-        if (myEquipment == null)
-        {
-            // 만약 빈 슬롯을 눌렀을 때 가방 창이 열리게 하고 싶다면 아래 두 줄의 주석을 지우기
-            // if (mainPanel != null && !mainPanel.gameObject.activeSelf) 
-            //     mainPanel.gameObject.SetActive(true);
+        if (myEquipment == null) return;
 
-            return;
-        }
-
-        if (isEquippedSlot)
+        // 클릭 시 즉시 장착하지 않고, 필요한 정보를 담아서 팝업창만 열기
+        if (mainPanel != null && mainPanel.itemPopup != null)
         {
-            EquipmentManager.Instance.equipmentInventory.Add(myEquipment);
-            targetHero.UnequipItem(myEquipment.type);
-        }
-        else
-        {
-            EquipmentManager.Instance.EquipToHero(targetHero, myEquipment);
-        }
-
-        if (mainPanel != null)
-        {
-            mainPanel.RefreshUI();
+            mainPanel.itemPopup.OpenPopup(myEquipment, targetHero, mainPanel, isEquippedSlot);
         }
     }
 }

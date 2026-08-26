@@ -16,6 +16,9 @@ MonoBehaviour:
   equipmentName: "\uBD80\uD65C\uD22C\uAD6C"
   type: 3
   equipmentIcon: {fileID: 21300000, guid: 648dc7d549f59bc1c1dcf12527dc19e5, type: 3}
-  bonusAttack: 0
-  bonusHP: 0
-  bonusDefense: 30
+  minAttack: 0
+  maxAttack: 0
+  minHP: 50
+  maxHP: 200
+  minDefense: 10
+  maxDefense: 50
