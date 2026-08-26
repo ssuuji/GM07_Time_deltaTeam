@@ -19,7 +19,7 @@ MonoBehaviour:
   jobType: 3
   ultimateSkillName: '-'
   ultimateEffectPrefab: {fileID: 0}
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 1242348002347848851, guid: 21e0df954f1f58f4e8eaf2523bce4de0, type: 3}
   moveSpeed: 2
   maxUltimateEnergy: 100
   basicAttackEnergyGain: 10

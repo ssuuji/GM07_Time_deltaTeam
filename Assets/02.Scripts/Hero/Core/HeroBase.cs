@@ -70,7 +70,8 @@ public class HeroBase : MonoBehaviour
         JobType jobType = heroInstance.data.JobType;
 
         if (jobType != JobType.Archer &&
-            jobType != JobType.Mage)
+            jobType != JobType.Mage &&
+            jobType != JobType.Healer)
         {
             return false;
         }

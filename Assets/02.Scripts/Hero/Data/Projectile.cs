@@ -45,7 +45,9 @@ public class Projectile : MonoBehaviour
         transform.position += direction * speed * Time.deltaTime;
 
         // 타겟을 바라보도록 회전 처리
-        transform.LookAt(target.transform);
+        //transform.LookAt(target.transform);
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
         // 타겟에 도달했는지 거리 검사
         float distance = Vector3.Distance(transform.position, target.transform.position);

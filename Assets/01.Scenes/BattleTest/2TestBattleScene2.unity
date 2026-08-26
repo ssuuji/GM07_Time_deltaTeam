@@ -35029,6 +35029,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.BattleManager
   battleTimeLimit: 30
   ultimateUseMode: 0
+  ultimateStartInvincibilityDuration: 0.2
   isBattleResultConfirmed: 0
 --- !u!4 &1951631305
 Transform:
@@ -35094,11 +35095,11 @@ MonoBehaviour:
   battleManager: {fileID: 1951631304}
   battleSpawner: {fileID: 1951631306}
   testAllyHeroes:
-  - {fileID: 11400000, guid: 429e638b687bb924a93a84f1b114a8e7, type: 2}
-  - {fileID: 11400000, guid: 5f059e67410d7e749aad15a5b83af248, type: 2}
-  - {fileID: 11400000, guid: 9068262ea5c7d7541b57b683410b07de, type: 2}
-  - {fileID: 11400000, guid: 193a4766a9abefd488a2f3b3ddd9f237, type: 2}
-  - {fileID: 11400000, guid: b9f21b2a8d263ca46939f03151442f00, type: 2}
+  - {fileID: 11400000, guid: 11b022b29d1c1304f94b2191855adf76, type: 2}
+  - {fileID: 11400000, guid: 1e493698dabd9204290d7d9fd4d15209, type: 2}
+  - {fileID: 11400000, guid: 83369abcba5a332418ebcf1d597eab38, type: 2}
+  - {fileID: 11400000, guid: a4d752d765b92884a87339bdfa77e499, type: 2}
+  - {fileID: 11400000, guid: ad5a21e502378234186b39bbdba1789a, type: 2}
   testEnemyHeroes:
   - {fileID: 11400000, guid: 35ab352bf8a744d4b80e15a0d3f32553, type: 2}
   - {fileID: 11400000, guid: eee5261fed256b4419ad76aa56e30f7c, type: 2}

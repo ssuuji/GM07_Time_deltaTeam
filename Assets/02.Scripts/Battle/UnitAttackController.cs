@@ -120,7 +120,8 @@ namespace AFKHero.Battle
 
             bool usesProjectile =
                 jobType == JobType.Archer ||
-                jobType == JobType.Mage;
+                jobType == JobType.Mage ||
+                jobType == JobType.Healer;
 
             if (!usesProjectile ||
                 owner.Data.ProjectilePrefab == null)
