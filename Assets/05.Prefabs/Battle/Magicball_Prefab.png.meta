@@ -1,0 +1,585 @@
+fileFormatVersion: 2
+guid: 7f4023bee7275f7458d8282d8cb12a8d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8177763839917822230
+    second: Magicball_Prefab_0
+  - first:
+      213: 1971341836128648132
+    second: Magicball_Prefab_1
+  - first:
+      213: 6622146849457256895
+    second: Magicball_Prefab_2
+  - first:
+      213: -830035233108461833
+    second: Magicball_Prefab_3
+  - first:
+      213: -6882966990554012232
+    second: Magicball_Prefab_4
+  - first:
+      213: -6124499683048394742
+    second: Magicball_Prefab_5
+  - first:
+      213: 3718574477121486633
+    second: Magicball_Prefab_6
+  - first:
+      213: 5231389652974977000
+    second: Magicball_Prefab_7
+  - first:
+      213: 2966896021805468713
+    second: Magicball_Prefab_8
+  - first:
+      213: -8390674371748948274
+    second: Magicball_Prefab_9
+  - first:
+      213: -1569971566057864627
+    second: Magicball_Prefab_10
+  - first:
+      213: 3710700188970884719
+    second: Magicball_Prefab_11
+  - first:
+      213: -506993079497335251
+    second: Magicball_Prefab_12
+  - first:
+      213: -2558138895754467274
+    second: Magicball_Prefab_13
+  - first:
+      213: 2200372175432312105
+    second: Magicball_Prefab_14
+  - first:
+      213: -549185209383662945
+    second: Magicball_Prefab_15
+  - first:
+      213: -7460323113883408953
+    second: Magicball_Prefab_16
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Magicball_Prefab_0
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 31
+        width: 1207
+        height: 981
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 611165f72e04d7170800000000000000
+      internalID: 8177763839917822230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_1
+      rect:
+        serializedVersion: 2
+        x: 1118
+        y: 461
+        width: 98
+        height: 281
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4cb705194fc9b5b10800000000000000
+      internalID: 1971341836128648132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_2
+      rect:
+        serializedVersion: 2
+        x: 1174
+        y: 737
+        width: 6
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb93f54597796eb50800000000000000
+      internalID: 6622146849457256895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_3
+      rect:
+        serializedVersion: 2
+        x: 1052
+        y: 355
+        width: 59
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f6f28b6a5f1b74f0800000000000000
+      internalID: -830035233108461833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_4
+      rect:
+        serializedVersion: 2
+        x: 981
+        y: 310
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b5e9475df9ca70a0800000000000000
+      internalID: -6882966990554012232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_5
+      rect:
+        serializedVersion: 2
+        x: 1011
+        y: 323
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0078ecbcf7610ba0800000000000000
+      internalID: -6124499683048394742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_6
+      rect:
+        serializedVersion: 2
+        x: 1020
+        y: 283
+        width: 17
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92ff8abf8c70b9330800000000000000
+      internalID: 3718574477121486633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_7
+      rect:
+        serializedVersion: 2
+        x: 1028
+        y: 323
+        width: 21
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ef3a3b1c21a99840800000000000000
+      internalID: 5231389652974977000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_8
+      rect:
+        serializedVersion: 2
+        x: 987
+        y: 313
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92c0c3966388c2920800000000000000
+      internalID: 2966896021805468713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_9
+      rect:
+        serializedVersion: 2
+        x: 987
+        y: 295
+        width: 14
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec61ee55d165e8b80800000000000000
+      internalID: -8390674371748948274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_10
+      rect:
+        serializedVersion: 2
+        x: 987
+        y: 291
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4248a1cd27563ae0800000000000000
+      internalID: -1569971566057864627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_11
+      rect:
+        serializedVersion: 2
+        x: 949
+        y: 258
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6e9597692e0f7330800000000000000
+      internalID: 3710700188970884719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_12
+      rect:
+        serializedVersion: 2
+        x: 529
+        y: 169
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2edaf8fa7cc6f8f0800000000000000
+      internalID: -506993079497335251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_13
+      rect:
+        serializedVersion: 2
+        x: 593
+        y: 145
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 638e1785a3aaf7cd0800000000000000
+      internalID: -2558138895754467274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_14
+      rect:
+        serializedVersion: 2
+        x: 641
+        y: 153
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 925eb42e5da498e10800000000000000
+      internalID: 2200372175432312105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_15
+      rect:
+        serializedVersion: 2
+        x: 646
+        y: 148
+        width: 13
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9ac9c636f6e068f0800000000000000
+      internalID: -549185209383662945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Magicball_Prefab_16
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 137
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c5e75787ab977890800000000000000
+      internalID: -7460323113883408953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Magicball_Prefab_0: 8177763839917822230
+      Magicball_Prefab_1: 1971341836128648132
+      Magicball_Prefab_10: -1569971566057864627
+      Magicball_Prefab_11: 3710700188970884719
+      Magicball_Prefab_12: -506993079497335251
+      Magicball_Prefab_13: -2558138895754467274
+      Magicball_Prefab_14: 2200372175432312105
+      Magicball_Prefab_15: -549185209383662945
+      Magicball_Prefab_16: -7460323113883408953
+      Magicball_Prefab_2: 6622146849457256895
+      Magicball_Prefab_3: -830035233108461833
+      Magicball_Prefab_4: -6882966990554012232
+      Magicball_Prefab_5: -6124499683048394742
+      Magicball_Prefab_6: 3718574477121486633
+      Magicball_Prefab_7: 5231389652974977000
+      Magicball_Prefab_8: 2966896021805468713
+      Magicball_Prefab_9: -8390674371748948274
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
