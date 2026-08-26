@@ -16,17 +16,18 @@ public class HeroInstance
     // =========================================
     // 장비 슬롯 및 세트 효과
     // =========================================
-    public EquipmentData equippedWeapon { get; private set; }
-    public EquipmentData equippedArmor { get; private set; }
-    public EquipmentData equippedPants { get; private set; }
-    public EquipmentData equippedHelmet { get; private set; }
+    public EquipmentInstance equippedWeapon { get; private set; }
+    public EquipmentInstance equippedArmor { get; private set; }
+    public EquipmentInstance equippedPants { get; private set; }
+    public EquipmentInstance equippedHelmet { get; private set; }
 
     // 장비 장착 함수
-    public void EquipItem(EquipmentData equipment)
+    public void EquipItem(EquipmentInstance equipment)
     {
         if (equipment == null) return;
 
-        switch (equipment.type)
+        // 장비의 부위 정보는 BaseData 안에 있으므로 참조 경로를 바꿨습니다
+        switch (equipment.BaseData.type)
         {
             case EquipmentType.Weapon: equippedWeapon = equipment; break;
             case EquipmentType.Armor: equippedArmor = equipment; break;
@@ -34,7 +35,9 @@ public class HeroInstance
             case EquipmentType.Helmet: equippedHelmet = equipment; break;
         }
         string heroName = data != null ? data.HeroName : "알수없는 영웅";
-        Debug.Log($"[{heroName}] {equipment.equipmentName} 장착 완료!");
+
+        // 장비의 이름도 BaseData 안에서 가져오도록 바꿨습니다
+        Debug.Log($"[{heroName}] {equipment.BaseData.equipmentName} 장착 완료!");
     }
 
     // 장비 해제 함수
@@ -48,28 +51,40 @@ public class HeroInstance
             case EquipmentType.Helmet: equippedHelmet = null; break;
         }
     }
+    public EquipmentInstance GetEquippedItem(EquipmentType type)
+    {
+        switch (type)
+        {
+            case EquipmentType.Weapon: return equippedWeapon;
+            case EquipmentType.Armor: return equippedArmor;
+            case EquipmentType.Pants: return equippedPants;
+            case EquipmentType.Helmet: return equippedHelmet;
+            default: return null;
+        }
+    }
 
-    // 4개 부위 장비 스탯 보너스 합산
+    // // onusAttack 같은 고정 스탯 대신, 확정된 스탯을 더하도록 바꿨습니다.
     private int EquipmentBonusAttack =>
-        (equippedWeapon?.bonusAttack ?? 0) + (equippedArmor?.bonusAttack ?? 0) +
-        (equippedPants?.bonusAttack ?? 0) + (equippedHelmet?.bonusAttack ?? 0);
+        (equippedWeapon?.Attack ?? 0) + (equippedArmor?.Attack ?? 0) +
+        (equippedPants?.Attack ?? 0) + (equippedHelmet?.Attack ?? 0);
 
     private int EquipmentBonusHP =>
-        (equippedWeapon?.bonusHP ?? 0) + (equippedArmor?.bonusHP ?? 0) +
-        (equippedPants?.bonusHP ?? 0) + (equippedHelmet?.bonusHP ?? 0);
+        (equippedWeapon?.HP ?? 0) + (equippedArmor?.HP ?? 0) +
+        (equippedPants?.HP ?? 0) + (equippedHelmet?.HP ?? 0);
 
     private int EquipmentBonusDefense =>
-        (equippedWeapon?.bonusDefense ?? 0) + (equippedArmor?.bonusDefense ?? 0) +
-        (equippedPants?.bonusDefense ?? 0) + (equippedHelmet?.bonusDefense ?? 0);
+        (equippedWeapon?.Defense ?? 0) + (equippedArmor?.Defense ?? 0) +
+        (equippedPants?.Defense ?? 0) + (equippedHelmet?.Defense ?? 0);
 
     // 장비 고유 ID를 기반으로 4개 부위의 세트 개수 판별
     public int GetSetCount(string setPrefix)
     {
         int count = 0;
-        if (equippedWeapon != null && equippedWeapon.equipmentID.StartsWith(setPrefix)) count++;
-        if (equippedArmor != null && equippedArmor.equipmentID.StartsWith(setPrefix)) count++;
-        if (equippedPants != null && equippedPants.equipmentID.StartsWith(setPrefix)) count++;
-        if (equippedHelmet != null && equippedHelmet.equipmentID.StartsWith(setPrefix)) count++;
+        // 세트 확인을 위한 장비 ID도 BaseData 안에서 꺼내오도록 바꿨습니다.
+        if (equippedWeapon != null && equippedWeapon.BaseData.equipmentID.StartsWith(setPrefix)) count++;
+        if (equippedArmor != null && equippedArmor.BaseData.equipmentID.StartsWith(setPrefix)) count++;
+        if (equippedPants != null && equippedPants.BaseData.equipmentID.StartsWith(setPrefix)) count++;
+        if (equippedHelmet != null && equippedHelmet.BaseData.equipmentID.StartsWith(setPrefix)) count++;
         return count;
     }
 
@@ -114,7 +129,7 @@ public class HeroInstance
         isUnlocked = defaultUnlocked;
         isResonanced = false;
 
-        // 추가된 부분 : 처음 생성 시 처음 등급으로 초기화
+        //  처음 생성 시 처음 등급으로 초기화
         currentGrade = data.HeroGrade;
     }
 
@@ -162,7 +177,7 @@ public class HeroInstance
     {
         get
         {
-            if (data == null) return 0; // 추가된 부분: 영웅 데이터가 비어있으면 체력 계산을 스킵하고 0을 반환
+            if (data == null) return 0; // 영웅 데이터가 비어있으면 체력 계산을 스킵하고 0을 반환
 
             int baseHp = data.GetJobStats().hp + (level - 1) * 20;
             return Mathf.RoundToInt(baseHp * GradeMultiplier);
@@ -173,7 +188,7 @@ public class HeroInstance
     {
         get
         {
-            if (data == null) return 0; // 추가된 부분: 영웅 데이터가 비어있으면 공격력 계산을 스킵하고 0을 반환
+            if (data == null) return 0; // 영웅 데이터가 비어있으면 공격력 계산을 스킵하고 0을 반환
 
             int baseAttack = data.GetJobStats().attack + (level - 1) * 5;
             return Mathf.RoundToInt(baseAttack * GradeMultiplier);
@@ -184,7 +199,7 @@ public class HeroInstance
     {
         get
         {
-            if (data == null) return 0; // 추가된 부분: 영웅 데이터가 비어있으면 방어력 계산을 스킵하고 0을 반환합니다.
+            if (data == null) return 0; // 영웅 데이터가 비어있으면 방어력 계산을 스킵하고 0을 반환합니다.
 
             int baseDefense = data.GetJobStats().defense + (level - 1) * 2;
             return Mathf.RoundToInt(baseDefense * GradeMultiplier);

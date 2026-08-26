@@ -9,12 +9,15 @@ namespace AFKHero.Battle
         private const string ReviveSetName = "ReviveSet";
         private const string VampSetName = "VampSet";
 
-        //  추가 : 콤보 세트용 이름과 스택 저장 변수
+        // 콤보 세트용 이름과 스택 저장 변수
         private const string ComboSetName = "ComboSet";
         private int comboStack = 0;
 
-        // 추가 : 콤보가 터졌을 때 텍스트를 띄우기 위한 신호
+        // 콤보가 터졌을 때 텍스트를 띄우기 위한 신호
         public event Action<BattleUnit, BattleUnit, int> OnComboExploded;
+
+        // 처형 세트용 이름 추가
+        private const string ExecuteSetName = "ExecuteSet";
 
         private const float TwoSetEvadeChance = 0.15f;
         private const float FourSetEvadeChance = 0.30f;
@@ -195,6 +198,27 @@ namespace AFKHero.Battle
 
                     // 추가 : 내가 맞았으니, 날 때린 공격자의 스택을 1 올려줌
                     attacker.Health.AddAttackStack(owner);
+                }
+
+                // 추가 : 처형 세트 (체력 5% 이하 즉사 기믹)
+                if (attacker != null && attacker.HeroInstance != null)
+                {
+                    int executeSetCount = attacker.HeroInstance.GetSetCount(ExecuteSetName);
+
+                    if (executeSetCount >= 2) // 2세트 이상일 때 발동
+                    {
+                        float hpPercent = (float)CurrentHealth / MaxHealth;
+                        // 4세트면 10% 이하, 2세트면 5% 이하일 때 즉사
+                        float executeThreshold = (executeSetCount >= 4) ? 0.10f : 0.05f;
+
+                        // 기준 체력 이하로 떨어졌고, 아직 살아있다면 처형!
+                        if (hpPercent <= executeThreshold && CurrentHealth > 0)
+                        {
+                            Debug.Log($"<color=purple>[처형 발동!]</color> {owner.name}의 체력이 {executeThreshold * 100}% 이하가 되어 즉사합니다!");
+                            owner.Stats.ApplyDamage(CurrentHealth); // 남은 체력만큼 피해를 줘서 확인 사살
+                            HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth);
+                        }
+                    }
                 }
             }
 
