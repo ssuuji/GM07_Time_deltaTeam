@@ -10,7 +10,8 @@ public class GameSaveData
     public int[] partySaveData;
     public int[] resonanceSaveData;
     public HeroSummonSaveData heroSummonSaveData;
-    public QuestSaveData questSaveData; 
+    public QuestSaveData questSaveData;
+    public OfflineRewardSaveData offlineRewardSaveData;
 }
 
 //스테이지
@@ -85,3 +86,10 @@ public class MainQuestSaveData
     public bool isAllCompleted;
 }
 
+//방치보상 - 
+[Serializable]
+public class OfflineRewardSaveData
+{
+    public string lastOnlineTime;
+    public int rewardGold;
+}
