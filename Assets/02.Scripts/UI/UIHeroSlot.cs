@@ -1,5 +1,4 @@
-﻿using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace AFKHero.UI
@@ -12,9 +11,6 @@ namespace AFKHero.UI
 
         [Header("등급 배경색")]
         [SerializeField] private Image gradeImage;  //등급 배경
-
-        [Header("영웅 레벨")]
-        [SerializeField] private TMP_Text heroLevelText;
         
         private UIHeroInfoPopup heroInfoPopup;      //영웅 정보 팝업
         private UIHeroSlotMode slotMode;            //현재 슬롯이 사용되고있는 화면모드
@@ -42,28 +38,6 @@ namespace AFKHero.UI
             gameObject.SetActive(true);
             heroIcon.sprite = Hero.data.HeroIcon;                           //아이콘
             gradeImage.color = HeroGradeColor.GetColor(Hero.currentGrade);  //등급(색) 설정
-
-
-            //0826 추가된 부분 : 공명 활성화 시 영웅 레벨 텍스트의 색깔을 다르게 출력합니다.
-            if (ResonanceManager.Instance.IsResonanceOn)
-            {
-                //슬롯 내부에 있는 영웅
-                if (!hero.isResonanced)
-                {
-                    heroLevelText.color = Color.cyan;
-                }
-                else //슬롯 외부에 있는 영웅
-                {
-                    heroLevelText.color = Color.red;
-                }
-            }
-            else//공명이 비활성화되면, 하얀색으로 돌립니다.
-            {
-                heroLevelText.color = Color.white;
-            }
-
-            heroLevelText.text = "Lv." + hero.level;
-            
         }
 
         //영웅슬롯 클릭버튼

@@ -182,7 +182,6 @@ namespace AFKHero.UI
 
             QuestManager.Instance?.AddProgress(QuestConditionType.HeroLevelUp);              //영웅 레벨업 퀘스트 진행도 증가
             UpdateSelectedHero();   //영웅UI 갱신
-            UpdateHeroList();
         }
         #endregion
 

@@ -1,5 +1,4 @@
 ﻿using AFKHero.UI;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -27,9 +26,10 @@ public class UIResonanceManager : MonoBehaviour
     [SerializeField] private GameObject[] removeMarks;
     private int selectedRemoveSlotIndex = -1;
 
-    [Header("공명 활성화/ 비활성화 시 연출")]
+
+    //흠... 문제는 이 파티클은 공명 창이 열려있을 때만 활성화되어야 할 텐데?
+    [Header("공명 시 연출")]
     [SerializeField] private ParticleSystem resonanceParticle;
-    [SerializeField] private TMP_Text resonanceLevelText;
 
 
 
@@ -62,10 +62,9 @@ public class UIResonanceManager : MonoBehaviour
         if (resonanceContent == null) return;
 
         heroList.UpdateList(resonanceContent, UIHeroSlotType.All, null, UIHeroSlotMode.Share);
-        UpdateResonanceUI();
     }
 
-    //공명창의 UI를 갱신하는 메서드 모음
+
     public void UpdateResonanceUI()
     {
         UpdateResonanceSet();
@@ -73,13 +72,14 @@ public class UIResonanceManager : MonoBehaviour
         ShowResonanceEffect(ResonanceManager.Instance.IsResonanceOn);
     }
 
-    //공명 상태가 활성화/ 비활성화 됐을 때의 효과 처리를 담당하는 메서드.
-    //공명 활성화 시 텍스트에 공명 레벨을 표시하고 파티클을 재생하며, 비활성화 시 문구를 표시하고 파티클을 끈다.
+    //공명 상태가 활성화됐을 경우, 어디선가에서 빤짝이 이펙트를 켜고 끄게 할 메서드
+    //Play와 Stop이 제대로 사용된 건지 모르겠네.
+    //공명 패널을 닫을 때 비활성화되고, 열 때 현재 공명 상태인지를 판별하여 활성화하게끔 해야 함.
     private void ShowResonanceEffect(bool isResonanceOn)
     {
-        if (resonanceParticle == null || resonanceLevelText == null)
+        if (resonanceParticle == null)
         {
-            Debug.LogWarning("[UIResonanceManager] : 공명 연출 컴포넌트가 부족합니다.");
+            Debug.LogWarning("[UIResonanceManager] : 공명 연출 컴포넌트가 없습니다.");
             return;
         }
         
@@ -92,8 +92,8 @@ public class UIResonanceManager : MonoBehaviour
             //파티클 켜기
 
             //어차피 공명이 활성화 되었을 때 표시할 거잖아? 그러면... 여기서 그런 식으로 하는게?
-            resonanceLevelText.text = "현재 공명 레벨 : Lv. " + ResonanceManager.Instance.ResonanceLevel;
-            }
+            //resonanceText.text = "현재 공명 레벨 : " + {ResonanceManager.Instance.ResonanceLevel;
+        }
         else
         {
             Debug.Log("[UIResonanceManager] : 공명이 비활성화되어 파티클이 꺼집니다.");
@@ -101,7 +101,7 @@ public class UIResonanceManager : MonoBehaviour
             resonanceParticle.Stop();
             //파티클 끄기
 
-            resonanceLevelText.text = "현재 공명이 활성화되지 않았습니다.";
+            //resonanceText.text = "현재 공명이 활성화되지 않았습니다."
         }
     }
 
@@ -211,7 +211,6 @@ public class UIResonanceManager : MonoBehaviour
         SetPlaceBack(false);
         SetSlotAlpha(false);
         UpdateResonanceUI();
-        UpdateHeroList();
     }
 
     public void RemoveHero(HeroInstance hero)
@@ -222,7 +221,6 @@ public class UIResonanceManager : MonoBehaviour
 
         ClearRemoveSelection();
         UpdateResonanceUI();
-        UpdateHeroList();
     }
 
     //참조 0이던데, 버튼에 연결하신 듯?
@@ -251,7 +249,6 @@ public class UIResonanceManager : MonoBehaviour
 
                 ClearRemoveSelection();
                 UpdateResonanceUI();
-                UpdateHeroList();
                 return;
             }
 
@@ -263,7 +260,6 @@ public class UIResonanceManager : MonoBehaviour
 
         selectedRemoveSlotIndex = slotIndex;
         UpdateRemoveMarks();
-        UpdateHeroList();
 
     }
 

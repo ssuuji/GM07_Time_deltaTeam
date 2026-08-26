@@ -4147,10 +4147,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 298245400}
     - target: {fileID: 6239012592920240292, guid: ffce08e64c369bc4ba887a7f415f4e16, type: 3}
-      propertyPath: resonanceLevelText
-      value: 
-      objectReference: {fileID: 8843729661234187445}
-    - target: {fileID: 6239012592920240292, guid: ffce08e64c369bc4ba887a7f415f4e16, type: 3}
       propertyPath: removeMarks.Array.size
       value: 5
       objectReference: {fileID: 0}
@@ -10853,6 +10849,8 @@ MonoBehaviour:
   heroNameText: {fileID: 0}
   skillNameText: {fileID: 0}
   cutInDuration: 0.8
+  effectContainer: {fileID: 0}
+  effectLifetime: 2
 --- !u!225 &732822379
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -19593,8 +19591,6 @@ MonoBehaviour:
   currentSectionNumber: 1
   lastStageNumber: 0
   lastSectionNumber: 0
-  equipmentDropChance: 30
-  possibleEquipmentDrops: []
 --- !u!4 &1373122691
 Transform:
   m_ObjectHideFlags: 0
@@ -20749,8 +20745,6 @@ MonoBehaviour:
   currentSectionNumber: 1
   lastStageNumber: 0
   lastSectionNumber: 0
-  equipmentDropChance: 30
-  possibleEquipmentDrops: []
 --- !u!1 &1442254596
 GameObject:
   m_ObjectHideFlags: 0
@@ -29764,8 +29758,6 @@ MonoBehaviour:
   rewardGoldText: {fileID: 2086579650}
   rewardDiaText: {fileID: 1026215678}
   rewardTicketText: {fileID: 807646214}
-  rewardEquipPanel: {fileID: 0}
-  rewardEquipText: {fileID: 0}
 --- !u!114 &2095186722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29828,7 +29820,6 @@ MonoBehaviour:
   testAllyLevel: 1
   testEnemyLevel: 1
   testBattleTimeLimit: 90
-  testHealthMultiplier: 10
   testUnit: {fileID: 0}
   stunDuration: 3
   silenceDuration: 3
@@ -30989,17 +30980,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e245e431b7ec4c64ab93b7315f9b654b, type: 3}
---- !u!114 &8843729661234187445 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8831504367064226253, guid: e245e431b7ec4c64ab93b7315f9b654b, type: 3}
-  m_PrefabInstance: {fileID: 8843729661234187444}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
