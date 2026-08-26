@@ -2364,6 +2364,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.BattleManager
   battleTimeLimit: 30
   ultimateUseMode: 0
+  ultimateStartInvincibilityDuration: 0.2
   isBattleResultConfirmed: 0
 --- !u!114 &156404594
 MonoBehaviour:
@@ -20956,7 +20957,7 @@ GameObject:
   - component: {fileID: 1299645188}
   - component: {fileID: 1299645187}
   m_Layer: 5
-  m_Name: Badge
+  m_Name: Collection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29164,7 +29165,7 @@ GameObject:
   - component: {fileID: 1749108834}
   - component: {fileID: 1749108833}
   m_Layer: 5
-  m_Name: Badge_txt
+  m_Name: Collection_txt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29209,7 +29210,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC5C5\uC801"
+  m_text: "\uB3C4\uAC10"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3d3e49fd0a8fd294faf61451549ea8c4, type: 2}
   m_sharedMaterial: {fileID: -4337488842083190814, guid: 3d3e49fd0a8fd294faf61451549ea8c4, type: 2}
