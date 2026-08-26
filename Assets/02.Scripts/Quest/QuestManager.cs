@@ -98,6 +98,38 @@ namespace AFKHero.Quest
             }
         }
 
+        //일일 퀘스트 초기화 체크
+        private void CheckDailyQuestReset()
+        {
+            string today = DateTime.Now.ToString("yyyy-MM-dd"); //오늘 날짜
+
+            print($"저장된 날짜 : {lastDailyResetDate}");
+            print($"현재 날짜 : {today}");
+
+            if (string.IsNullOrEmpty(lastDailyResetDate))
+            {
+                lastDailyResetDate = today;
+                return;
+            }
+
+            if (lastDailyResetDate == today) return;
+
+            ResetDailyQuest();
+
+            lastDailyResetDate = today;
+        }
+
+        //일일 퀘스트 초기화
+        private void ResetDailyQuest()
+        {
+            foreach (QuestProgress progress in dailyQuestProgress.Values)
+            {
+                progress.currentCount = 0;
+                progress.isRewardClaimed = false;
+            }
+            OnQuestChanged?.Invoke(); //퀘스트 UI 갱신
+        }
+
         #endregion
 
         #region 퀘스트 저장/불러오기
@@ -161,6 +193,7 @@ namespace AFKHero.Quest
                     progress.isRewardClaimed = savedQuest.isRewardClaimed;
                 }
             }
+            CheckDailyQuestReset();
 
             //반복 퀘스트
             if (saveData.repeatQuestSaveData != null)
@@ -261,6 +294,73 @@ namespace AFKHero.Quest
             currentMainQuestCount = currentQuest.TargetCount; //메인 퀘스트 완료
 
             OnQuestChanged?.Invoke(); //퀘스트 UI 갱신
+        }
+
+        //다음 메인 퀘스트로 이동
+        private void MoveToNextMainQuest(int currentOrder)
+        {
+            QuestData nextMainQuest = null;
+
+            foreach (QuestData quest in questDataList)
+            {
+                if (quest == null || !quest.IsEnabled) continue;
+                if (quest.QuestType != QuestType.Main) continue;
+                if (quest.Order <= currentOrder) continue;
+
+                //현재 퀘스트보다 Order가 높으면서 가장 가까운 퀘스트 찾기
+                if (nextMainQuest == null || quest.Order < nextMainQuest.Order)
+                {
+                    nextMainQuest = quest;
+                }
+            }
+
+            //다음 메인 퀘스트가 존재
+            if (nextMainQuest != null)
+            {
+                currentMainQuestId = nextMainQuest.QuestId; //다음 메인 퀘스트
+                currentMainQuestCount = 0;                  //진행도 초기화
+
+                CheckCurrentMainQuestProgress();            //이미 달성한 조건인지 확인
+
+                OnQuestChanged?.Invoke();                   //변경된 메인 퀘스트 UI 갱신
+                return;
+            }
+
+            //다음 퀘스트가 없다면 메인 퀘스트 전체 완료
+            currentMainQuestId = "";
+            currentMainQuestCount = 0;
+            isMainQuestAllCompleted = true;
+        }
+
+        //현재 메인 퀘스트가 이미 달성된 조건인지 확인
+        private void CheckCurrentMainQuestProgress()
+        {
+            if (isMainQuestAllCompleted) return;
+
+            QuestData currentQuest = GetQuestData(currentMainQuestId);
+
+            if (currentQuest == null || !currentQuest.IsEnabled) return;
+
+            switch (currentQuest.ConditionType)
+            {
+                case QuestConditionType.StageClear:
+                    if (StageManager.Instance == null) return;
+
+                    int lastStage = StageManager.Instance.LastStageNumber;
+                    int lastSection = StageManager.Instance.LastSectionNumber;
+
+                    bool isCleared =
+                        lastStage > currentQuest.TargetStageNumber ||
+                        (lastStage == currentQuest.TargetStageNumber &&
+                         lastSection >= currentQuest.TargetSectionNumber);
+
+                    if (isCleared)
+                    {
+                        currentMainQuestCount = currentQuest.TargetCount; //이미 클리어했다면 완료 처리
+                    }
+
+                    break;
+            }
         }
 
         #endregion
@@ -462,73 +562,6 @@ namespace AFKHero.Quest
         {
             GiveQuestReward(questData); //현재 메인 퀘스트 보상 지급
             MoveToNextMainQuest(questData.Order); //다음 메인 퀘스트로 이동
-        }
-
-        //다음 메인 퀘스트로 이동
-        private void MoveToNextMainQuest(int currentOrder)
-        {
-            QuestData nextMainQuest = null;
-
-            foreach (QuestData quest in questDataList)
-            {
-                if (quest == null || !quest.IsEnabled) continue;
-                if (quest.QuestType != QuestType.Main) continue;
-                if (quest.Order <= currentOrder) continue;
-
-                //현재 퀘스트보다 Order가 높으면서 가장 가까운 퀘스트 찾기
-                if (nextMainQuest == null || quest.Order < nextMainQuest.Order)
-                {
-                    nextMainQuest = quest;
-                }
-            }
-
-            //다음 메인 퀘스트가 존재
-            if (nextMainQuest != null)
-            {
-                currentMainQuestId = nextMainQuest.QuestId; //다음 메인 퀘스트
-                currentMainQuestCount = 0;                  //진행도 초기화
-
-                CheckCurrentMainQuestProgress();            //이미 달성한 조건인지 확인
-
-                OnQuestChanged?.Invoke();                   //변경된 메인 퀘스트 UI 갱신
-                return;
-            }
-
-            //다음 퀘스트가 없다면 메인 퀘스트 전체 완료
-            currentMainQuestId = "";
-            currentMainQuestCount = 0;
-            isMainQuestAllCompleted = true;
-        }
-
-        //현재 메인 퀘스트가 이미 달성된 조건인지 확인
-        private void CheckCurrentMainQuestProgress()
-        {
-            if (isMainQuestAllCompleted) return;
-
-            QuestData currentQuest = GetQuestData(currentMainQuestId);
-
-            if (currentQuest == null || !currentQuest.IsEnabled) return;
-
-            switch (currentQuest.ConditionType)
-            {
-                case QuestConditionType.StageClear:
-                    if (StageManager.Instance == null) return;
-
-                    int lastStage = StageManager.Instance.LastStageNumber;
-                    int lastSection = StageManager.Instance.LastSectionNumber;
-
-                    bool isCleared =
-                        lastStage > currentQuest.TargetStageNumber ||
-                        (lastStage == currentQuest.TargetStageNumber &&
-                         lastSection >= currentQuest.TargetSectionNumber);
-
-                    if (isCleared)
-                    {
-                        currentMainQuestCount = currentQuest.TargetCount; //이미 클리어했다면 완료 처리
-                    }
-
-                    break;
-            }
         }
 
         //현재 타입에서 받을 수 있는 퀘스트 보상 모두 수령
