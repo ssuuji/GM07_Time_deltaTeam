@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AFKHero.Collection;
+using System;
 using System.Collections.Generic;
 
 [Serializable]
@@ -12,6 +13,7 @@ public class GameSaveData
     public HeroSummonSaveData heroSummonSaveData;
     public QuestSaveData questSaveData;
     public OfflineRewardSaveData offlineRewardSaveData;
+    public CollectionSaveData collectionSaveData;
 }
 
 //스테이지
@@ -92,4 +94,12 @@ public class OfflineRewardSaveData
 {
     public string lastOnlineTime;
     public int rewardGold;
+}
+
+//도감
+[Serializable]
+public class CollectionSaveData
+{
+    public List<int> collectedHeroIDs = new List<int>();    
+    public List<int> claimedRewardCounts = new List<int>(); 
 }
