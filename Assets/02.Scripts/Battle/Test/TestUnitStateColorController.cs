@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 namespace AFKHero.Battle
 {
@@ -9,37 +9,48 @@ namespace AFKHero.Battle
             Normal,
             Ultimate,
             Stun,
-            Silence
+            Silence,
+            Knockback,
+            Taunt
         }
 
-        [Header("»óÅÂº° »ö»ó")]
+        [Header("ìƒíƒœë³„ ìƒ‰ìƒ")]
 
-        [Tooltip("±Ã±Ø±â ½ÇÇà Áß Ç¥½ÃÇÒ »ö»óÀÔ´Ï´Ù.")]
+        [Tooltip("ê¶ê·¹ê¸° ì‹¤í–‰ ì¤‘ í‘œì‹œí•  ìƒ‰ìƒì…ë‹ˆë‹¤.")]
         [SerializeField]
         private Color ultimateColor =
             new Color(1f, 0.75f, 0.2f, 1f);
 
-        [Tooltip("±âÀı Áß Ç¥½ÃÇÒ »ö»óÀÔ´Ï´Ù.")]
+        [Tooltip("ê¸°ì ˆ ì¤‘ í‘œì‹œí•  ìƒ‰ìƒì…ë‹ˆë‹¤.")]
         [SerializeField]
         private Color stunColor =
             new Color(0.35f, 0.7f, 1f, 1f);
 
-        [Tooltip("Ä§¹¬ Áß Ç¥½ÃÇÒ »ö»óÀÔ´Ï´Ù.")]
+        [Tooltip("ì¹¨ë¬µ ì¤‘ í‘œì‹œí•  ìƒ‰ìƒì…ë‹ˆë‹¤.")]
         [SerializeField]
         private Color silenceColor =
             new Color(0.75f, 0.4f, 1f, 1f);
 
-        [Header("»ö»óÀ» º¯°æÇÒ ÀÌ¹ÌÁö")]
+        [Tooltip("ë„‰ë°± ì¤‘ í‘œì‹œí•  ìƒ‰ìƒì…ë‹ˆë‹¤.")]
+        [SerializeField]
+        private Color knockbackColor =
+    new Color(1f, 0.45f, 0.15f, 1f);
 
-        [Tooltip(
-            "ºñ¾î ÀÖÀ¸¸é ÇöÀç À¯´ÖÀÇ ¸ğµç ÀÚ½Ä SpriteRenderer¸¦ " +
-            "ÀÚµ¿À¸·Î Ã£½À´Ï´Ù.")]
+        [Tooltip("ë„ë°œ ì¤‘ í‘œì‹œí•  ìƒ‰ìƒì…ë‹ˆë‹¤.")]
+        [SerializeField]
+        private Color tauntColor =
+            new Color(1f, 0.25f, 0.25f, 1f);
+
+
+        [Header("ìƒ‰ìƒì„ ë³€ê²½í•  ì´ë¯¸ì§€")]
+
+        [Tooltip("ë¹„ì–´ ìˆìœ¼ë©´ í˜„ì¬ ìœ ë‹›ì˜ ëª¨ë“  ìì‹ SpriteRendererë¥¼ ìë™ìœ¼ë¡œ ì°¾ìŠµë‹ˆë‹¤.")]
         [SerializeField]
         private SpriteRenderer[] spriteRenderers;
 
         private BattleUnit owner;
 
-        // °¢ SpriteRenderer°¡ ¿ø·¡ °¡Áö°í ÀÖ´ø »ö»óÀÔ´Ï´Ù.
+        // ê° SpriteRendererê°€ ì›ë˜ ê°€ì§€ê³  ìˆë˜ ìƒ‰ìƒì…ë‹ˆë‹¤.
         private Color[] originalColors;
 
         private VisualState currentVisualState =
@@ -63,7 +74,7 @@ namespace AFKHero.Battle
             VisualState nextState =
                 GetCurrentVisualState();
 
-            // »óÅÂ°¡ ¹Ù²îÁö ¾Ê¾Ò´Ù¸é »ö»óÀ» ´Ù½Ã Àû¿ëÇÏÁö ¾Ê½À´Ï´Ù.
+            // ìƒíƒœê°€ ë°”ë€Œì§€ ì•Šì•˜ë‹¤ë©´ ìƒ‰ìƒì„ ë‹¤ì‹œ ì ìš©í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
             if (currentVisualState == nextState)
             {
                 return;
@@ -75,12 +86,12 @@ namespace AFKHero.Battle
         }
 
         /// <summary>
-        /// ÇöÀç À¯´Ö »óÅÂ¿¡ µû¶ó Ç¥½ÃÇÒ »óÅÂ¸¦ °áÁ¤ÇÕ´Ï´Ù.
-        /// À§ÂÊ Á¶°ÇÀÏ¼ö·Ï »ö»ó ¿ì¼±¼øÀ§°¡ ³ô½À´Ï´Ù.
+        /// í˜„ì¬ ìœ ë‹› ìƒíƒœì— ë”°ë¼ í‘œì‹œí•  ìƒíƒœë¥¼ ê²°ì •í•©ë‹ˆë‹¤.
+        /// ìœ„ìª½ ì¡°ê±´ì¼ìˆ˜ë¡ ìƒ‰ìƒ ìš°ì„ ìˆœìœ„ê°€ ë†’ìŠµë‹ˆë‹¤.
         /// </summary>
         private VisualState GetCurrentVisualState()
         {
-            // ±Ã±Ø±â ½ÇÇà »ö»óÀ» °¡Àå ¸ÕÀú Ç¥½ÃÇÕ´Ï´Ù.
+            // ê¶ê·¹ê¸° ì‹¤í–‰ ìƒ‰ìƒì„ ê°€ì¥ ë¨¼ì € í‘œì‹œí•©ë‹ˆë‹¤.
             if (owner.UltimateController != null &&
                 owner.UltimateController.IsExecuting)
             {
@@ -89,12 +100,23 @@ namespace AFKHero.Battle
 
             if (owner.StatusEffects != null)
             {
-                // ±âÀı°ú Ä§¹¬ÀÌ µ¿½Ã¿¡ Àû¿ëµÇ¸é
-                // Çàµ¿ Á¦ÇÑÀÌ ´õ °­ÇÑ ±âÀı »ö»óÀ» Ç¥½ÃÇÕ´Ï´Ù.
+                // ê¸°ì ˆê³¼ ì¹¨ë¬µì´ ë™ì‹œì— ì ìš©ë˜ë©´
+                // í–‰ë™ ì œí•œì´ ë” ê°•í•œ ê¸°ì ˆ ìƒ‰ìƒì„ í‘œì‹œí•©ë‹ˆë‹¤.
                 if (owner.StatusEffects.IsStunned)
                 {
                     return VisualState.Stun;
                 }
+
+                if (owner.StatusEffects.IsKnockedBack)
+                {
+                    return VisualState.Knockback;
+                }
+
+                if (owner.StatusEffects.IsTaunted)
+                {
+                    return VisualState.Taunt;
+                }
+
 
                 if (owner.StatusEffects.IsSilenced)
                 {
@@ -106,7 +128,7 @@ namespace AFKHero.Battle
         }
 
         /// <summary>
-        /// ÇöÀç »óÅÂ¿¡ ¸Â´Â »ö»óÀ» ¸ğµç SpriteRenderer¿¡ Àû¿ëÇÕ´Ï´Ù.
+        /// í˜„ì¬ ìƒíƒœì— ë§ëŠ” ìƒ‰ìƒì„ ëª¨ë“  SpriteRendererì— ì ìš©í•©ë‹ˆë‹¤.
         /// </summary>
         private void ApplyCurrentStateColor()
         {
@@ -148,7 +170,7 @@ namespace AFKHero.Battle
         }
 
         /// <summary>
-        /// »óÅÂ¿¡ ´ëÀÀÇÏ´Â »ö»óÀ» ¹İÈ¯ÇÕ´Ï´Ù.
+        /// ìƒíƒœì— ëŒ€ì‘í•˜ëŠ” ìƒ‰ìƒì„ ë°˜í™˜í•©ë‹ˆë‹¤.
         /// </summary>
         private Color GetStateColor(
             VisualState visualState)
@@ -164,14 +186,20 @@ namespace AFKHero.Battle
                 case VisualState.Silence:
                     return silenceColor;
 
+                case VisualState.Knockback:
+                    return knockbackColor;
+
+                case VisualState.Taunt:
+                    return tauntColor;
+
                 default:
                     return Color.white;
             }
         }
 
         /// <summary>
-        /// ÇÁ¸®ÆÕÀÇ ¿ø·¡ »ö»ó¿¡ »óÅÂ »ö»óÀ» °öÇÕ´Ï´Ù.
-        /// SpriteRendererÀÇ ±âÁ¸ Åõ¸íµµ´Â À¯ÁöÇÕ´Ï´Ù.
+        /// í”„ë¦¬íŒ¹ì˜ ì›ë˜ ìƒ‰ìƒì— ìƒíƒœ ìƒ‰ìƒì„ ê³±í•©ë‹ˆë‹¤.
+        /// SpriteRendererì˜ ê¸°ì¡´ íˆ¬ëª…ë„ëŠ” ìœ ì§€í•©ë‹ˆë‹¤.
         /// </summary>
         private static Color MultiplyColor(
             Color originalColor,
@@ -185,8 +213,8 @@ namespace AFKHero.Battle
         }
 
         /// <summary>
-        /// »ö»óÀ» ¹Ù²Ü SpriteRenderer¸¦ ÀÚµ¿À¸·Î Ã£½À´Ï´Ù.
-        /// ºñÈ°¼ºÈ­µÈ ÀÚ½Ä ¿ÀºêÁ§Æ®µµ Æ÷ÇÔÇÕ´Ï´Ù.
+        /// ìƒ‰ìƒì„ ë°”ê¿€ SpriteRendererë¥¼ ìë™ìœ¼ë¡œ ì°¾ìŠµë‹ˆë‹¤.
+        /// ë¹„í™œì„±í™”ëœ ìì‹ ì˜¤ë¸Œì íŠ¸ë„ í¬í•¨í•©ë‹ˆë‹¤.
         /// </summary>
         private void FindSpriteRenderers()
         {
@@ -202,7 +230,7 @@ namespace AFKHero.Battle
         }
 
         /// <summary>
-        /// »óÅÂ°¡ ³¡³µÀ» ¶§ º¹±¸ÇÒ ¿ø·¡ »ö»óÀ» ÀúÀåÇÕ´Ï´Ù.
+        /// ìƒíƒœê°€ ëë‚¬ì„ ë•Œ ë³µêµ¬í•  ì›ë˜ ìƒ‰ìƒì„ ì €ì¥í•©ë‹ˆë‹¤.
         /// </summary>
         private void SaveOriginalColors()
         {
@@ -230,8 +258,8 @@ namespace AFKHero.Battle
         }
 
         /// <summary>
-        /// »ç¸Á ¶Ç´Â Ç® ¹İÈ¯À¸·Î ¿ÀºêÁ§Æ®°¡ ºñÈ°¼ºÈ­µÉ ¶§
-        /// ¿ø·¡ »ö»óÀ¸·Î µÇµ¹¸³´Ï´Ù.
+        /// ì‚¬ë§ ë˜ëŠ” í’€ ë°˜í™˜ìœ¼ë¡œ ì˜¤ë¸Œì íŠ¸ê°€ ë¹„í™œì„±í™”ë  ë•Œ
+        /// ì›ë˜ ìƒ‰ìƒìœ¼ë¡œ ë˜ëŒë¦½ë‹ˆë‹¤.
         /// </summary>
         private void OnDisable()
         {
@@ -276,5 +304,5 @@ namespace AFKHero.Battle
 #endif
     }
 
-    // ===== [º¯°æ ³¡: ±Ã±Ø±â ¹× ±ºÁßÁ¦¾î »ö»ó Ç¥½Ã Ãß°¡] =====
+    // ===== [ë³€ê²½ ë: ê¶ê·¹ê¸° ë° êµ°ì¤‘ì œì–´ ìƒ‰ìƒ í‘œì‹œ ì¶”ê°€] =====
 }

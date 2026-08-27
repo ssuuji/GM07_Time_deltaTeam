@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using System.ComponentModel;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -7,25 +7,25 @@ namespace AFKHero.Battle
 {
     public sealed class UnitTargetFinder : MonoBehaviour
     {
-        // Àü¿­
+        // ì „ì—´
         private const int FrontRowSlotCount = 2;
 
-        // ºÎµ¿¼Ò¼öÁ¡ °Å¸® ¿ÀÂ÷·Î °°Àº °Å¸®ÀÇ Å¸°ÙÀÌ Èçµé¸®´Â °ÍÀ» ¹æÁö
+        // ë¶€ë™ì†Œìˆ˜ì  ê±°ë¦¬ ì˜¤ì°¨ë¡œ ê°™ì€ ê±°ë¦¬ì˜ íƒ€ê²Ÿì´ í”ë“¤ë¦¬ëŠ” ê²ƒì„ ë°©ì§€
         private const float DistanceComparisonEpsion = 0.0001f;
 
-        [Header("Å¸°Ù Å½»ö")]
+        [Header("íƒ€ê²Ÿ íƒìƒ‰")]
         [SerializeField, Min(0.05f)]
-        // Å½»ö ÀÎÅÍ¹ú ½Ã°£
+        // íƒìƒ‰ ì¸í„°ë²Œ ì‹œê°„
         private float searchInterval = 0.2f;
 
         private BattleUnit owner;
 
         private BattleManager battleManager;
 
-        // ´ÙÀ½ Å½»ö ½Ã°£
+        // ë‹¤ìŒ íƒìƒ‰ ì‹œê°„
         private float nextSrearchTime;
 
-        // ÇöÀç Å¸°Ù
+        // í˜„ì¬ íƒ€ê²Ÿ
         public BattleUnit CurrentTarget { get; private set; }
 
         public bool HasValidTarget => IsValidTarget(CurrentTarget);
@@ -45,16 +45,16 @@ namespace AFKHero.Battle
                 return;
             }
 
-            // À¯È¿ °ø°İ Å¸°ÙÀÎÁö °Ë»ç
+            // ìœ íš¨ ê³µê²© íƒ€ê²Ÿì¸ì§€ ê²€ì‚¬
             if (HasValidTarget)
             {
                 return;
             }
 
-            // Á×°Å³ª »ç¶óÁø Å¸°Ù ÂüÁ¶ Á¦°Å
+            // ì£½ê±°ë‚˜ ì‚¬ë¼ì§„ íƒ€ê²Ÿ ì°¸ì¡° ì œê±°
             CurrentTarget = null;
 
-            // Å½»ö ÀÎÅÍ¹úÀÌ µ¹¾Æ¿ÀÁö ¾Ê¾ÒÀ¸¸é ±â´Ù¸²
+            // íƒìƒ‰ ì¸í„°ë²Œì´ ëŒì•„ì˜¤ì§€ ì•Šì•˜ìœ¼ë©´ ê¸°ë‹¤ë¦¼
             if (Time.time < nextSrearchTime)
             {
                 {
@@ -67,7 +67,7 @@ namespace AFKHero.Battle
             FindClosestTarget();
         }
 
-        // ÇöÀç Å¸°ÙÀÌ »ç¸ÁÇß´Ù´Â ¾Ë¸²À» ¹ŞÀ¸¸é °°Àº ÇÁ·¹ÀÓ¿¡ ´ÙÀ½ ÀûÀ» Ã£À½
+        // í˜„ì¬ íƒ€ê²Ÿì´ ì‚¬ë§í–ˆë‹¤ëŠ” ì•Œë¦¼ì„ ë°›ìœ¼ë©´ ê°™ì€ í”„ë ˆì„ì— ë‹¤ìŒ ì ì„ ì°¾ìŒ
         public void HandleTargetInvalidated(BattleUnit invalidTarget)
         {
             if(CurrentTarget != invalidTarget)
@@ -85,13 +85,19 @@ namespace AFKHero.Battle
             SearchImmediately();
         }
 
-        // ¿ì¼±¼øÀ§ Àû Ã£±â
-        // 1. Àü¿­ (0~1¹ø ½½·Ô) 2. °°Àº ¿­¿¡¼­´Â °¡±î¿î °Å¸® 3. °Å¸®µµ ³·À¸¸é ´õ ³·Àº ½½·Ô ¹øÈ£
+        // ìš°ì„ ìˆœìœ„ ì  ì°¾ê¸°
+        // 1. ì „ì—´ (0~1ë²ˆ ìŠ¬ë¡¯) 2. ê°™ì€ ì—´ì—ì„œëŠ” ê°€ê¹Œìš´ ê±°ë¦¬ 3. ê±°ë¦¬ë„ ë‚®ìœ¼ë©´ ë” ë‚®ì€ ìŠ¬ë¡¯ ë²ˆí˜¸
         public void FindPriorityTarget()
         {
             if(owner == null || battleManager == null)
             {
                 CurrentTarget = null;
+                return;
+            }
+
+            if (TryFindTauntTarget(out BattleUnit tauntTarget))
+            {
+                CurrentTarget = tauntTarget;
                 return;
             }
 
@@ -136,7 +142,7 @@ namespace AFKHero.Battle
         }
 
 
-        // °¡Àå °¡±î¿î À¯´Ö Å½»ö
+        // ê°€ì¥ ê°€ê¹Œìš´ ìœ ë‹› íƒìƒ‰
         public void FindClosestTarget()
         {
             FindPriorityTarget();
@@ -155,7 +161,7 @@ namespace AFKHero.Battle
                 return true;
             }
 
-            // Àü¿­(0)ÀÌ ÈÄ¿­(1)º¸´Ù Ç×»ó ¿ì¼±ÇÔ
+            // ì „ì—´(0)ì´ í›„ì—´(1)ë³´ë‹¤ í•­ìƒ ìš°ì„ í•¨
             if (candidateRowPriority != currentBestRowPriority)
             {
                 return candidateRowPriority < currentBestRowPriority;
@@ -163,7 +169,7 @@ namespace AFKHero.Battle
 
             float distanceDiffernce = candidateSqrDistnace - currentBestSqrDistance;
 
-            // °°Àº ¿­¿¡¼­´Â ´õ °¡±î¿î ÀûÀ» ¿ì¼±
+            // ê°™ì€ ì—´ì—ì„œëŠ” ë” ê°€ê¹Œìš´ ì ì„ ìš°ì„ 
             if(distanceDiffernce < - DistanceComparisonEpsion)
             {
                 return true;
@@ -174,25 +180,39 @@ namespace AFKHero.Battle
                 return false;
             }
 
-            // °Å¸®±îÁö °°À¸¸é ½½·Ô ¹øÈ£·Î °á°ú¸¦ °íÁ¤
+            // ê±°ë¦¬ê¹Œì§€ ê°™ìœ¼ë©´ ìŠ¬ë¡¯ ë²ˆí˜¸ë¡œ ê²°ê³¼ë¥¼ ê³ ì •
             return candidate.FormationSlotIndex < currentBest.FormationSlotIndex; 
         }
 
-        // Àü¿­Àº 0, ÈÄ¿­Àº 1À» ¹İÈ¯ÇÏ¿© ¼ıÀÚ°¡ ³·À» ¼ö·Ï ¿ì¼±ÇÏ°Ô ÇÔ
+        // ì „ì—´ì€ 0, í›„ì—´ì€ 1ì„ ë°˜í™˜í•˜ì—¬ ìˆ«ìê°€ ë‚®ì„ ìˆ˜ë¡ ìš°ì„ í•˜ê²Œ í•¨
         private static int GetRowPriority(BattleUnit unit)
         {
-            return unit.FormationSlotIndex >= 0 &&
-                unit.FormationSlotIndex < FrontRowSlotCount ? 0 : 1;
+            return unit.FormationSlotIndex >= 0 && unit.FormationSlotIndex < FrontRowSlotCount ? 0 : 1;
         }
 
-        // Å¸°Ù Á¤¸®
+        private bool TryFindTauntTarget(out BattleUnit tauntTarget)
+        {
+            tauntTarget = null;
+
+            if (owner.StatusEffects == null ||
+                !owner.StatusEffects.TryGetTauntSource(out BattleUnit source) ||
+                !IsValidTarget(source))
+            {
+                return false;
+            }
+
+            tauntTarget = source;
+            return true;
+        }
+
+        // íƒ€ê²Ÿ ì •ë¦¬
         public void ClearTarget()
         {
             CurrentTarget = null;
             nextSrearchTime = 0f;
         }
         
-        // Å½»ö °¡´ÉÇÑ ÀüÅõ »óÅÂ ÀÎÁö °Ë»ç
+        // íƒìƒ‰ ê°€ëŠ¥í•œ ì „íˆ¬ ìƒíƒœ ì¸ì§€ ê²€ì‚¬
         private bool CanSearchTarget()
         {
             return owner != null &&
@@ -209,7 +229,7 @@ namespace AFKHero.Battle
             nextSrearchTime = HasValidTarget ? 0f : Time.time + searchInterval;
         }
 
-        // °ø°İ °¡´ÉÇÑ À¯È¿ Å¸±êÀÎÁö °Ë»ç
+        // ê³µê²© ê°€ëŠ¥í•œ ìœ íš¨ íƒ€ê¹ƒì¸ì§€ ê²€ì‚¬
         private bool IsValidTarget(BattleUnit target)
         {
             if (owner == null ||

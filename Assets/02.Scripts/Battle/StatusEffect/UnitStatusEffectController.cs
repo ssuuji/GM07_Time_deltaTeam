@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -11,6 +11,16 @@ namespace AFKHero.Battle
 
         private readonly List<StatusEffectType> updateTargets = new();
 
+        private const float MinimumKnockbackDuration = 0.05f;
+
+        private const float KnockbackCompletionEpsilon = 0.0001f;
+
+        private BattleUnit tauntSource;
+
+        private Vector2 knockbackDirection;
+        private float knockbackSpeed;
+        private float remainingKnockbackDistance;
+
         private BattleUnit owner;
         private BattleManager battlemanager;
 
@@ -18,12 +28,16 @@ namespace AFKHero.Battle
 
         public bool IsSilenced => HasStatusEffect(StatusEffectType.Silence);
 
-        // ±âÀı Ã³¸® (ÀÌµ¿ x, °ø°İ x)
-        public bool CanMove => !IsStunned;
-        public bool CanUseBasicAttack => !IsStunned;
+        public bool IsKnockedBack => HasStatusEffect(StatusEffectType.Knockback);
 
-        // ±âÀı, Ä§¹¬ °øÅë Ã³¸® (±Ã±Ø±â »ç¿ë x)
-        public bool CanUseUltimate => !IsStunned && !IsSilenced;
+        public bool IsTaunted => HasStatusEffect(StatusEffectType.Taunt);
+
+        // ê¸°ì ˆ ì²˜ë¦¬ (ì´ë™ x, ê³µê²© x)
+        public bool CanMove => !IsStunned && !IsKnockedBack;
+        public bool CanUseBasicAttack => !IsStunned && !IsKnockedBack;
+
+        // ê¸°ì ˆ, ì¹¨ë¬µ ê³µí†µ ì²˜ë¦¬ (ê¶ê·¹ê¸° ì‚¬ìš© x)
+        public bool CanUseUltimate => !IsStunned && !IsSilenced && !IsKnockedBack;
 
         public event Action<BattleUnit, StatusEffectType, float> StatusEffectApplied;
         public event Action<BattleUnit, StatusEffectType> StatusEffectRemoved;
@@ -33,7 +47,7 @@ namespace AFKHero.Battle
             owner = unitOwner;
             battlemanager = manager;
 
-            // Ç®¸µÀ¸·Î Àç»ç¿ëµÈ À¯´Ö¿¡ ÀÌÀü ÀüÅõÀÇ »óÅÂ°¡ ³²Áö¾ÊÀ½
+            // í’€ë§ìœ¼ë¡œ ì¬ì‚¬ìš©ëœ ìœ ë‹›ì— ì´ì „ ì „íˆ¬ì˜ ìƒíƒœê°€ ë‚¨ì§€ì•ŠìŒ
             ClearAllStatusEffects();
         }
 
@@ -43,6 +57,8 @@ namespace AFKHero.Battle
             {
                 return;
             }
+
+            UpdateKnockbackMovement();
 
             updateTargets.Clear();
 
@@ -54,6 +70,17 @@ namespace AFKHero.Battle
             for(int i = 0; i < updateTargets.Count; i++)
             {
                 StatusEffectType type = updateTargets[i];
+
+                if (type == StatusEffectType.Taunt && !IsValidOpponentSource(tauntSource))
+                {
+                    RemoveStatusEffect(StatusEffectType.Taunt);
+                    continue;
+                }
+
+                if (!remainingDurations.ContainsKey(type))
+                {
+                    continue;
+                }
 
                 float nextDuration = remainingDurations[type] - Time.deltaTime;
 
@@ -67,9 +94,114 @@ namespace AFKHero.Battle
             }
         }
         
-        // ±ºÁßÁ¦¾î È¿°ú Àû¿ë
-        // °°Àº È¿°ú°¡ ÀÌ¹Ì ÀÖ´Ù¸é ´õ ±ä ³²Àº ½Ã°£À» »ç¿ë
+        // êµ°ì¤‘ì œì–´ íš¨ê³¼ ì ìš©
+        // ê°™ì€ íš¨ê³¼ê°€ ì´ë¯¸ ìˆë‹¤ë©´ ë” ê¸´ ë‚¨ì€ ì‹œê°„ì„ ì‚¬ìš©
         public bool ApplyStatusEffect(StatusEffectType type, float duration)
+        {
+            if (type == StatusEffectType.Knockback || type == StatusEffectType.Taunt)
+            {
+                return false;
+            }
+
+            return ApplyTimedStatusEffect(type,  duration, false);
+        }
+
+        public bool ApplyKnockback(BattleUnit source, float distance, float duration)
+        {
+            if (!CanApplySpecialEffect(source, duration) ||
+                distance <= 0f)
+            {
+                return false;
+            }
+
+            float safeDuration =
+                Mathf.Max(MinimumKnockbackDuration, duration);
+
+            Vector2 sourcePosition = source.transform.position;
+
+            Vector2 ownerPosition = owner.transform.position;
+
+            Vector2 direction = ownerPosition - sourcePosition;
+
+            // ë‘ ìœ ë‹›ì˜ ìœ„ì¹˜ê°€ ì™„ì „íˆ ê²¹ì¹œ ê²½ìš°ì—ëŠ” ì§„ì˜ ë°©í–¥ì„ ê¸°ì¤€ìœ¼ë¡œ ë°€ë ¤ë‚  ë°©í–¥ì„ ê²°ì •
+            if (direction.sqrMagnitude <=
+                KnockbackCompletionEpsilon)
+            {
+                direction = owner.Team == TeamType.Ally ? Vector2.down : Vector2.up;
+            }
+            else
+            {
+                direction.Normalize();
+            }
+
+            knockbackDirection = direction;
+            remainingKnockbackDistance = distance;
+            knockbackSpeed = distance / safeDuration;
+
+            bool wasApplied =
+                ApplyTimedStatusEffect(
+                    StatusEffectType.Knockback,
+                    safeDuration,
+                    true);
+
+            if (!wasApplied)
+            {
+                ResetKnockbackMovement();
+            }
+
+            return wasApplied;
+        }
+
+        // ë„ë°œ ì ìš©
+        public bool ApplyTaunt(BattleUnit source, float duration)
+        {
+            if (!CanApplySpecialEffect(source, duration))
+            {
+                return false;
+            }
+
+            BattleUnit previousSource =
+                tauntSource;
+
+            tauntSource = source;
+
+            bool wasApplied =
+                ApplyTimedStatusEffect(
+                    StatusEffectType.Taunt,
+                    duration,
+                    true);
+
+            if (!wasApplied)
+            {
+                tauntSource = previousSource;
+            }
+
+            return wasApplied;
+        }
+
+        public bool TryGetTauntSource(out BattleUnit source)
+        {
+            source = null;
+
+            if (!HasStatusEffect(StatusEffectType.Taunt))
+            {
+                return false;
+            }
+
+            if (!IsValidOpponentSource(tauntSource))
+            {
+                RemoveStatusEffect(StatusEffectType.Taunt);
+                return false;
+            }
+
+            source = tauntSource;
+            return true;
+        }
+
+        private bool ApplyTimedStatusEffect(
+            StatusEffectType type,
+            float duration,
+            bool replaceDuration)
         {
             if (owner == null ||
                 owner.Stats == null ||
@@ -79,32 +211,49 @@ namespace AFKHero.Battle
                 return false;
             }
 
-            if(remainingDurations.TryGetValue(type, out float currentDuration))
+            if (remainingDurations.TryGetValue(
+                type,
+                out float currentDuration))
             {
-                remainingDurations[type] = Mathf.Max(currentDuration, duration);
+                remainingDurations[type] =
+                    replaceDuration
+                        ? duration
+                        : Mathf.Max(
+                            currentDuration,
+                            duration);
             }
             else
             {
-                remainingDurations.Add(type, duration);
+                remainingDurations.Add(
+                    type,
+                    duration);
             }
 
-            // ±âÀı ½Ã ÇöÀç °ø°İ ´ë»ó ÇØÁ¦
-            if(type == StatusEffectType.Stun)
+            // í–‰ë™ì„ ê°•ì œë¡œ ëŠê±°ë‚˜ ëŒ€ìƒì„ ë³€ê²½í•˜ëŠ” íš¨ê³¼ëŠ” ê¸°ì¡´ íƒ€ê¹ƒì„ í•´ì œí•´ ë‹¤ìŒ íƒìƒ‰ì—ì„œ ìƒíƒœê°€ ë°˜ì˜ë˜ê²Œ í•©ë‹ˆë‹¤.
+            if (type == StatusEffectType.Stun ||
+                type == StatusEffectType.Knockback ||
+                type == StatusEffectType.Taunt)
             {
                 owner.TargetFinder?.ClearTarget();
             }
 
-            float remainingDuration = remainingDurations[type];
+            float remainingDuration =
+                remainingDurations[type];
 
-            StatusEffectApplied?.Invoke(owner, type, remainingDuration);
+            StatusEffectApplied?.Invoke(
+                owner,
+                type,
+                remainingDuration);
 
-            Debug.Log($"[»óÅÂÀÌ»ó Àû¿ë] {owner.name} | {type} | " +
-                $"{remainingDuration:0.00}ÃÊ", owner);
+            Debug.Log(
+                $"[ìƒíƒœì´ìƒ ì ìš©] {owner.name} | " +
+                $"{type} | {remainingDuration:0.00}ì´ˆ",
+                owner);
 
             return true;
         }
 
-        // ±ºÁßÁ¦¾î Áï½Ã ÇØÁ¦
+        // êµ°ì¤‘ì œì–´ ì¦‰ì‹œ í•´ì œ
         public bool RemoveStatusEffect(StatusEffectType type)
         {
             if (!remainingDurations.Remove(type))
@@ -112,21 +261,35 @@ namespace AFKHero.Battle
                 return false;
             }
 
+            if (type == StatusEffectType.Knockback)
+            {
+                ResetKnockbackMovement();
+            }
+            else if (type == StatusEffectType.Taunt)
+            {
+                tauntSource = null;
+
+                // ë„ë°œ ì¢…ë£Œ í›„ì—ë„ ë„ë°œ ì‹œì „ìë¥¼ ê³„ì† ê³µê²©í•˜ì§€ ì•Šë„ë¡ ê¸°ì¡´ íƒ€ê¹ƒì„ í•´ì œí•˜ê³  ì •ìƒ ìš°ì„ ìˆœìœ„ë¡œ ì¬íƒìƒ‰
+                owner?.TargetFinder?.ClearTarget();
+            }
+
             StatusEffectRemoved?.Invoke(owner, type);
 
-            if(owner != null)
+            if (owner != null)
             {
-                Debug.Log($"[»óÅÂÀÌ»ó ÇØÁ¦] {owner.name} | {type}", owner);
+                Debug.Log($"[ìƒíƒœì´ìƒ í•´ì œ] {owner.name} | {type}", owner);
             }
 
             return true;
         }
 
-        // »ç¸Á, ÀüÅõ ³¡, Á¤È­ È¿°ú ÈÄ ¸ğµç ±ºÁßÁ¦¾î Á¦°Å
+        // ì‚¬ë§, ì „íˆ¬ ë, ì •í™” íš¨ê³¼ í›„ ëª¨ë“  êµ°ì¤‘ì œì–´ ì œê±°
         public void ClearAllStatusEffects()
         {
             if(remainingDurations.Count == 0)
             {
+                tauntSource = null;
+                ResetKnockbackMovement();
                 return;
             }
 
@@ -153,6 +316,76 @@ namespace AFKHero.Battle
         public float GetRemainingDuration(StatusEffectType type)
         {
             return remainingDurations.TryGetValue(type, out float duration) ? duration : 0f;
+        }
+
+        private bool CanApplySpecialEffect(BattleUnit source, float duration)
+        {
+            if (owner == null ||
+                owner.Stats == null ||
+                !owner.Stats.IsAlive ||
+                battlemanager == null ||
+                duration <= 0f)
+            {
+                return false;
+            }
+
+            bool isBattleActive =
+                battlemanager.CurrentState == BattleState.Fighting ||
+                battlemanager.CurrentState == BattleState.UltimateSequence;
+
+            return isBattleActive && IsValidOpponentSource(source);
+        }
+
+        private bool IsValidOpponentSource(BattleUnit source)
+        {
+            return source != null &&
+                   source != owner &&
+                   source.IsInitialized &&
+                   source.Stats != null &&
+                   source.Stats.IsAlive &&
+                   source.Team != owner.Team;
+        }
+
+        private void UpdateKnockbackMovement()
+        {
+            if (!IsKnockedBack ||
+                remainingKnockbackDistance <= 0f ||
+                knockbackSpeed <= 0f)
+            {
+                return;
+            }
+
+            float moveDistance =
+                Mathf.Min(
+                    remainingKnockbackDistance,
+                    knockbackSpeed *
+                    Time.deltaTime);
+
+            Vector3 currentPosition = transform.position;
+
+            Vector3 movement =
+                new Vector3(
+                    knockbackDirection.x,
+                    knockbackDirection.y,
+                    0f) *
+                moveDistance;
+
+            transform.position = currentPosition + movement;
+
+            remainingKnockbackDistance -= moveDistance;
+
+            if (remainingKnockbackDistance <= KnockbackCompletionEpsilon)
+            {
+                RemoveStatusEffect(StatusEffectType.Knockback);
+            }
+        }
+
+        private void ResetKnockbackMovement()
+        {
+            knockbackDirection = Vector2.zero;
+
+            knockbackSpeed = 0f;
+            remainingKnockbackDistance = 0f;
         }
 
         private bool CanUpdateDuration()

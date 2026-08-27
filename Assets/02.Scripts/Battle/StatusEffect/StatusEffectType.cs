@@ -1,10 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace AFKHero.Battle
 {
     public enum StatusEffectType
     {
         Stun,
-        Silence
+        Silence,
+        Knockback,
+        Taunt
     }
 }
