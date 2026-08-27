@@ -1,6 +1,7 @@
 ﻿using AFKHero.Battle;
 using AFKHero.Quest;
 using AFKHero.UI;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -40,6 +41,13 @@ public class StageManager : MonoBehaviour
     [Header("현재 진행 정보")]
     [SerializeField] private int currentStageNumber = 1;
     [SerializeField] private int currentSectionNumber = 1;
+    [SerializeField] private StageState currentState = StageState.None;
+
+    //IdleBattleHandler가 구독해야 할 이벤트
+    //매개변수를 뭘로 받게 해야 할지 고민.
+    //매개변수로는 StageState만 넘긴다. 어차피 프로퍼티 다 뚫려있어서 값을 읽을 순 있음.
+    public event Action<StageState> StageStateChanged;
+
 
     [Header("마지막으로 클리어한 스테이지")]
     [SerializeField] private int lastStageNumber;
@@ -66,18 +74,21 @@ public class StageManager : MonoBehaviour
     public int CurrentSectionNumber => currentSectionNumber;
     public int LastStageNumber => lastStageNumber;
     public int LastSectionNumber => lastSectionNumber;
+    public StageState CurrentState => currentState;
+
+    public StageData StageData => stageData;
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else if (Instance != this)
         {
-            Destroy(Instance.gameObject);
+            Destroy(gameObject);
         }
-        DontDestroyOnLoad(this.gameObject);
 
         victoryPanel.gameObject.SetActive(false);
         defeatPanel.gameObject.SetActive(false);
@@ -95,6 +106,8 @@ public class StageManager : MonoBehaviour
         {
             stageBackgroundChanger.ChangeBackground(currentStageNumber);
         }
+
+        ChangeState(StageState.Idle);
     }
 
     private void OnDestroy()
@@ -108,7 +121,7 @@ public class StageManager : MonoBehaviour
     {
         //전투가 실행 중일 때 실행하지 않게 할 방법 : BattleManager의 현재 상태에서 전투가 실행되선 안 되는 상태를 알아야 함.       
         //BattleManager의 현 상태가 Victory, Defeat인 상태로 바뀐 뒤, 다시 preparing으로 전환되는지 확인해야 함.        
-        //이것의 조건이 사실상 BattleManager의 IsBattleRunning() 메서드인데, public으로 바꿔주실 수 있으신가요?
+        //BattleManager의 상태에 종속되지 않고, StageManage가 Working 상태일 때 실행을 제한하는 방식도 괜찮지 않을까.
         if(battleManager.CurrentState == BattleState.Fighting || battleManager.CurrentState == BattleState.UltimateSequence)
         {
             Debug.Log("전투가 이미 실행중입니다.");
@@ -158,6 +171,8 @@ public class StageManager : MonoBehaviour
             return;
         }
 
+
+        //방치전투 소환 로직은 이걸 참고해서 구현하면 될 듯.
         bool battleStarted = battleSpawner.SpawnBattle(
             PartyManager.Instance.partySlots,
             currentStageInfo.Enemies,
@@ -167,7 +182,10 @@ public class StageManager : MonoBehaviour
         if (!battleStarted)
         {
             Debug.LogError("[StageManager] 현재 스테이지 전투 생성에 실패했습니다.", this);
+            return;
         }
+
+        ChangeState(StageState.Working);
     }
 
     //전투상태가 변경되었을 때 이벤트로 호출되며, 승리 / 패배에 따라 다른 코드들을 실행하게 할 메서드
@@ -189,11 +207,14 @@ public class StageManager : MonoBehaviour
     //승리 시 호출될 메서드
     private void HandleVictory()
     {
+        //이 널체크는 필요한가?
         if (currentStageInfo == null)
         {
             Debug.LogError("현재 스테이지의 정보가 null입니다.");
             return;
         }
+
+        ChangeState(StageState.Result);
 
         //승리 보상 UI 갱신
         UIBattleManager.Instance?.UpdateRewardUI(currentStageInfo);
@@ -201,10 +222,7 @@ public class StageManager : MonoBehaviour
         //승리 패널 활성화
         victoryPanel.gameObject.SetActive(true);
 
-        //승리했으니 현 스테이지의 보상에 해당하는 골드를 매니저를 통해 지급 => PlayerManager를 활용하는 것으로 변경
-        //골드 이외의 다른 보상이 있더라도 새 클래스를 늘리기보단
-        //ClearDia, ClearTicket 필드를 StageInfo에 만드는 것을 고려한다.
-        //지급만 총괄하는 메서드를 구현해서 여기서 호출해도 될 듯.
+        //승리했으니 현 스테이지의 보상을 매니저를 통해 지급 => PlayerManager를 활용하는 것으로 변경
         TryGiveReward();
 
         //마지막으로 클리어한 스테이지와 섹션의 값을 저장 => 방치 전투에서 활용.
@@ -233,6 +251,7 @@ public class StageManager : MonoBehaviour
 
     private void HandleDefeat()
     {
+        ChangeState(StageState.Result);
         defeatPanel.gameObject.SetActive(true);
         battleManager.ClearRegisteredUnits();
         battleSpawner.ClearSpawnedUnits();
@@ -255,11 +274,12 @@ public class StageManager : MonoBehaviour
 
     //패배 시, '확인' 버튼을 눌러 패널을 닫게 할 메서드
     public void CloseDefeatPanel()
-    {
-        defeatPanel.gameObject.SetActive(false);
-       
+    {               
+        defeatPanel.gameObject.SetActive(false);       
 
         Debug.Log("패배 패널 닫음");
+
+        ChangeState(StageState.Idle);
 
         // 0814 수정
         // 다시 유닛 재 생성 후 전투
@@ -280,7 +300,6 @@ public class StageManager : MonoBehaviour
     }
 
     //전투 승리 시, 다음 스테이지로 진행하지 않고 전투를 종료할 메서드
-    //사실상 위의 코드에서 StartStage만 실행하지 않는 건데, 이거 어떻게 처리하지?
     public void StopStageProgress()
     {
         if(autoClosePanelCoroutine != null)
@@ -290,6 +309,7 @@ public class StageManager : MonoBehaviour
         }
 
         victoryPanel.gameObject.SetActive(false);
+        ChangeState(StageState.Idle);
     }
 
     private void TryGiveReward()
@@ -332,6 +352,17 @@ public class StageManager : MonoBehaviour
         }
     }
 
+    private void ChangeState(StageState nextState)
+    {
+        if (currentState == nextState) return;
+
+        currentState = nextState;
+
+        //이벤트 호출
+        StageStateChanged?.Invoke(currentState);
+    }
+
+    #region 세이브/ 로드
 
     public StageSaveData CreateStageSaveData()
     {
@@ -351,4 +382,6 @@ public class StageManager : MonoBehaviour
         lastStageNumber = saveData.lastStageNumber;
         lastSectionNumber = saveData.lastSectionNumber;
     }
+
+    #endregion
 }
