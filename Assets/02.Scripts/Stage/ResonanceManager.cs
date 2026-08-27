@@ -155,8 +155,10 @@ public class ResonanceManager : MonoBehaviour
                 //딕셔너리에 키를 영웅으로, 값을 원래 레벨로 등록해둔 다음, 
                 originalLevelDict.TryAdd(hero, hero.level);
        
-                //공명 레벨로 덮어씌우기
-                hero.level = resonanceLevel;
+                if (hero.level < resonanceLevel) //공명 레벨보다 낮을 때만 공명 레벨로 적용하되, 공명을 적용받게 합니다.
+                {
+                    hero.level = resonanceLevel;
+                } 
 
                 //슬롯 밖에 있는 영웅이라면 공명 적용 O = true로 설정
                 hero.isResonanced = true;
