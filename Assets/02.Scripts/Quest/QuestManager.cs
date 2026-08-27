@@ -103,9 +103,6 @@ namespace AFKHero.Quest
         {
             string today = DateTime.Now.ToString("yyyy-MM-dd"); //오늘 날짜
 
-            print($"저장된 날짜 : {lastDailyResetDate}");
-            print($"현재 날짜 : {today}");
-
             if (string.IsNullOrEmpty(lastDailyResetDate))
             {
                 lastDailyResetDate = today;
@@ -127,6 +124,7 @@ namespace AFKHero.Quest
                 progress.currentCount = 0;
                 progress.isRewardClaimed = false;
             }
+
             OnQuestChanged?.Invoke(); //퀘스트 UI 갱신
         }
 

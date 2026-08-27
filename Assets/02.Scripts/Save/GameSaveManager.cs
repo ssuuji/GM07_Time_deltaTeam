@@ -1,4 +1,5 @@
-﻿using AFKHero.Quest;
+﻿using AFKHero.Collection;
+using AFKHero.Quest;
 using AFKHero.Save;
 using AFKHero.Scene;
 using AFKHero.Shop;
@@ -152,6 +153,12 @@ public class GameSaveManager : MonoBehaviour
             saveData.offlineRewardSaveData = OfflineRewardManager.Instance.CreateOfflineRewardSaveData();
         }
 
+        //도감
+        if (CollectionManager.Instance != null)
+        {
+            saveData.collectionSaveData = CollectionManager.Instance.GetCollectionSaveData();
+        }
+
         return saveData;
     }
 
@@ -259,6 +266,12 @@ public class GameSaveManager : MonoBehaviour
             {
                 UIOfflineReward.Instance.ShowOfflineReward(); //오프라인보상 판넬 표시
             }
+        }
+
+        //도감
+        if (CollectionManager.Instance != null)
+        {
+            CollectionManager.Instance.LoadCollectionSaveData(loadedSaveData.collectionSaveData);
         }
 
         Debug.Log("[GameSaveManager] 저장 데이터 적용 완료");
