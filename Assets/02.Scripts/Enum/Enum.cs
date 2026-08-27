@@ -11,6 +11,14 @@ public enum EnemySpawnSlot // 적 소환될 위치
    BackRight        // 후열 오른쪽
 }
 
+public enum StageState //스테이지 매니저의 상태 측정용
+{    
+    None,
+    Idle,
+    Working,
+    Result
+}
+
 /////////////////////////////////
 
 
