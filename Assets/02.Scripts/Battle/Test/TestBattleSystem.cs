@@ -57,6 +57,24 @@ namespace AFKHero.Battle
         [SerializeField, Min(0.1f)]
         private float silenceDuration = 3f;
 
+        [Header("넉백 및 도발 테스트")]
+
+        [Tooltip("넉백과 도발을 사용하는 시전자입니다.")]
+        [SerializeField]
+        private BattleUnit statusEffectSource;
+
+        [Tooltip("테스트 넉백 거리입니다.")]
+        [SerializeField, Min(0.1f)]
+        private float knockbackDistance = 1.5f;
+
+        [Tooltip("테스트 넉백 이동 시간입니다.")]
+        [SerializeField, Min(0.05f)]
+        private float knockbackDuration = 0.25f;
+
+        [Tooltip("테스트 도발 지속시간입니다.")]
+        [SerializeField, Min(0.1f)]
+        private float tauntDuration = 3f;
+
         /// <summary>
         /// 궁극기를 자동 모드로 변경합니다.
         /// </summary>
@@ -176,6 +194,59 @@ namespace AFKHero.Battle
             testUnit.StatusEffects.ApplyStatusEffect(
                 StatusEffectType.Silence,
                 silenceDuration);
+        }
+
+        /// <summary>
+        /// statusEffectSource가 testUnit을 반대 방향으로 밀어냅니다.
+        /// </summary>
+        [ContextMenu("군중제어/테스트 유닛 넉백")]
+        private void ApplyKnockback()
+        {
+            if (!ValidateTestUnit() ||
+                !ValidateStatusEffectSource())
+            {
+                return;
+            }
+
+            bool wasApplied =
+                testUnit.StatusEffects.ApplyKnockback(
+                    statusEffectSource,
+                    knockbackDistance,
+                    knockbackDuration);
+
+            if (!wasApplied)
+            {
+                Debug.LogWarning(
+                    "[테스트] 넉백 적용에 실패했습니다. " +
+                    "진영, 생존 상태와 전투 상태를 확인하세요.",
+                    testUnit);
+            }
+        }
+
+        /// <summary>
+        /// testUnit이 지속시간 동안 statusEffectSource만 공격하게 합니다.
+        /// </summary>
+        [ContextMenu("군중제어/테스트 유닛 도발")]
+        private void ApplyTaunt()
+        {
+            if (!ValidateTestUnit() ||
+                !ValidateStatusEffectSource())
+            {
+                return;
+            }
+
+            bool wasApplied =
+                testUnit.StatusEffects.ApplyTaunt(
+                    statusEffectSource,
+                    tauntDuration);
+
+            if (!wasApplied)
+            {
+                Debug.LogWarning(
+                    "[테스트] 도발 적용에 실패했습니다. " +
+                    "진영, 생존 상태와 전투 상태를 확인하세요.",
+                    testUnit);
+            }
         }
 
         /// <summary>
@@ -392,7 +463,27 @@ namespace AFKHero.Battle
 
             return false;
         }
-    }
 
+        private bool ValidateStatusEffectSource()
+        {
+            if (statusEffectSource != null &&
+                statusEffectSource.IsInitialized &&
+                statusEffectSource.Stats != null &&
+                statusEffectSource.Stats.IsAlive &&
+                testUnit != null &&
+                statusEffectSource.Team != testUnit.Team)
+            {
+                return true;
+            }
+
+            Debug.LogError(
+                "[테스트] 살아 있는 반대 진영의 " +
+                "statusEffectSource를 연결해야 합니다.",
+                this);
+
+            return false;
+        }
+
+    }
 }
 
