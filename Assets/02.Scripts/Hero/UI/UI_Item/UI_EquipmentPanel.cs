@@ -40,7 +40,7 @@ public class UI_EquipmentPanel : MonoBehaviour
     {
         if (currentHero != null)
         {
-            EquipmentManager.Instance.AutoEquip(currentHero);
+            EquipmentManager.Instance.AutoEquipHero(currentHero);
             RefreshUI();
         }
     }
