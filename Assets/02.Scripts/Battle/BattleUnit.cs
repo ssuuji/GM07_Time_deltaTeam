@@ -24,6 +24,10 @@ namespace AFKHero.Battle
         // Sorting Order 미세 조정
         [SerializeField] private int sortingPrecision = 100;
 
+        [Header("유닛 이동 제한 범위")] 
+        private Vector2 maximumBattlePosition = new Vector2(2.2f, 3.5f);
+        private Vector2 minimumBattlePosition = new Vector2(-2.2f, -1.5f);
+
         // 원본 데이터
         public HeroData Data { get; private set; }
         // 히어로 인스턴스
@@ -98,10 +102,14 @@ namespace AFKHero.Battle
 
         private void LateUpdate()
         {
-            if (IsInitialized)
+            if (!IsInitialized)
             {
-                RefreshSortingOrder();
+                return;
             }
+
+            ClampToBattleArea();
+
+            RefreshSortingOrder();
         }
 
         private void FindMissingComponents()
@@ -203,6 +211,17 @@ namespace AFKHero.Battle
             return isValid;
         }
 
+        // 유닛의 중심 위치가 지정된 전투 영역을 벗어나지 않도록 제한
+        private void ClampToBattleArea()
+        {
+            Vector3 currentPosition = transform.position;
+
+            float clampedX = Mathf.Clamp(currentPosition.x, minimumBattlePosition.x, maximumBattlePosition.x);
+            float clampedY = Mathf.Clamp(currentPosition.y, minimumBattlePosition.y, maximumBattlePosition.y);
+
+            transform.position = new Vector3(clampedX, clampedY, currentPosition.z);
+        }
+
         // Y 좌표가 낮으면 스프라이트 sorting order가 아래로 내려가도록 설정
         private void RefreshSortingOrder()
         {
@@ -223,6 +242,21 @@ namespace AFKHero.Battle
         }
 
 #if UNITY_EDITOR
+        // 카메라 제한 범위 기즈모
+        private void OnDrawGizmos()
+        {
+            Vector2 center = (minimumBattlePosition + maximumBattlePosition) * 0.5f;
+            Vector2 size = maximumBattlePosition - minimumBattlePosition;
+
+            Color previousColor = Gizmos.color;
+            Gizmos.color = Color.red;
+
+            Gizmos.DrawWireCube(
+                new Vector3(center.x, center.y, transform.position.z),
+                new Vector3(size.x, size.y, 0f));
+
+            Gizmos.color = previousColor;
+        }
         // 컴포넌트를 처음 추가할 때 자동 연결
         private void Reset()
         {
