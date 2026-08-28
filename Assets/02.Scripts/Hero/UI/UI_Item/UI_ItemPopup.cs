@@ -14,6 +14,10 @@ public class UI_ItemPopup : MonoBehaviour
     public Button actionButton;
     public TextMeshProUGUI actionBtnText;
 
+    // 강화 버튼 연결
+    [Header("강화 버튼 연결")]
+    public Button enhanceButton;
+
     // 장착 로직 처리를 위해 임시로 정보를 들고 있을 변수들
     private EquipmentInstance currentEquip;
     private HeroInstance currentHero;
@@ -35,8 +39,18 @@ public class UI_ItemPopup : MonoBehaviour
             iconImage.sprite = equip.BaseData.equipmentIcon;
         }
 
-        // 이름 및 등급 표시
-        nameText.text = equip.BaseData.equipmentName;
+        // 강화 수치가 1 이상이면 이름 앞에 "+수치"를 붙임
+        if (equip.EnhanceLevel > 0)
+        {
+            nameText.text = $"+{equip.EnhanceLevel} {equip.BaseData.equipmentName}";
+        }
+        else
+        {
+            nameText.text = equip.BaseData.equipmentName;
+        }
+
+
+        // 등급 표시
         gradeText.text = $"등급: {equip.Grade}";
 
         if (equip.Grade == EquipmentGrade.Epic) gradeText.color = new Color(0.8f, 0.2f, 1f);
@@ -53,6 +67,16 @@ public class UI_ItemPopup : MonoBehaviour
 
             actionButton.onClick.RemoveAllListeners();
             actionButton.onClick.AddListener(OnClickActionButton); // 버튼에 클릭 이벤트 연결
+        }
+
+        // 강화 버튼 이벤트 및 10강 제한 연결
+        if (enhanceButton != null)
+        {
+            // +10강이면 버튼을 클릭할 수 없게 만듭니다.
+            enhanceButton.interactable = (equip.EnhanceLevel < 10);
+
+            enhanceButton.onClick.RemoveAllListeners();
+            enhanceButton.onClick.AddListener(OnClickEnhanceButton);
         }
     }
 
@@ -76,6 +100,41 @@ public class UI_ItemPopup : MonoBehaviour
         // 장착/해제가 끝났으니 UI를 새로고침하고 팝업창을 닫기
         if (mainPanel != null) mainPanel.RefreshUI();
         ClosePopup();
+    }
+
+    // 강화 버튼을 눌렀을 때 실행되는 확률 함수
+    private void OnClickEnhanceButton()
+    {
+        if (currentEquip == null) return;
+
+        // 이미 10강이면 진행 불가
+        if (currentEquip.EnhanceLevel >= 10) return;
+
+        // 강화 비용 계산 기본 1000골드 + 단계당 500골드씩 증가
+        int enhanceCost = 1000 + (currentEquip.EnhanceLevel * 500);
+
+        // 골드 부족 체크
+        if (!AFKHero.Player.PlayerManager.Instance.TryUseGold(enhanceCost))
+        {
+            Debug.Log($"<color=orange>[강화 불가]</color> 골드가 부족합니다! (필요 골드: {enhanceCost}G)");
+            return; // 골드가 부족하므로 강화를 중단
+        }
+
+        // 골드 차감을 마쳤으니 확률 강화 시도
+        bool isSuccess = currentEquip.EnhanceItem();
+
+        if (isSuccess)
+        {
+            Debug.Log($"<color=green>[강화 성공!]</color> {currentEquip.BaseData.equipmentName}이(가) +{currentEquip.EnhanceLevel}강이 되었습니다! (-{enhanceCost}G)");
+        }
+        else
+        {
+            Debug.Log($"<color=red>[강화 실패...]</color> {currentEquip.BaseData.equipmentName} 강화에 실패했습니다. (-{enhanceCost}G)");
+        }
+
+        // 바뀐 정보를 화면에 즉시 갱신
+        OpenPopup(currentEquip, currentHero, mainPanel, isEquippedItem);
+        if (mainPanel != null) mainPanel.RefreshUI();
     }
 
     public void ClosePopup()

@@ -4,18 +4,18 @@ using TMPro;
 
 public class UI_ItemSlot : MonoBehaviour
 {
+    public Image backgroundImage;
+
     public Image iconImage;
     public TextMeshProUGUI nameText;
     public Button slotButton;
     public GameObject plusIconObject;
 
-    // 슬롯이 보관하는 장비를 'EquipmentInstance'로 변경했습니다.
     private EquipmentInstance myEquipment;
     private HeroInstance targetHero;
     private UI_EquipmentPanel mainPanel;
     private bool isEquippedSlot;
 
-    // 매개변수 타입도 EquipmentInstance로 변경
     public void Setup(EquipmentInstance equipData, HeroInstance hero, UI_EquipmentPanel panel, bool isEquipped)
     {
         myEquipment = equipData;
@@ -27,11 +27,27 @@ public class UI_ItemSlot : MonoBehaviour
         {
             if (iconImage != null)
             {
-                // 아이콘과 이름은 원본 설계도 안에서 꺼내옵니다.
                 iconImage.sprite = myEquipment.BaseData.equipmentIcon;
                 iconImage.gameObject.SetActive(true);
             }
-            if (nameText != null) nameText.text = myEquipment.BaseData.equipmentName;
+
+            if (nameText != null)
+            {
+                nameText.text = myEquipment.BaseData.equipmentName;
+                // 글씨는 배경색에 묻히지 않게 하얀색 또는 검은색으로 고정
+                nameText.color = Color.black;
+            }
+
+            // 장비 등급에 따른 배경색 변경 로직
+            if (backgroundImage != null)
+            {
+                if (myEquipment.Grade == EquipmentGrade.Epic)
+                    backgroundImage.color = new Color(0.9f, 0.7f, 1f); // 에픽: 연한 보라색 배경
+                else if (myEquipment.Grade == EquipmentGrade.Rare)
+                    backgroundImage.color = new Color(0.7f, 0.9f, 1f); // 레어: 연한 파란색 배경
+                else
+                    backgroundImage.color = new Color(0.9f, 0.9f, 0.9f); // 노말: 밝은 회색 배경
+            }
 
             if (plusIconObject != null) plusIconObject.SetActive(false);
             slotButton.interactable = true;
@@ -43,7 +59,17 @@ public class UI_ItemSlot : MonoBehaviour
                 iconImage.sprite = null;
                 iconImage.gameObject.SetActive(false);
             }
-            if (nameText != null) nameText.text = "";
+            if (nameText != null)
+            {
+                nameText.text = "";
+            }
+
+            // 빈 슬롯일 때의 기본 배경색
+            if (backgroundImage != null)
+            {
+                backgroundImage.color = new Color(0.8f, 0.8f, 0.8f); // 빈 슬롯: 약간 어두운 회색
+            }
+
             if (plusIconObject != null) plusIconObject.SetActive(true);
             slotButton.interactable = true;
         }
@@ -56,7 +82,6 @@ public class UI_ItemSlot : MonoBehaviour
     {
         if (myEquipment == null) return;
 
-        // 클릭 시 즉시 장착하지 않고, 필요한 정보를 담아서 팝업창만 열기
         if (mainPanel != null && mainPanel.itemPopup != null)
         {
             mainPanel.itemPopup.OpenPopup(myEquipment, targetHero, mainPanel, isEquippedSlot);
