@@ -477,7 +477,14 @@ public class HeroBase : MonoBehaviour
                 finalMultiplier,
                 defenseIgnoreRate);
 
-        return appliedDamage > 0;
+        if (appliedDamage <= 0)
+        {
+            return false;
+        }
+
+        JobUltimateSkill.ApplyArcherKnockback(battleUnit, target.battleUnit);
+
+        return true;
     }
 
     // 수호의 방패: 최대 체력 20% 보호막 생성
@@ -485,6 +492,8 @@ public class HeroBase : MonoBehaviour
         HeroBase[] allHeroes)
     {
         const float baseShieldRate = 0.20f;
+
+        const int maximumHealingTargetCount = 2;
 
         float finalShieldRate =
             baseShieldRate +
@@ -506,35 +515,72 @@ public class HeroBase : MonoBehaviour
             transform.position,
             2f);
 
+        foreach (HeroBase hero in allHeroes)
+        {
+            if (!IsLivingHero(hero) || !IsOpponent(hero))
+            {
+                continue;
+            }
+
+            JobUltimateSkill.ApplyTankTaunt(battleUnit, hero.battleUnit);
+        }
+
         float bonusHealRate =
             JobUltimateSkill.GetTankBonusHealRate(
                 battleUnit);
 
         if (bonusHealRate > 0f)
         {
+            List<HeroBase> healingTargets = new();
+
             foreach (HeroBase hero in allHeroes)
             {
-                if (!IsLivingHero(hero) ||
-                    !IsSameTeam(hero))
+                if (!IsLivingHero(hero) || !IsSameTeam(hero))
                 {
                     continue;
                 }
 
-                int healingAmount =
-                    Mathf.Max(
-                        1,
-                        Mathf.RoundToInt(
-                            hero.battleUnit.Stats.MaxHealth *
-                            bonusHealRate));
+                // 이미 최대 체력인 아군은 회복 대상에서 제외
+                if (hero.battleUnit.Stats.CurrentHealth >= hero.battleUnit.Stats.MaxHealth)
+                {
+                    continue;
+                }
 
-                hero.battleUnit.Health.RestoreHealthFromUltimate(
-                    healingAmount,
-                    battleUnit);
+                healingTargets.Add(hero);
+            }
+
+            // 현재 체력 비율이 낮은 아군부터 정렬
+            healingTargets.Sort(CompareCurrentHealthRatio);
+
+            int healingTargetCount = Mathf.Min(maximumHealingTargetCount, healingTargets.Count);
+
+            for (int i = 0; i < healingTargetCount; i++)
+            {
+                HeroBase healingTarget = healingTargets[i];
+                int healingAmount = Mathf.Max(1, Mathf.RoundToInt(healingTarget.battleUnit.Stats.MaxHealth * bonusHealRate));
+
+                healingTarget.battleUnit.Health.RestoreHealthFromUltimate(healingAmount, battleUnit);
             }
         }
-
         return true;
     }
+
+    private static int CompareCurrentHealthRatio(HeroBase left, HeroBase right)
+    {
+        long leftHealthRatio = (long)left.battleUnit.Stats.CurrentHealth * right.battleUnit.Stats.MaxHealth;
+        long rightHealthRatio = (long)right.battleUnit.Stats.CurrentHealth * left.battleUnit.Stats.MaxHealth;
+
+        int ratioComparison = leftHealthRatio.CompareTo(rightHealthRatio);
+
+        if (ratioComparison != 0)
+        {
+            return ratioComparison;
+        }
+
+        // 체력 비율이 같으면 결과가 매번 바뀌지 않도록 편성 슬롯 순서로 결정합니다.
+        return left.battleUnit.FormationSlotIndex.CompareTo(right.battleUnit.FormationSlotIndex);
+    }
+
 
     private int ApplyUltimateDamage(
        HeroBase target,

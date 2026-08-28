@@ -27,4 +27,4 @@ MonoBehaviour:
   heroImage: {fileID: 1265990047204594612, guid: 400ae9afabab3574cb021831e3566bf5, type: 3}
   heroPrefab: {fileID: 554551116813082751, guid: 0d9cb4f64ca48a64ea5f0e8994183bd5, type: 3}
   battleUnitPrefab: {fileID: 5405934589750331299, guid: d8c470e7701c26b4d82ef37f3e954aec, type: 3}
-  canUseUltimate: 0
+  canUseUltimate: 1

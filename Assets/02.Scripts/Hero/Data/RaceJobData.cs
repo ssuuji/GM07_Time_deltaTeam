@@ -1,10 +1,10 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
-// Á¾Á·º° Á÷¾÷ ¹èÄ¡ ¹× Á÷¾÷ ¸ŞÄ¿´ÏÁòÀ» ÃÑ°ı °ü¸®ÇÏ´Â Å¬·¡½º
+// ì¢…ì¡±ë³„ ì§ì—… ë°°ì¹˜ ë° ì§ì—… ë©”ì»¤ë‹ˆì¦˜ì„ ì´ê´„ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
 public static class RaceJobData
 {
-    // Á¾Á·º° º¸À¯ Á÷¾÷
+    // ì¢…ì¡±ë³„ ë³´ìœ  ì§ì—…
     public static readonly Dictionary<RaceType, List<JobType>> RaceJobMapping = new Dictionary<RaceType, List<JobType>>()
     {
         { RaceType.Human,  new List<JobType> { JobType.Warrior, JobType.Tank, JobType.Archer, JobType.Mage, JobType.Healer } },
@@ -13,10 +13,10 @@ public static class RaceJobData
         { RaceType.Undead, new List<JobType> { JobType.Warrior, JobType.Tank, JobType.Archer, JobType.Mage, JobType.Healer } }
     };
 
-    // ¸Å°³º¯¼ö¿¡ HeroGrade grade Ãß°¡
+    // ë§¤ê°œë³€ìˆ˜ì— HeroGrade grade ì¶”ê°€
     public static JobStats GetStatsByJob(JobType jobType, HeroGrade grade)
     {
-        // °øÅëÀ¸·Î »ç¿ëÇÒ º¯¼öµé ¹Ì¸® ¼±¾ğ
+        // ê³µí†µìœ¼ë¡œ ì‚¬ìš©í•  ë³€ìˆ˜ë“¤ ë¯¸ë¦¬ ì„ ì–¸
         int hp = 0;
         int attack = 0;
         int defense = 0;
@@ -28,66 +28,66 @@ public static class RaceJobData
 
         switch (jobType)
         {
-            // Àü»ç: °¡Àå °¡±î¿î Àû Å¸°Ù / È¸Àü °ø°İ
+            // ì „ì‚¬: ê°€ì¥ ê°€ê¹Œìš´ ì  íƒ€ê²Ÿ / íšŒì „ ê³µê²©
             case JobType.Warrior:
                 targetType = TargetPriority.NearestEnemy;
-                skillName = "È¸Àü °ø°İ";
-                jobDesc = "°ø°İ°ú »ıÁ¸ÀÌ ±ÕÇü ÀâÈù ±ÙÁ¢ µô·¯. Àû¿¡°Ô Á¢±ÙÇØ Áö¼Ó ÇÇÇØ¸¦ ÁÖ¸ç ÁÖº¯ÀÇ ¸ğµç ÀûÀ» °ø°İÇÕ´Ï´Ù.";
+                skillName = "íšŒì „ ê³µê²©";
+                jobDesc = "ê³µê²©ê³¼ ìƒì¡´ì´ ê· í˜• ì¡íŒ ê·¼ì ‘ ë”œëŸ¬. ì ì—ê²Œ ì ‘ê·¼í•´ ì§€ì† í”¼í•´ë¥¼ ì£¼ë©° ì£¼ë³€ì˜ ëª¨ë“  ì ì„ ê³µê²©í•©ë‹ˆë‹¤.";
                 attackSpeed = 1.0f;
-                attackRange = 1.5f;
+                attackRange = 1.2f;
 
-                // [¼öÁ¤µÈ ºÎºĞ 3] ÅÂ»ı µî±Şº°·Î ¿ÏÀüÈ÷ ´Ù¸¥ ±âº» ½ºÅÈ ºÎ¿©
+                // [ìˆ˜ì •ëœ ë¶€ë¶„ 3] íƒœìƒ ë“±ê¸‰ë³„ë¡œ ì™„ì „íˆ ë‹¤ë¥¸ ê¸°ë³¸ ìŠ¤íƒ¯ ë¶€ì—¬
                 if (grade == HeroGrade.Normal) { hp = 700; attack = 90; defense = 50; }
                 else if (grade == HeroGrade.Rare) { hp = 1200; attack = 150; defense = 80; }
                 else if (grade == HeroGrade.Epic) { hp = 2000; attack = 250; defense = 120; }
                 break;
 
-            // ÅÊÄ¿: °¡Àå °¡±î¿î Àû Å¸°Ù / ÇÇÇØ °¨¼â ¹× º¸È£¸·
+            // íƒ±ì»¤: ê°€ì¥ ê°€ê¹Œìš´ ì  íƒ€ê²Ÿ / í”¼í•´ ê°ì‡„ ë° ë³´í˜¸ë§‰
             case JobType.Tank:
                 targetType = TargetPriority.NearestEnemy;
-                skillName = "¼öÈ£ÀÇ ¹æÆĞ";
-                jobDesc = "³ôÀº Ã¼·Â°ú ¹æ¾î·ÂÀ¸·Î Àü¿­¿¡¼­ ¾Æ±ºÀ» º¸È£ÇÏ¸ç, ±Ã±Ø±â·Î º¸È£¸·À» »ı¼ºÇÕ´Ï´Ù.";
+                skillName = "ìˆ˜í˜¸ì˜ ë°©íŒ¨";
+                jobDesc = "ë†’ì€ ì²´ë ¥ê³¼ ë°©ì–´ë ¥ìœ¼ë¡œ ì „ì—´ì—ì„œ ì•„êµ°ì„ ë³´í˜¸í•˜ë©°, ê¶ê·¹ê¸°ë¡œ ë³´í˜¸ë§‰ì„ ìƒì„±í•©ë‹ˆë‹¤.";
                 attackSpeed = 0.8f;
-                attackRange = 1.5f;
+                attackRange = 1.2f;
 
                 if (grade == HeroGrade.Normal) { hp = 1000; attack = 50; defense = 80; }
                 else if (grade == HeroGrade.Rare) { hp = 1800; attack = 80; defense = 130; }
                 else if (grade == HeroGrade.Epic) { hp = 3000; attack = 120; defense = 200; }
                 break;
 
-            // ¸¶¹ı»ç: °¡Àå °¡±î¿î Àû Å¸°Ù / ¸ŞÅ×¿À(±¤¿ª)
+            // ë§ˆë²•ì‚¬: ê°€ì¥ ê°€ê¹Œìš´ ì  íƒ€ê²Ÿ / ë©”í…Œì˜¤(ê´‘ì—­)
             case JobType.Mage:
                 targetType = TargetPriority.NearestEnemy;
-                skillName = "¸ŞÅ×¿À";
-                jobDesc = "Ã¼·ÂÀº ³·Áö¸¸ °­·ÂÇÑ ¹üÀ§ ¸¶¹ıÀ» »ç¿ëÇÏ¸ç, ¸ŞÅ×¿À·Î ¹üÀ§ ³» ´Ù¼öÀÇ ÀûÀ» ¸ô»ìÇÕ´Ï´Ù.";
+                skillName = "ë©”í…Œì˜¤";
+                jobDesc = "ì²´ë ¥ì€ ë‚®ì§€ë§Œ ê°•ë ¥í•œ ë²”ìœ„ ë§ˆë²•ì„ ì‚¬ìš©í•˜ë©°, ë©”í…Œì˜¤ë¡œ ë²”ìœ„ ë‚´ ë‹¤ìˆ˜ì˜ ì ì„ ëª°ì‚´í•©ë‹ˆë‹¤.";
                 attackSpeed = 0.8f;
-                attackRange = 6.0f;
+                attackRange = 3.0f;
 
                 if (grade == HeroGrade.Normal) { hp = 450; attack = 130; defense = 25; }
                 else if (grade == HeroGrade.Rare) { hp = 700; attack = 220; defense = 40; }
                 else if (grade == HeroGrade.Epic) { hp = 1100; attack = 350; defense = 60; }
                 break;
 
-            // ±Ã¼ö: ÈÄ¹æ Àû ¿ì¼± Å¸°Ù / Àú°İ(¿ø°Å¸® Æøµô)
+            // ê¶ìˆ˜: í›„ë°© ì  ìš°ì„  íƒ€ê²Ÿ / ì €ê²©(ì›ê±°ë¦¬ í­ë”œ)
             case JobType.Archer:
                 targetType = TargetPriority.BacklineEnemy;
-                skillName = "ÁıÁß Àú°İ";
-                jobDesc = "ÈÄ¿­ÀÇ ÀûÀ» ¿ì¼± Å¸°ÙÆÃÇÏ¿© ³ôÀº ´ÜÀÏ ÇÇÇØ·Î Ä¡¸íÅ¸¸¦ ÀÔÈ÷´Â ¿ø°Å¸® µô·¯ÀÔ´Ï´Ù.";
+                skillName = "ì§‘ì¤‘ ì €ê²©";
+                jobDesc = "í›„ì—´ì˜ ì ì„ ìš°ì„  íƒ€ê²ŸíŒ…í•˜ì—¬ ë†’ì€ ë‹¨ì¼ í”¼í•´ë¡œ ì¹˜ëª…íƒ€ë¥¼ ì…íˆëŠ” ì›ê±°ë¦¬ ë”œëŸ¬ì…ë‹ˆë‹¤.";
                 attackSpeed = 1.3f;
-                attackRange = 7.0f;
+                attackRange = 3.0f;
 
                 if (grade == HeroGrade.Normal) { hp = 500; attack = 100; defense = 30; }
                 else if (grade == HeroGrade.Rare) { hp = 800; attack = 180; defense = 50; }
                 else if (grade == HeroGrade.Epic) { hp = 1200; attack = 280; defense = 80; }
                 break;
 
-            // Èú·¯: °¡Àå °¡±î¿î ÀûÀ» ÆòÅ¸·Î °ø°İÇÏ¸ç ¿¡³ÊÁö¸¦ ¸ğÀº µÚ / ÀüÃ¼ È¸º¹
+            // íëŸ¬: ê°€ì¥ ê°€ê¹Œìš´ ì ì„ í‰íƒ€ë¡œ ê³µê²©í•˜ë©° ì—ë„ˆì§€ë¥¼ ëª¨ì€ ë’¤ / ì „ì²´ íšŒë³µ
             case JobType.Healer:
                 targetType = TargetPriority.NearestEnemy;
-                skillName = "Ä¡À¯ÀÇ ºû";
-                jobDesc = "°ø°İ ´ë½Å Ã¼·ÂÀÌ °¡Àå ³·Àº ¾Æ±ºÀ» ¿ì¼± È¸º¹½ÃÅ°¸ç ¾Æ±ºÀÇ »ıÁ¸·ÂÀ» ³ôÀÔ´Ï´Ù.";
+                skillName = "ì¹˜ìœ ì˜ ë¹›";
+                jobDesc = "ê³µê²© ëŒ€ì‹  ì²´ë ¥ì´ ê°€ì¥ ë‚®ì€ ì•„êµ°ì„ ìš°ì„  íšŒë³µì‹œí‚¤ë©° ì•„êµ°ì˜ ìƒì¡´ë ¥ì„ ë†’ì…ë‹ˆë‹¤.";
                 attackSpeed = 1.0f;
-                attackRange = 6.0f;
+                attackRange = 3.0f;
 
                 if (grade == HeroGrade.Normal) { hp = 550; attack = 40; defense = 35; }
                 else if (grade == HeroGrade.Rare) { hp = 900; attack = 70; defense = 55; }
@@ -95,15 +95,15 @@ public static class RaceJobData
                 break;
 
             default:
-                Debug.LogError($"[RaceJobData] Á÷¾÷ µ¥ÀÌÅÍ ºÒÀÏÄ¡: {jobType}");
-                return new JobStats(100, 10, 5, 1.0f, 1.5f, TargetPriority.NearestEnemy, "±âº» ½ºÅ³", "¼³¸í ¾øÀ½");
+                Debug.LogError($"[RaceJobData] ì§ì—… ë°ì´í„° ë¶ˆì¼ì¹˜: {jobType}");
+                return new JobStats(100, 10, 5, 1.0f, 1.5f, TargetPriority.NearestEnemy, "ê¸°ë³¸ ìŠ¤í‚¬", "ì„¤ëª… ì—†ìŒ");
         }
 
-        // ÃÖÁ¾ÀûÀ¸·Î ¼¼ÆÃµÈ °ªµéÀ» ¸ğ¾Æ¼­ JobStats °´Ã¼·Î ¹İÈ¯
+        // ìµœì¢…ì ìœ¼ë¡œ ì„¸íŒ…ëœ ê°’ë“¤ì„ ëª¨ì•„ì„œ JobStats ê°ì²´ë¡œ ë°˜í™˜
         return new JobStats(hp, attack, defense, attackSpeed, attackRange, targetType, skillName, jobDesc);
     }
 
-    // Á¾Á·-Á÷¾÷ Á¶ÇÕ À¯È¿¼º °Ë»ç
+    // ì¢…ì¡±-ì§ì—… ì¡°í•© ìœ íš¨ì„± ê²€ì‚¬
     public static bool IsValidRaceJob(RaceType race, JobType job)
     {
         if (RaceJobMapping.TryGetValue(race, out var jobs))

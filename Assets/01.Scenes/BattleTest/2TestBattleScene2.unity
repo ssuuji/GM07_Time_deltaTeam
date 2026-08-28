@@ -32692,7 +32692,6 @@ Transform:
   - {fileID: 2075083283}
   - {fileID: 482561060}
   - {fileID: 1002713636}
-  - {fileID: 2103306356}
   - {fileID: 578406118}
   - {fileID: 127420743}
   - {fileID: 163291647}
@@ -34501,6 +34500,7 @@ MonoBehaviour:
   defeatPanel: {fileID: 358684879}
   currentStageNumber: 1
   currentSectionNumber: 1
+  currentState: 0
   lastStageNumber: 0
   lastSectionNumber: 0
   equipmentDropChance: 100
@@ -34946,12 +34946,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2103306355}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2002678142}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2103306357
 MonoBehaviour:
@@ -35011,21 +35011,21 @@ MonoBehaviour:
   battleManager: {fileID: 2103306361}
   battleSpawner: {fileID: 2103306360}
   testAllyHeroes:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 11400000, guid: 52cedf96ddb33d749bbeb1c1764db086, type: 2}
+  - {fileID: 11400000, guid: 70ab1537ef2c9104ab77e66f7c5668a7, type: 2}
+  - {fileID: 11400000, guid: 70ab1537ef2c9104ab77e66f7c5668a7, type: 2}
+  - {fileID: 11400000, guid: 70ab1537ef2c9104ab77e66f7c5668a7, type: 2}
+  - {fileID: 11400000, guid: 70ab1537ef2c9104ab77e66f7c5668a7, type: 2}
+  - {fileID: 11400000, guid: 83369abcba5a332418ebcf1d597eab38, type: 2}
   testEnemyHeroes:
   - {fileID: 11400000, guid: ba5157846496f0148b68b93b90908a4a, type: 2}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 11b022b29d1c1304f94b2191855adf76, type: 2}
+  - {fileID: 11400000, guid: 83369abcba5a332418ebcf1d597eab38, type: 2}
   testAllyLevel: 1
   testEnemyLevel: 1
   testBattleTimeLimit: 90
-  testHealthMultiplier: 10
+  testHealthMultiplier: 100
   testUnit: {fileID: 0}
   stunDuration: 3
   silenceDuration: 3
@@ -35424,6 +35424,60 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2107788283}
   m_CullTransparentMesh: 1
+--- !u!1 &2109601570
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2109601572}
+  - component: {fileID: 2109601571}
+  m_Layer: 0
+  m_Name: TestBattleUnit
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2109601571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2109601570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b360f85c200cb349a77f913c2b0fca1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.BattleUnit
+  targetFinder: {fileID: 0}
+  unitMovemnet: {fileID: 0}
+  attackController: {fileID: 0}
+  unitHealth: {fileID: 0}
+  unitEnergy: {fileID: 0}
+  ultimateController: {fileID: 0}
+  statusEffectController: {fileID: 0}
+  spriteRenderers: []
+  sortingBaseOrder: 1000
+  sortingPrecision: 100
+--- !u!4 &2109601572
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2109601570}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.37513, y: 0.47872, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2120242376
 GameObject:
   m_ObjectHideFlags: 0
@@ -35859,6 +35913,8 @@ SceneRoots:
   m_Roots:
   - {fileID: 156955394}
   - {fileID: 2058783356}
+  - {fileID: 2109601572}
+  - {fileID: 2103306356}
   - {fileID: 2002678142}
   - {fileID: 1256662754}
   - {fileID: 254550415}
