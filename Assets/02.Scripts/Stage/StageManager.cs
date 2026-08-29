@@ -152,7 +152,7 @@ public class StageManager : MonoBehaviour
         }
 
         //적의 레벨을 스테이지 기반으로 계산
-        int enemyLevel = EnemyLevelCalculator.CalculateEnemyLevel(currentStageNumber, currentSectionNumber);
+        int enemyLevel = StageCalculator.CalculateEnemyLevel(currentStageNumber, currentSectionNumber);
 
         // [수정한 부분: 적 목록(Enemies)과 방금 계산한 레벨(enemyLevel)을 같이 넘겨줍니다]
         //StageInfo의 리스트가 StageEnemyInfo가 아니라 UnitData로 변경되어 주석처리함. BattleSpawner 기반으로 변경하기
