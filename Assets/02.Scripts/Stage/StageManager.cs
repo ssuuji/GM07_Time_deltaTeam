@@ -17,6 +17,11 @@ using UnityEngine;
 //이런 부분을... 조교님이나 강사님, 멘토님한테 물어봐야 할 수도 있을 것 같네.
 //애초에... UIStageManager 이런 클래스로 기능분리를 했어야 했을 듯.
 
+
+//세이브 로드 할 때, StageInfo도 셋팅하는 식으로 해야 할 것 같다.
+//만약에 세이브 데이터가 없다? 그러면 처음 시작하는 거자나?
+//그러면 그 땐 1-1로 셋팅.
+
 public class StageManager : MonoBehaviour
 {
     public static StageManager Instance { get; private set; }
@@ -41,6 +46,7 @@ public class StageManager : MonoBehaviour
     [Header("현재 진행 정보")]
     [SerializeField] private int currentStageNumber = 1;
     [SerializeField] private int currentSectionNumber = 1;
+    [SerializeField] private StageInfo currentStageInfo; // 현재 진행 중인 구간의 데이터
     [SerializeField] private StageState currentState = StageState.None;
 
     //IdleBattleHandler가 구독해야 할 이벤트
@@ -65,7 +71,7 @@ public class StageManager : MonoBehaviour
 
     //승리 패널을 자동으로 닫히게 할 코루틴
     private Coroutine autoClosePanelCoroutine;
-    private StageInfo currentStageInfo; // 현재 진행 중인 구간의 데이터
+
 
 
     //프로퍼티
@@ -132,6 +138,7 @@ public class StageManager : MonoBehaviour
         defeatPanel.gameObject.SetActive(false);
 
         //현재 번호에 따라서 StageData에서 Info를 받아온다.
+        //이게 어디선가에선 호출되어야 계속 currentStageInfo가 교체되는 건데, 그게 대체 어디냐고.
         currentStageInfo = stageData.GetStage(currentStageNumber, currentSectionNumber);
 
         if(currentStageInfo == null) // 스테이지 데이터가 없으면 진행 중단
@@ -381,6 +388,17 @@ public class StageManager : MonoBehaviour
         currentSectionNumber = saveData.currentSectionNumber;
         lastStageNumber = saveData.lastStageNumber;
         lastSectionNumber = saveData.lastSectionNumber;
+
+        //그니까... 저장할 때 굳이 StageInfo까지 저장할 필요는 없잖아?
+        //여기에서 로드할 때만 하면 되잖아.
+        //그런데 중요한 것은, 최초 실행한 경우라면 로드할 데이터가 없을 텐데?
+        //아닌가? 최초 실행할 때는 1 1 로 설정해뒀잖아.
+
+
+        //3-1클리어까지 해보고, 이 부분에서 문제 생기는지 확인해보기.
+        currentStageInfo = StageData.GetStage(currentStageNumber, currentSectionNumber);
+
+        
     }
 
     #endregion
