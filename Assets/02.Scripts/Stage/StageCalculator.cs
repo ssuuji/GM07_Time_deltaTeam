@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-//StageNumber와 SectionNumber를 받아, 출현할 적들의 레벨을 결정할 정적 클래스
+//StageNumber와 SectionNumber를 받아 필요한 계산을 수행할 정적 클래스
 
-public static class EnemyLevelCalculator 
+public static class StageCalculator 
 {
 
     //적이 소환되는 시점에서 호출할 int형 정적 메서드
@@ -14,5 +14,12 @@ public static class EnemyLevelCalculator
     public static int CalculateEnemyLevel(int stageNumber, int sectionNumber)
     {
         return Mathf.Clamp((stageNumber - 1) * 10 + sectionNumber, 1, 9999);
+    }
+
+    public static int CaculateIdleBattleReward(int lastStageNumber, int lastSectionNumber)
+    {
+        int IdleBattleRewardPerSecond = (lastStageNumber - 1) * 10 + lastSectionNumber * 5;
+
+        return IdleBattleRewardPerSecond;
     }
 }
