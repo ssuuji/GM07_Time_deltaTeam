@@ -17,9 +17,11 @@ MonoBehaviour:
   isBossStage: 0
   timeLimit: 120
   enemies:
-  - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
-  - {fileID: 11400000, guid: 62f5f4aded2174e4b82169e82d9ada42, type: 2}
+  - {fileID: 11400000, guid: 6497791b2eb2d0045a79acf163e08bb9, type: 2}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 11400000, guid: f835f16a1448daf40be8d6f92783555a, type: 2}
   - {fileID: 0}
   clearGold: 200
+  clearDia: 0
+  clearTicket: 0

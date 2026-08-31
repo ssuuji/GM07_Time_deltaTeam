@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using System.Linq;
 
 /*
 [방치 전투의 조건(파기된 안건입니다)]
@@ -67,13 +68,43 @@ public class IdleBattleHandler : MonoBehaviour
         StageInfo baseStage = StageManager.Instance.StageData.GetStage(StageManager.Instance.LastStageNumber, StageManager.Instance.LastSectionNumber);
         if (baseStage == null) return;
 
+        //파티슬롯길이만큼 내부 요소가 null인 것을 찾았다 = 파티가 전부 비어있다.
+        if (CheckPartySlot() == PartyManager.Instance.partySlots.Length)
+        {
+            Debug.Log("파티가 없어서 실행 안 됨");
+            return;
+        }
+
         SpawnParty();
 
         ToggleDummyTarget(true);
 
+        //이걸 이제 발전시킨다면, 그런 식으로 할 수 있겠지.
+        //이 메서드가 실행되는 시점에서 파티의 정보를 불러오고,
+        //배치한 영웅 수나 영웅들 중 가장 낮거나 높은 레벨도 계산에 반영하도록 CalculateIdleBattleReward를 수정할 수도 있겠지.
+
         int IdleReward = StageCalculator.CaculateIdleBattleReward(StageManager.Instance.LastStageNumber, StageManager.Instance.LastSectionNumber);
 
         idleBattleCoroutine = StartCoroutine(HandleIdleBattleCo(IdleReward));
+    }
+
+    //파티슬롯이 전부 비어있는지 체크할 메서드
+    private int CheckPartySlot()
+    {
+        int slotCount = 0;
+
+        HeroInstance[] heroes = PartyManager.Instance.partySlots;
+
+        for (int i = 0; i < heroes.Length; i++)
+        {
+            if (heroes[i] == null)
+            {
+                slotCount++;
+            }
+        }
+
+        return slotCount;
+
     }
 
     private void SpawnParty()
