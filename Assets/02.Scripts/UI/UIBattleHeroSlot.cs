@@ -72,6 +72,8 @@ namespace AFKHero.UI
                 return;
             }
 
+            ResetBattleUnit(); //이전 전투 유닛 연결 및 이벤트 해제
+
             gameObject.SetActive(true); //활성화
             SetDeadEffect(false); //흑백처리 해제
 

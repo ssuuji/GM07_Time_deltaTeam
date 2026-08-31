@@ -73,15 +73,20 @@ namespace AFKHero.UI
 
         private void Start()
         {
-            if (battleManager == null) return;
+            if (battleManager != null)
+            {
+                battleManager.UltimateUseModeChanged += UpdateUltimateModeUI; //궁극기 모드 변경 
+                battleManager.UltimateStarted += OnUltimateStarted;           //궁극기 연출 시작
+                battleManager.UltimateFinished += OnUltimateFinished;         //궁극기 연출 종료
+                battleManager.UnitDied += OnUnitDied;                         //유닛 사망 이벤트 구독
+
+                UpdateUltimateModeUI(battleManager.UltimateMode);             //현재 궁극기 모드에 맞는 UI 반영
+            }
             
-            battleManager.UltimateUseModeChanged += UpdateUltimateModeUI; //궁극기 모드 변경 
-
-            battleManager.UltimateStarted += OnUltimateStarted;   //궁극기 연출 시작
-            battleManager.UltimateFinished += OnUltimateFinished; //궁극기 연출 종료
-            battleManager.UnitDied += OnUnitDied;                 //유닛 사망 이벤트 구독
-
-            UpdateUltimateModeUI(battleManager.UltimateMode); //현재 궁극기 모드에 맞는 UI 반영
+            if (StageManager.Instance != null)
+            {
+                StageManager.Instance.StageStateChanged += OnStageStateChanged; //스테이지 상태 변경 이벤트 구독
+            }
         }
 
         private void OnDestroy()
@@ -93,6 +98,11 @@ namespace AFKHero.UI
                 battleManager.UltimateStarted -= OnUltimateStarted;
                 battleManager.UltimateFinished -= OnUltimateFinished;
                 battleManager.UnitDied -= OnUnitDied;
+            }
+
+            if (StageManager.Instance != null)
+            {
+                StageManager.Instance.StageStateChanged -= OnStageStateChanged;
             }
 
             //연출 초기화
@@ -116,6 +126,15 @@ namespace AFKHero.UI
             currentStageText.text = $"STAGE {StageManager.Instance.CurrentStageNumber}-{StageManager.Instance.CurrentSectionNumber}";
         }
 
+        //스테이지 상태 변경
+        private void OnStageStateChanged(StageState state)
+        {
+            //실제 전투가 끝나고 방치전투 상태로 돌아왔을 때
+            if (state != StageState.Idle) return;
+
+            UpdatePartyUI();
+        }
+
         #endregion
 
         #region 파티 UI
@@ -126,6 +145,7 @@ namespace AFKHero.UI
             for (int i = 0; i < heroSlots.Length; i++)
             {
                 heroSlots[i] = Instantiate(heroSlotPrefab, heroSlotTransform);
+                heroSlots[i].Hide(); //파티 정보 적용 전에는 기본 프리팹 모습 숨김
             }
         }
 
