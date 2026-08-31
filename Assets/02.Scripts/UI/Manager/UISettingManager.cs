@@ -17,6 +17,12 @@ namespace AFKHero.UI
         //설정창 열기
         public void OnClickedOpenSetting()
         {
+            //메인 탭이 열려있다면 먼저 닫기
+            if (UIManager.Instance != null && UIManager.Instance.TryCloseMainTab())
+            {
+                return;
+            }
+
             settingPanel.SetActive(true);
             backButton.gameObject.SetActive(true);
         }
