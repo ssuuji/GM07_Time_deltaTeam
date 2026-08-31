@@ -15,7 +15,7 @@ MonoBehaviour:
   equipmentID: EvadeSet_Armor
   equipmentName: "\uD68C\uD53C\uAC11\uC637(\uC0C1\uC758)"
   type: 1
-  equipmentIcon: {fileID: 21300000, guid: c0bb2249bba75df617f683676b4e639b, type: 3}
+  equipmentIcon: {fileID: 21300000, guid: 02621297585d28b4cba24466a6d29bca, type: 2}
   minAttack: 0
   maxAttack: 0
   minHP: 100

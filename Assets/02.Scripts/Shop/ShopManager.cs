@@ -37,21 +37,35 @@ namespace AFKHero.Shop
         //1회 소환
         public void OnClickedSummon1()
         {
-            if (!playerManager.TryUseDia(oneCost)) return;
+            if (!playerManager.TryUseDia(oneCost))
+            {
+                UINoticePopup.Instance.ShowTime("다이아가 부족합니다.");
+                return;
+            }
+
 
             Summon(1);
         }
         //10회 소환
         public void OnClickedSummon10()
         {
-            if (!playerManager.TryUseDia(tenCost)) return;
+            if (!playerManager.TryUseDia(tenCost))
+            {
+                UINoticePopup.Instance.ShowTime("다이아가 부족합니다.");
+                return;
+            }
+
 
             Summon(10);
         }
         //무료 뽑기권
         public void OnClickedFreeTicket()
         {
-            if (!playerManager.TryUseFreeTicket()) return;
+            if (!playerManager.TryUseFreeTicket())
+            {
+                UINoticePopup.Instance.ShowTime("무료 뽑기권이 없습니다.");
+                return;
+            }
 
             Summon(1);
         }

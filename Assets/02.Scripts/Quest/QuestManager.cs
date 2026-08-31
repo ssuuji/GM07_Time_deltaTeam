@@ -542,6 +542,8 @@ namespace AFKHero.Quest
 
             progress.isRewardClaimed = true;
 
+            AddProgress(QuestConditionType.DailyQuestRewardClaim); //일일 퀘스트 보상 수령 퀘스트 진행도 증가
+
         }
 
         //반복 퀘스트 보상 수령

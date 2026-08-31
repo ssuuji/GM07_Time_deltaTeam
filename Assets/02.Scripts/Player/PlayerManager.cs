@@ -165,6 +165,29 @@ namespace AFKHero.Player
         }
 
         #endregion
+
+        #region 파티 공격력
+
+        //현재 배치된 파티 영웅들의 총 공격력 계산
+        public void UpdatePartyPower()
+        {
+            partyPower = 0;
+
+            if (PartyManager.Instance == null) return;
+
+            for (int i = 0; i < PartyManager.Instance.partySlots.Length; i++)
+            {
+                HeroInstance hero = PartyManager.Instance.partySlots[i];
+
+                if (hero == null || hero.data == null) continue;
+
+                partyPower += hero.FinalAttack;
+            }
+
+            OnPlayerInfoChanged?.Invoke();
+        }
+
+        #endregion
     }
 }
 

@@ -18,6 +18,10 @@ public class UI_ItemPopup : MonoBehaviour
     [Header("강화 버튼 연결")]
     public Button enhanceButton;
 
+    // 판매 버튼 연결
+    [Header("판매 버튼 연결")]
+    public Button sellButton;
+
     // 장착 로직 처리를 위해 임시로 정보를 들고 있을 변수들
     private EquipmentInstance currentEquip;
     private HeroInstance currentHero;
@@ -78,6 +82,16 @@ public class UI_ItemPopup : MonoBehaviour
             enhanceButton.onClick.RemoveAllListeners();
             enhanceButton.onClick.AddListener(OnClickEnhanceButton);
         }
+
+        // 판매 버튼 이벤트 연결
+        if (sellButton != null)
+        {
+            // 영웅이 장착 중인 아이템은 바로 팔 수 없게 버튼 비활성화 (가방에 있는 것만 판매 가능)
+            sellButton.interactable = !isEquippedItem;
+
+            sellButton.onClick.RemoveAllListeners();
+            sellButton.onClick.AddListener(OnClickSellButton);
+        }
     }
 
     // 팝업창의 장착/해제 버튼을 눌렀을 때 실행될 함수
@@ -135,6 +149,22 @@ public class UI_ItemPopup : MonoBehaviour
         // 바뀐 정보를 화면에 즉시 갱신
         OpenPopup(currentEquip, currentHero, mainPanel, isEquippedItem);
         if (mainPanel != null) mainPanel.RefreshUI();
+    }
+
+    //  판매 버튼을 눌렀을 때 실행
+    private void OnClickSellButton()
+    {
+        if (currentEquip == null) return;
+
+        // 장착 중인 아이템은 여기서 판매하지 않음
+        if (isEquippedItem) return;
+
+        // 매니저를 통해 장비 개별 판매
+        EquipmentManager.Instance.SellEquipment(currentEquip);
+
+        // 인벤토리 새로고침 후 팝업 닫기
+        if (mainPanel != null) mainPanel.RefreshUI();
+        ClosePopup();
     }
 
     public void ClosePopup()
