@@ -19,6 +19,11 @@ namespace AFKHero.Battle
         // 처형 세트용 이름 추가
         private const string ExecuteSetName = "ExecuteSet";
 
+        // 추가 : 불사 세트용 변수
+        private const string ImmortalSetName = "ImmortalSet";
+        private bool hasTriggeredImmortality = false;         // 이번 전투에서 불사가 터졌는지 여부
+        private float immortalityEndTime = 0f;             // 불사 상태가 끝나는 시간
+
         private const float TwoSetEvadeChance = 0.15f;
         private const float FourSetEvadeChance = 0.30f;
 
@@ -75,6 +80,10 @@ namespace AFKHero.Battle
             hasRevived = false;
             CurrentShield = 0;
             invincibleUntilTime = 0f;
+
+            // 추가 :  전투 시작 시 불사 상태 초기화
+            hasTriggeredImmortality = false;
+            immortalityEndTime = 0f;
         }
 
         internal void UltimateCutInInvincibility(
@@ -182,101 +191,132 @@ namespace AFKHero.Battle
 
             int absorbedDamage = AbsorbDamageWithShield(finalDamage);
             int remainingDamage = finalDamage - absorbedDamage;
-            int appliedHealthDamage = owner.Stats.ApplyDamage(remainingDamage);
-            int totalAppliedDamage = absorbedDamage + appliedHealthDamage;
 
-            if (totalAppliedDamage <= 0) return 0;
-
-            if (appliedHealthDamage > 0)
+            // 불사 세트 로직: 치명적인 피해를 입을 때 개입
+            // 이번 피해로 체력이 0 이하가 될 상황이라면
+            if (remainingDamage >= CurrentHealth)
             {
-                HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth);
-
-                // 흡혈 적용 : 내 피가 깎인 만큼 공격자에게 피를 채움
-                if (attacker != null && attacker.Health != null)
+                // 이미 불사 상태가 켜져 있는 중이라면
+                if (Time.time < immortalityEndTime)
                 {
-                    attacker.Health.ApplyLifeStealFromDamage(appliedHealthDamage);
-
-                    // 추가 : 내가 맞았으니, 날 때린 공격자의 스택을 1 올려줌
-                    attacker.Health.AddAttackStack(owner);
+                    remainingDamage = CurrentHealth - 1; // 강제로 체력을 1만 남김
                 }
-
-                // 추가 : 처형 세트 (체력 5% 이하 즉사 기믹)
-                if (attacker != null && attacker.HeroInstance != null)
+                // 불사를 아직 안 썼고, 불사 세트를 장착했다면 발동
+                else if (!hasTriggeredImmortality && owner != null && owner.HeroInstance != null)
                 {
-                    int executeSetCount = attacker.HeroInstance.GetSetCount(ExecuteSetName);
-
-                    if (executeSetCount >= 2) // 2세트 이상일 때 발동
+                    int immortalSetCount = owner.HeroInstance.GetSetCount(ImmortalSetName);
+                    if (immortalSetCount >= 2)
                     {
-                        float hpPercent = (float)CurrentHealth / MaxHealth;
-                        // 4세트면 10% 이하, 2세트면 5% 이하일 때 즉사
-                        float executeThreshold = (executeSetCount >= 4) ? 0.10f : 0.05f;
+                        hasTriggeredImmortality = true; // 1회 발동 체크
 
-                        // 기준 체력 이하로 떨어졌고, 아직 살아있다면 처형!
-                        if (hpPercent <= executeThreshold && CurrentHealth > 0)
-                        {
-                            Debug.Log($"<color=purple>[처형 발동!]</color> {owner.name}의 체력이 {executeThreshold * 100}% 이하가 되어 즉사합니다!");
-                            owner.Stats.ApplyDamage(CurrentHealth); // 남은 체력만큼 피해를 줘서 확인 사살
-                            HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth);
-                        }
+                        // 4세트면 5초, 2세트면 3초 유지
+                        float duration = (immortalSetCount >= 4) ? 5f : 3f;
+                        immortalityEndTime = Time.time + duration;
+
+                        remainingDamage = CurrentHealth - 1; // 이번 공격도 체력 1 남김
+                        Debug.Log($"<color=yellow>[불사 발동!]</color> {owner.name}이(가) 치명상을 버티고 {duration}초 동안 불사 상태가 됩니다!");
                     }
                 }
             }
 
-            if (logDamage)
-            {
-                bool isUltimateDamage =
-               attacker != null &&
-               battleManager != null &&
-               battleManager.CurrentUltimateUnit ==
-               attacker;
+                int appliedHealthDamage = owner.Stats.ApplyDamage(remainingDamage);
+                int totalAppliedDamage = absorbedDamage + appliedHealthDamage;
 
-                // 일반 공격은 기존 logDamage 설정을 사용하고,
-                // 궁극기는 시전자의 궁극기 디버그 설정을 사용합니다.
-                bool shouldLogDamage =
-                    isUltimateDamage
-                        ? ShouldLogUltimateResult(attacker)
-                        : logDamage;
 
-                if (shouldLogDamage)
+
+                if (totalAppliedDamage <= 0) return 0;
+
+                if (appliedHealthDamage > 0)
                 {
-                    string attackerName =
-                        attacker != null
-                            ? attacker.name
-                            : "Unknown";
+                    HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth);
 
-                    string damageType =
-                        isUltimateDamage
-                            ? "궁극기 피해"
-                            : "피해";
+                    // 흡혈 적용 : 내 피가 깎인 만큼 공격자에게 피를 채움
+                    if (attacker != null && attacker.Health != null)
+                    {
+                        attacker.Health.ApplyLifeStealFromDamage(appliedHealthDamage);
 
-                    string color =
-                        isUltimateDamage
-                            ? "#FF6B6B"
-                            : "white";
+                        // 추가 : 내가 맞았으니, 날 때린 공격자의 스택을 1 올려줌
+                        attacker.Health.AddAttackStack(owner);
+                    }
 
-                    Debug.Log(
-                        $"<color={color}>[{damageType}]</color> " +
-                        $"{attackerName} → {owner.name} / " +
-                        $"총 적용 피해: {totalAppliedDamage} / " +
-                        $"체력 피해: {appliedHealthDamage} / " +
-                        $"보호막 흡수: {absorbedDamage} / " +
-                        $"대상 HP: {CurrentHealth}/{MaxHealth}",
-                        owner);
+                    // 추가 : 처형 세트 (체력 5% 이하 즉사 기믹)
+                    if (attacker != null && attacker.HeroInstance != null)
+                    {
+                        int executeSetCount = attacker.HeroInstance.GetSetCount(ExecuteSetName);
+
+                        if (executeSetCount >= 2) // 2세트 이상일 때 발동
+                        {
+                            float hpPercent = (float)CurrentHealth / MaxHealth;
+                            // 4세트면 10% 이하, 2세트면 5% 이하일 때 즉사
+                            float executeThreshold = (executeSetCount >= 4) ? 0.10f : 0.05f;
+
+                            // 기준 체력 이하로 떨어졌고, 아직 살아있다면 처형!
+                            if (hpPercent <= executeThreshold && CurrentHealth > 0)
+                            {
+                                Debug.Log($"<color=purple>[처형 발동!]</color> {owner.name}의 체력이 {executeThreshold * 100}% 이하가 되어 즉사합니다!");
+                                owner.Stats.ApplyDamage(CurrentHealth); // 남은 체력만큼 피해를 줘서 확인 사살
+                                HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth);
+                            }
+                        }
+                    }
                 }
-            }
 
-            // 부활 적용 구간 (죽었을 때 1회 부활)
-            if (!owner.Stats.IsAlive && !TryReviveFromSet())
-            {
-                Die();
-            }
+                if (logDamage)
+                {
+                    bool isUltimateDamage =
+                   attacker != null &&
+                   battleManager != null &&
+                   battleManager.CurrentUltimateUnit ==
+                   attacker;
 
-            if (owner.Stats.IsAlive)
-            {
-                owner.Energy?.GainFromDamageTake();
-            }
+                    // 일반 공격은 기존 logDamage 설정을 사용하고,
+                    // 궁극기는 시전자의 궁극기 디버그 설정을 사용합니다.
+                    bool shouldLogDamage =
+                        isUltimateDamage
+                            ? ShouldLogUltimateResult(attacker)
+                            : logDamage;
 
-            return totalAppliedDamage;
+                    if (shouldLogDamage)
+                    {
+                        string attackerName =
+                            attacker != null
+                                ? attacker.name
+                                : "Unknown";
+
+                        string damageType =
+                            isUltimateDamage
+                                ? "궁극기 피해"
+                                : "피해";
+
+                        string color =
+                            isUltimateDamage
+                                ? "#FF6B6B"
+                                : "white";
+
+                        Debug.Log(
+                            $"<color={color}>[{damageType}]</color> " +
+                            $"{attackerName} → {owner.name} / " +
+                            $"총 적용 피해: {totalAppliedDamage} / " +
+                            $"체력 피해: {appliedHealthDamage} / " +
+                            $"보호막 흡수: {absorbedDamage} / " +
+                            $"대상 HP: {CurrentHealth}/{MaxHealth}",
+                            owner);
+                    }
+                }
+
+                // 부활 적용 구간 (죽었을 때 1회 부활)
+                if (!owner.Stats.IsAlive && !TryReviveFromSet())
+                {
+                    Die();
+                }
+
+                if (owner.Stats.IsAlive)
+                {
+                    owner.Energy?.GainFromDamageTake();
+                }
+
+                return totalAppliedDamage;
+            
         }
 
         // 회피

@@ -117,6 +117,67 @@ public class EquipmentManager : MonoBehaviour
 
         equipmentInventory.Clear(); // 판 뒤에는 가방을 싹 비웁니다.
     }
+
+    // ==========================
+    // 개별 장비 판매
+    // ==========================
+    public void SellEquipment(EquipmentInstance itemToSell)
+    {
+        // 가방에 없는 아이템이거나 비어있으면 취소
+        if (itemToSell == null || !equipmentInventory.Contains(itemToSell)) return;
+
+        int earnedGold = 0;
+
+        // 등급에 따라 골드 차등 지급 (에픽 1000, 레어 300, 노말 100)
+        if (itemToSell.Grade == EquipmentGrade.Epic) earnedGold = 1000;
+        else if (itemToSell.Grade == EquipmentGrade.Rare) earnedGold = 300;
+        else earnedGold = 100;
+
+        // 플레이어에게 골드 지급
+        if (AFKHero.Player.PlayerManager.Instance != null)
+        {
+            AFKHero.Player.PlayerManager.Instance.AddGold(earnedGold);
+        }
+
+        // 가방에서 해당 아이템만 빼서 삭제
+        equipmentInventory.Remove(itemToSell);
+
+        Debug.Log($"<color=orange>[장비 판매]</color> {itemToSell.BaseData.equipmentName}을(를) 팔고 {earnedGold}골드를 얻었습니다!");
+    }
+
+    // ==========================
+    // 다중 선택 장비 판매 
+    // ==========================
+    public void SellSelectedEquipments(List<EquipmentInstance> itemsToSell)
+    {
+        if (itemsToSell == null || itemsToSell.Count == 0) return;
+
+        int totalEarnedGold = 0;
+        int sellCount = 0;
+
+        foreach (var item in itemsToSell)
+        {
+            if (equipmentInventory.Contains(item))
+            {
+                // 등급에 따른 골드 합산
+                if (item.Grade == EquipmentGrade.Epic) totalEarnedGold += 1000;
+                else if (item.Grade == EquipmentGrade.Rare) totalEarnedGold += 300;
+                else totalEarnedGold += 100;
+
+                equipmentInventory.Remove(item);
+                sellCount++;
+            }
+        }
+
+        // 플레이어에게 총 골드 지급
+        if (AFKHero.Player.PlayerManager.Instance != null)
+        {
+            AFKHero.Player.PlayerManager.Instance.AddGold(totalEarnedGold);
+        }
+
+        Debug.Log($"<color=orange>[선택 판매]</color> 장비 {sellCount}개를 팔고 {totalEarnedGold}골드를 얻었습니다!");
+    }
+
     // ===============================
     // 스마트 일괄 장착 시스템
     // ===============================
@@ -194,6 +255,7 @@ public class EquipmentManager : MonoBehaviour
         if (equipmentID.Contains("EvadeSet")) return "EvadeSet";
         if (equipmentID.Contains("ExecuteSet")) return "ExecuteSet";
         if (equipmentID.Contains("ReviveSet")) return "ReviveSet";
+        if (equipmentID.Contains("ImmortalSet")) return "ImmortalSet";
         return "";
     }
 
@@ -202,12 +264,12 @@ public class EquipmentManager : MonoBehaviour
     {
         float score = 0;
 
-        // [1순위] 장비의 순수 등급 점수
+        // 1순위 : 장비의 순수 등급 점수
         if (equip.Grade == EquipmentGrade.Epic) score += 50000;
         else if (equip.Grade == EquipmentGrade.Rare) score += 20000;
         else score += 5000;
 
-        // [2순위] 세트 효과 점수 (이 세트가 2부위 이상 맞춰질 수 있을 때만 점수)
+        // 2순위 : 세트 효과 점수
         if (maxPossibleSetCount >= 2)
         {
             string equipName = equip.BaseData.equipmentID;
@@ -218,6 +280,7 @@ public class EquipmentManager : MonoBehaviour
             else if (equipName.Contains("EvadeSet")) setBonus = 3000;
             else if (equipName.Contains("ExecuteSet")) setBonus = 2000;
             else if (equipName.Contains("ReviveSet")) setBonus = 1000;
+            else if (equipName.Contains("ImmortalSet")) setBonus = 1500;
 
             // 만약 4세트 풀셋이 가능하다면? 세트 가중치를 2배로 줘서 풀셋을 우선적으로 장착하도록 유도
             if (maxPossibleSetCount >= 4) setBonus *= 2;
@@ -225,7 +288,7 @@ public class EquipmentManager : MonoBehaviour
             score += setBonus;
         }
 
-        // [3순위] 깡스탯 점수 (세트를 못 맞추면 위 2순위 점수는 0점이 되고, 오직 이 스탯 점수로만 비교)
+        // 3순위 : 깡스탯 점수
         score += equip.HP * 1f;
         score += equip.Attack * 5f;
         score += equip.Defense * 4f;
