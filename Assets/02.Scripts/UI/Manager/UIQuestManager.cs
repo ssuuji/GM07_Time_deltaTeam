@@ -111,6 +111,12 @@ namespace AFKHero.UI
         //퀘스트창 열기버튼
         public void OnClickedOpenQuest()
         {
+            //메인 탭이 열려있다면 먼저 닫기
+            if (UIManager.Instance != null && UIManager.Instance.TryCloseMainTab())
+            {
+                return;
+            }
+
             questPanel.SetActive(true);
             backButton.gameObject.SetActive(true);
 

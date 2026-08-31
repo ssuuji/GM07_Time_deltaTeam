@@ -76,10 +76,24 @@ namespace AFKHero.UI
             OpenView(UIMainTab.None);
         }
 
-        //현재 열려있는 메인 탭 닫기
+        //현재 열려있는 메인 탭 닫기 (public) .. 그냥 하나로 합칠까,.?
         public void CloseView()
         {
             CloseCurrentView();
+        }
+
+        //현재 메인 탭이 열려있다면 닫기
+        public bool TryCloseMainTab()
+        {
+            //열려있는 메인 탭이 없다면
+            if (CurrentView == UIMainTab.None)
+            {
+                return false;
+            }
+
+            CloseCurrentView();
+
+            return true;
         }
 
         #region 메인 탭 아이콘
