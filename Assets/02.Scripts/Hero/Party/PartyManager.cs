@@ -116,6 +116,9 @@ public class PartyManager : MonoBehaviour
                 activeSynergyDescriptions.Add($"{race} 2명: 파티 전체 공격력 10% 증가");
             }
         }
+
+        //현재 파티 총 공격력 갱신
+        AFKHero.Player.PlayerManager.Instance?.UpdatePartyPower();
     }
 
     // =========================================
