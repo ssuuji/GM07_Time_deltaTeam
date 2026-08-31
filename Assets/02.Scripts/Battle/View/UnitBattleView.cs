@@ -114,10 +114,52 @@ namespace AFKHero.Battle
 
             if(damageTextPrefab != null)
             {
-                DamageTextView damageText = Instantiate(damageTextPrefab);
+                DamageTextView damageText = SpawnDamageText();
 
-                damageText.Play(appliedDamage, damageTextAnchor.position);
+                if (damageText != null)
+                {
+                    damageText.Play(appliedDamage, damageTextAnchor.position);
+                }
             }
+        }
+
+        private DamageTextView SpawnDamageText()
+        {
+            if (damageTextPrefab == null)
+            {
+                return null;
+            }
+
+            Vector3 spawnPosition = damageTextAnchor != null ? damageTextAnchor.position : transform.position;
+
+            // PoolManager가 없으면 기존 생성 방식을 사용
+            if (PoolManager.Instance == null)
+            {
+                return Instantiate(damageTextPrefab, spawnPosition, Quaternion.identity);
+            }
+
+            GameObject pooledObject = PoolManager.Instance.SpawnFromPool(
+                damageTextPrefab.gameObject,
+                spawnPosition,
+                Quaternion.identity);
+
+            DamageTextView damageText = pooledObject.GetComponent<DamageTextView>();
+
+            if (damageText != null)
+            {
+                return damageText;
+            }
+
+            Debug.LogError("[UnitBattleView] 풀에서 생성한 오브젝트에 DamageTextView가 없습니다.", pooledObject);
+
+            Poolable poolable = pooledObject.GetComponent<Poolable>();
+
+            if (poolable != null)
+            {
+                poolable.Release();
+            }
+
+            return null;
         }
 
         private void HandleUltimateStarted(BattleUnit ultimateUser)
@@ -179,11 +221,11 @@ namespace AFKHero.Battle
         // : 추가회피 신호를 들었을 때 텍스트를 띄워주는 함수
         private void HandleEvaded(BattleUnit target)
         {
-            if (damageTextPrefab != null)
-            {
-                DamageTextView damageText = Instantiate(damageTextPrefab);
+            DamageTextView damageText = SpawnDamageText();
 
-                damageText.PlayText("회피!", damageTextAnchor.position, Color.green);
+            if (damageText != null)
+            {
+                damageText.PlayText("회피!", damageTextAnchor.position, Color.blue);
             }
         }
 

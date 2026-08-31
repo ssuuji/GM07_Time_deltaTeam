@@ -16,52 +16,54 @@ namespace AFKHero.Battle
         [SerializeField, Min(0f)]
         private float riseDistance = 0.8f;
 
-        private Color originalColor;
+        private Color defaultColor;
+        private Color playbackColor;
 
         private void Awake()
         {
-            if(damageText == null)
+            if (damageText == null)
             {
                 damageText = GetComponentInChildren<TMP_Text>(true);
             }
 
-            if(damageText != null)
+            if (damageText != null)
             {
-                originalColor = damageText.color;
+                defaultColor = damageText.color;
+                playbackColor = defaultColor;
             }
         }
 
         public void Play(int damageAmount, Vector3 worldPosition)
         {
-            if(damageText == null)
-            {
-                Debug.LogError("[DamageTextView] TMP_Text가 연결되지 않았습니다.", this);
-
-                Destroy(gameObject);
-                return;
-            }
-
-            transform.position = worldPosition;
-            damageText.text = $"{damageAmount}";
-            damageText.color = originalColor;
-
-            StartCoroutine(PlayRoutine());
+            BeginPlayback($"{damageAmount}", worldPosition, defaultColor);
         }
 
         public void PlayText(string textMessage, Vector3 worldPosition, Color customColor)
         {
+            BeginPlayback(textMessage, worldPosition, customColor);
+        }
+
+        private void BeginPlayback(
+            string textMessage,
+            Vector3 worldPosition,
+            Color textColor)
+        {
             if (damageText == null)
             {
-                Destroy(gameObject);
+                Debug.LogError("[DamageTextView] TMP_Text가 연결되지 않았습니다.", this);
+                ReleaseOrDestroy();
                 return;
             }
 
-            transform.position = worldPosition;
-            damageText.text = textMessage; // 전달받은 글자 입력
+            // 풀에서 재사용될 때 이전 재생 상태가 남지 않도록 초기화
+            StopAllCoroutines();
 
-            // 애니메이션에서 자연스럽게 투명해지도록 기준 색상을 변경
-            originalColor = customColor;
-            damageText.color = originalColor;
+            transform.position = worldPosition;
+            damageText.text = textMessage;
+
+            playbackColor = textColor;
+            playbackColor.a = 1f;
+            damageText.color = playbackColor;
 
             StartCoroutine(PlayRoutine());
         }
@@ -81,15 +83,30 @@ namespace AFKHero.Battle
 
                 transform.position = Vector3.Lerp(startPosition, endPosition , progress);
 
-                Color currentColor = originalColor;
+                Color currentColor = playbackColor;
                 currentColor.a = 1f - progress;
                 damageText.color = currentColor;
 
                 yield return null;
             }
 
+            ReleaseOrDestroy();
+        }
+        private void ReleaseOrDestroy()
+        {
+            Poolable poolable = GetComponent<Poolable>();
+
+            // PoolManager를 통해 생성된 오브젝트만 풀로 반환
+            if (PoolManager.Instance != null &&
+                poolable != null &&
+                !string.IsNullOrEmpty(poolable.poolKey))
+            {
+                poolable.Release();
+                return;
+            }
+
+            // 독립 테스트처럼 PoolManager 없이 생성된 경우에는 기존 방식으로 제거
             Destroy(gameObject);
         }
-
     }
 }
