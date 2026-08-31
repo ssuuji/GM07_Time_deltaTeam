@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using AFKHero.UI;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -16,9 +17,11 @@ using UnityEngine.Rendering;
 
 public class StagePreviewer : MonoBehaviour
 {
-    //"프리뷰 패널"과 "소환할 위치"만 설정해주시면 됩니다.
-    [Header("프리뷰 패널")]
-    [SerializeField] private RectTransform stagePreviewPanel;
+    ////"프리뷰 패널"과 "소환할 위치"만 설정해주시면 됩니다.
+    //[Header("프리뷰 패널")]
+    //[SerializeField] private RectTransform stagePreviewPanel;         // -> 버튼연결부분 -> UIManager로 옮겼습니다
+    //private bool isPanelOpened = false;
+
 
     //소환할 위치. 프리뷰 패널 프리팹에 5개 있습니다.
     [Header("소환할 위치")]
@@ -27,9 +30,8 @@ public class StagePreviewer : MonoBehaviour
     [Header("프리팹 복사본 리스트")]
     [SerializeField] private List<GameObject> copiedPrefabs;
 
-    private bool isPanelOpened = false;
-
-    private void Awake()
+    /*                                                                 //버튼연결부분 -> UIManager로 옮겼습니다
+    private void Awake()                                               //OnEnable , OnDisable : 전투프리뷰 패널이 열리고 닫힐때 실행되도록 추가했습니다
     {
         TogglePreviewPanel(isPanelOpened);
     }
@@ -72,6 +74,21 @@ public class StagePreviewer : MonoBehaviour
         }
 
     }
+    */
+
+    //전투 프리뷰 패널이 열렸을 때
+    private void OnEnable()
+    {
+        ShowEnemyPrefab();
+    }
+
+    //전투 프리뷰 패널이 닫혔을 때
+    private void OnDisable()
+    {
+        ClearEnemyPrefab();
+    }
+
+
 
     private void ShowEnemyPrefab()
     {
@@ -138,9 +155,11 @@ public class StagePreviewer : MonoBehaviour
     //패널의 "전투 시작" 버튼을 눌렀을 때 실행할 메서드
     public void OnClickedStartStageButton()
     {
-        //값을 false로 바꿔 프리뷰 패널을 닫습니다.
-        isPanelOpened = false;
-        TogglePreviewPanel(isPanelOpened);
+        //값을 false로 바꿔 프리뷰 패널을 닫습니다.         //버튼연결부분 -> UIManager로 옮겼습니다
+        //isPanelOpened = false;
+        //TogglePreviewPanel(isPanelOpened);
+
+        UIManager.Instance.CloseView();     //전투 프리뷰 패널 닫기
 
         //StageManager의 StartStage를 호출합니다.
         StageManager.Instance.StartStage();
