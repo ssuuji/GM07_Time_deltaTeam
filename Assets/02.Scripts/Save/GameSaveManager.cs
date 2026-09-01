@@ -3,6 +3,7 @@ using AFKHero.Quest;
 using AFKHero.Save;
 using AFKHero.Scene;
 using AFKHero.Shop;
+using AFKHero.Sound;
 using AFKHero.UI;
 using Newtonsoft.Json;
 using System.IO;
@@ -165,6 +166,12 @@ public class GameSaveManager : MonoBehaviour
             saveData.equipmentSaveData = EquipmentManager.Instance.CreateEquipmentSaveData();
         }
 
+        //사운드
+        if (SoundManager.Instance != null)
+        {
+            saveData.soundSaveData = SoundManager.Instance.CreateSoundSaveData();
+        }
+
         return saveData;
     }
 
@@ -286,7 +293,25 @@ public class GameSaveManager : MonoBehaviour
             EquipmentManager.Instance.LoadEquipmentSaveData(loadedSaveData.equipmentSaveData);
         }
 
+        //사운드
+        if (SoundManager.Instance != null && loadedSaveData.soundSaveData != null)
+        {
+            SoundManager.Instance.LoadSoundSaveData(loadedSaveData.soundSaveData);
+        }
+
         Debug.Log("[GameSaveManager] 저장 데이터 적용 완료");
+    }
+
+    //사운드 데이터 적용
+    public void ApplySoundSaveData()
+    {
+        if (loadedSaveData == null)
+            return;
+
+        if (SoundManager.Instance != null && loadedSaveData.soundSaveData != null)
+        {
+            SoundManager.Instance.LoadSoundSaveData(loadedSaveData.soundSaveData);
+        }
     }
 
     #endregion
