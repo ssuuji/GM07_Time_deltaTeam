@@ -125,7 +125,13 @@ namespace AFKHero.UI
         {
             if (StageManager.Instance == null || currentStageText == null) return;
 
-            if(StageManager.Instance.CurrentStageInfo != null)
+            if (StageManager.Instance.CurrentState == StageState.Idle || StageManager.Instance.CurrentState == StageState.None)
+            {
+                currentStageText.text = "훈련중";
+                return;
+            }
+
+            if (StageManager.Instance.CurrentStageInfo != null)
             {
                 currentStageText.text = $"STAGE {StageManager.Instance.CurrentStageNumber}-{StageManager.Instance.CurrentSectionNumber}";
             }

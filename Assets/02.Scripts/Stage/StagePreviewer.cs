@@ -31,6 +31,15 @@ public class StagePreviewer : MonoBehaviour
     [Header("적 정보 텍스트")]
     [SerializeField] private TMP_Text[] enemyInfoTexts;
 
+    [Header("스테이지 정보")]
+    [SerializeField] private TMP_Text stageInfo;
+    [SerializeField] private GameObject goldRewardObject;
+    [SerializeField] private TMP_Text goldText;
+    [SerializeField] private GameObject diaRewardObject;
+    [SerializeField] private TMP_Text diaText;
+    [SerializeField] private GameObject freeTicketRewardObject;
+    [SerializeField] private TMP_Text freeTicketText;
+
     [Header("프리팹 복사본 리스트")]
     [SerializeField] private List<GameObject> copiedPrefabs;
 
@@ -115,6 +124,9 @@ public class StagePreviewer : MonoBehaviour
             return;
         }
 
+        //UI - 스테이지 정보 표시
+        ShowStageInfo(currentStage);
+
         //StageInfo에 들어있는 적 리스트를 복사해온다.
         List<HeroData> enemies = currentStage.Enemies;
 
@@ -180,5 +192,38 @@ public class StagePreviewer : MonoBehaviour
 
         //StageManager의 StartStage를 호출합니다.
         StageManager.Instance.StartStage();
+    }
+
+    //스테이지 정보 표시 UI
+    private void ShowStageInfo(StageInfo currentStage)
+    {
+        stageInfo.text = $"STAGE {StageManager.Instance.CurrentStageNumber}-{StageManager.Instance.CurrentSectionNumber}";
+
+        //골드
+        bool hasGold = currentStage.ClearGold > 0;
+        goldRewardObject.SetActive(hasGold);
+
+        if (hasGold)
+        {
+            goldText.text = currentStage.ClearGold.ToString();
+        }
+
+        //다이아
+        bool hasDia = currentStage.ClearDia > 0;
+        diaRewardObject.SetActive(hasDia);
+
+        if (hasDia)
+        {
+            diaText.text = currentStage.ClearDia.ToString();
+        }
+
+        //무료 티켓
+        bool hasFreeTicket = currentStage.ClearTicket > 0;
+        freeTicketRewardObject.SetActive(hasFreeTicket);
+
+        if (hasFreeTicket)
+        {
+            freeTicketText.text = currentStage.ClearTicket.ToString();
+        }
     }
 }
