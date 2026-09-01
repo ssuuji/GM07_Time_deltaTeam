@@ -14846,7 +14846,7 @@ PrefabInstance:
     - target: {fileID: 6239012592920240292, guid: ffce08e64c369bc4ba887a7f415f4e16, type: 3}
       propertyPath: resonanceParticle
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1960329489}
     - target: {fileID: 6239012592920240292, guid: ffce08e64c369bc4ba887a7f415f4e16, type: 3}
       propertyPath: resonanceLevelText
       value: 
@@ -39567,6 +39567,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1955361680}
   m_CullTransparentMesh: 1
+--- !u!198 &1960329489 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 6949683493495134619, guid: e245e431b7ec4c64ab93b7315f9b654b, type: 3}
+  m_PrefabInstance: {fileID: 929887391}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1963574242
 GameObject:
   m_ObjectHideFlags: 0
