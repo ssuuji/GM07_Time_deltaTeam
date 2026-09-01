@@ -1,5 +1,6 @@
 ﻿using AFKHeroPlayerManager = AFKHero.Player.PlayerManager;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AFKHero.Save
@@ -15,6 +16,9 @@ namespace AFKHero.Save
 
         public int OfflineMinutes => offlineMinutes;
         public int RewardGold => rewardGold;
+
+        // 오프라인 동안 쌓인 장비들을 임시로 담아둘 리스트
+        public List<EquipmentInstance> rewardEquipments = new List<EquipmentInstance>();
 
         private void Awake()
         {
@@ -44,6 +48,30 @@ namespace AFKHero.Save
             int calculatedGold = offlineMinutes * goldPerMinute; //이번 방치 골드
 
             rewardGold += calculatedGold; //방치 보상 골드에 추가
+
+            // ==========================================
+            // 1시간당 장비 1~4개 랜덤 드랍 계산
+            // ==========================================
+            int offlineHours = offlineMinutes / 60; // 몇 시간 지났는지 계산
+            int equipDropCount = 0;
+
+            for (int i = 0; i < offlineHours; i++)
+            {
+                equipDropCount += UnityEngine.Random.Range(1, 5); // 1시간마다 1~4개 누적
+            }
+
+            // Resources/Equipments 폴더 안의 모든 장비 원본 데이터를 가져옵니다.
+            EquipmentData[] allEquips = Resources.LoadAll<EquipmentData>("Equipments");
+
+            if (allEquips.Length > 0 && equipDropCount > 0)
+            {
+                for (int i = 0; i < equipDropCount; i++)
+                {
+                    // 랜덤으로 하나 뽑아서 인스턴스 생성 후 리스트에 담기
+                    EquipmentData randomData = allEquips[UnityEngine.Random.Range(0, allEquips.Length)];
+                    rewardEquipments.Add(new EquipmentInstance(randomData));
+                }
+            }
         }
 
         //분당 방치 골드 계산
@@ -76,11 +104,22 @@ namespace AFKHero.Save
         //방치 보상 수령
         public void ClaimReward()
         {
-            if (rewardGold <= 0) return;
+            // 장비 보상이 있을 수도 있으니 조건식 변경
+            if (rewardGold <= 0 && rewardEquipments.Count == 0) return;
 
             AFKHeroPlayerManager.Instance.AddGold(rewardGold); //방치 골드 지급
 
+            // 보관해둔 장비들을 실제 가방에 넣기
+            if (EquipmentManager.Instance != null)
+            {
+                foreach (var equip in rewardEquipments)
+                {
+                    EquipmentManager.Instance.AddEquipment(equip);
+                }
+            }
+
             rewardGold = 0; //수령 후 초기화
+            rewardEquipments.Clear(); // 수령 후 장비 리스트도 싹 비워주기
 
             GameSaveManager.Instance.SaveGame();
         }

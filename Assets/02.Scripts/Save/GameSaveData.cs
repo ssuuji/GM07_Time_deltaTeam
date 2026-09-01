@@ -14,6 +14,7 @@ public class GameSaveData
     public QuestSaveData questSaveData;
     public OfflineRewardSaveData offlineRewardSaveData;
     public CollectionSaveData collectionSaveData;
+    public EquipmentSaveData equipmentSaveData;
 }
 
 //스테이지
@@ -102,4 +103,23 @@ public class CollectionSaveData
 {
     public List<int> collectedHeroIDs = new List<int>();    
     public List<int> claimedRewardCounts = new List<int>(); 
+}
+
+//장비
+[Serializable]
+public class EquipmentSaveData
+{
+    // 가방에 있는 장비 리스트
+    public List<EquipItemSaveData> inventoryEquips = new List<EquipItemSaveData>();
+}
+
+[Serializable]
+public class EquipItemSaveData
+{
+    public string equipmentID;
+    public int grade;
+    public int enhanceLevel;
+    public int attack;
+    public int defense;
+    public int hp;
 }
