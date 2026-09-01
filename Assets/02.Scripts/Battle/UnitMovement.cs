@@ -4,7 +4,7 @@ namespace AFKHero.Battle
 {
     public class UnitMovement : MonoBehaviour
     {
-        private const float AttackRangeEpsilon = 0.0001f;
+        private float AttackRangeEpsilon = 0.0001f;
 
         private BattleUnit owner;
 
@@ -12,35 +12,30 @@ namespace AFKHero.Battle
 
         private UnitTargetFinder targetFinder;
 
-        public bool IsTargetInAttackRange
+        // 공격할 대상을 직접 받아서 검사
+        public bool IsTargetInAttackRange(BattleUnit target)
         {
-            get
-            {
-                if (!TryGetTargetDistanceData(out Vector2 difference, out float attackRange))
-                {
-                    return false;
-                }
-
-                return IsAttackRange(difference, attackRange);
-            }
-        }
-
-        private bool TryGetTargetDistanceData(out Vector2 difference, out float attackRange)
-        {
-            difference = Vector2.zero;
-            attackRange = 0f;
-
-            if (owner == null ||
-                owner.Stats == null ||
-                targetFinder == null ||
-                !targetFinder.HasValidTarget)
+            if (!TryGetTargetDistanceData(target, out Vector2 difference, out float effectiveAttackRange))
             {
                 return false;
             }
 
-            BattleUnit target = targetFinder.CurrentTarget;
+            return IsAttackRange(difference, effectiveAttackRange);
+        }
 
-            if (target == null)
+        private bool TryGetTargetDistanceData(
+            BattleUnit target,
+            out Vector2 difference,
+            out float effectiveAttackRange)
+        {
+            difference = Vector2.zero;
+            effectiveAttackRange = 0f;
+
+            if (owner == null ||
+                owner.Stats == null ||
+                target == null ||
+                target.Stats == null ||
+                !target.Stats.IsAlive)
             {
                 return false;
             }
@@ -49,16 +44,17 @@ namespace AFKHero.Battle
             Vector2 targetPosition = target.transform.position;
 
             difference = targetPosition - currentPosition;
-            attackRange = Mathf.Max(0f, owner.Stats.AttackRange);
+
+            // 기본 공격 사거리에 작은 여유 범위를 더해 경계값에서 공격이 막히는 현상 방지
+            effectiveAttackRange = Mathf.Max(0f, owner.Stats.AttackRange) + AttackRangeEpsilon;
 
             return true;
         }
 
-        private static bool IsAttackRange(Vector2 difference, float attackRange)
+        private static bool IsAttackRange(Vector2 difference, float effectiveAttackRange)
         {
-            float attackRangeSqr = attackRange * attackRange;
-
-            return difference.sqrMagnitude <= attackRangeSqr + AttackRangeEpsilon;
+            float effectiveAttackRangeSqr = effectiveAttackRange * effectiveAttackRange;
+            return difference.sqrMagnitude <= effectiveAttackRangeSqr;
         }
 
         public void Initialize(BattleUnit unitOwner, BattleManager manager, UnitTargetFinder finder)
@@ -102,18 +98,20 @@ namespace AFKHero.Battle
             }
 
             // 이미 사거리 안 이라면 공격하는 동안 이동 X
-            return !IsTargetInAttackRange;
+            return !IsTargetInAttackRange(targetFinder.CurrentTarget);
         }
 
         // 타겟을 향해 이동 및 공격 사거리에 들어오면 정지
         private void MoveTowardTarget()
         {
-            if (!TryGetTargetDistanceData(out Vector2 direction, out float attackRange))
+            BattleUnit target = targetFinder.CurrentTarget;
+
+            if (!TryGetTargetDistanceData(target, out Vector2 direction, out float effectiveAttackRange))
             {
                 return;
             }
 
-            if (IsAttackRange(direction, attackRange))
+            if (IsAttackRange(direction, effectiveAttackRange))
             {
                 return;
             }
@@ -125,10 +123,8 @@ namespace AFKHero.Battle
                 return;
             }
 
-            BattleUnit target = targetFinder.CurrentTarget;
-
             float maximumMoveDistance = owner.Stats.MoveSpeed * Time.deltaTime;
-            float distanceUntilAttackRange = Mathf.Max(0f, distance - attackRange);
+            float distanceUntilAttackRange = Mathf.Max(0f, distance - effectiveAttackRange);
             float moveDistance = Mathf.Min(maximumMoveDistance, distanceUntilAttackRange);
 
             Vector2 normalizedDirection = direction / distance;
