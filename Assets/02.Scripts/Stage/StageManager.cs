@@ -145,9 +145,6 @@ public class StageManager : MonoBehaviour
         //이게 어디선가에선 호출되어야 계속 currentStageInfo가 교체되는 건데, 그게 대체 어디냐고.
         currentStageInfo = stageData.GetStage(currentStageNumber, currentSectionNumber);
 
-        //현재 스테이지 UI 갱신
-        UIBattleManager.Instance?.UpdateStageUI();
-
         if (currentStageInfo == null) // 스테이지 데이터가 없으면 진행 중단
         {
             Debug.Log("[StageManager] : StageInfo가 셋팅되지 않았거나 마지막 스테이지를 클리어했습니다.");
@@ -394,6 +391,9 @@ public class StageManager : MonoBehaviour
 
         //이벤트 호출
         StageStateChanged?.Invoke(currentState);
+
+        //현재 스테이지 UI 갱신
+        UIBattleManager.Instance?.UpdateStageUI();
     }
 
     #region 세이브/ 로드
