@@ -21,8 +21,24 @@ public enum StageState //스테이지 매니저의 상태 측정용
 
 /////////////////////////////////
 
+/////////////////////////////////
+//////////// 사운드 /////////////
+public enum SoundKey 
+{
+    // BGM
+    BGM_Title,
+    BGM_Idle,
+    BGM_Stage,
 
+    //UI
+    UI_ButtonSelect,
+    UI_ButtonClose,
 
+    //Battle
+    // ..등등 추가
+}
+
+/////////////////////////////////
 /////////////////////////////////
 //////////// Scene //////////////
 namespace AFKHero.Scene

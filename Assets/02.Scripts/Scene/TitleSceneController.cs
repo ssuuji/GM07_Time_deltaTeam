@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using AFKHero.Sound;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -22,7 +23,10 @@ namespace AFKHero.Scene
             if (GameSaveManager.Instance != null)
             {
                 GameSaveManager.Instance.LoadSaveData();
+                GameSaveManager.Instance.ApplySoundSaveData();
             }
+
+            SoundManager.Instance?.PlayBGM(SoundKey.BGM_Title);
 
             PlayTitle(); //타이틀 연출 시작
         }

@@ -15,6 +15,7 @@ public class GameSaveData
     public OfflineRewardSaveData offlineRewardSaveData;
     public CollectionSaveData collectionSaveData;
     public EquipmentSaveData equipmentSaveData;
+    public SoundSaveData soundSaveData;
 }
 
 //스테이지
@@ -122,4 +123,13 @@ public class EquipItemSaveData
     public int attack;
     public int defense;
     public int hp;
+}
+
+//사운드
+[Serializable]
+public class SoundSaveData
+{
+    public float masterVolume;
+    public float bgmVolume;
+    public float sfxVolume;
 }
