@@ -1,7 +1,8 @@
-﻿using AFKHeroPlayerManager = AFKHero.Player.PlayerManager;
+﻿using AFKHero.Battle;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using AFKHeroPlayerManager = AFKHero.Player.PlayerManager;
 
 namespace AFKHero.Quest
 {
@@ -14,6 +15,9 @@ namespace AFKHero.Quest
     public class QuestManager : MonoBehaviour
     {
         public static QuestManager Instance { get; private set; }
+
+        [Header("적 처치 관련 퀘스트")]
+        [SerializeField] private BattleManager battleManager;
 
         //전체 퀘스트 (Assets/03.Data/Resources/Quest 에 생성되어있는 퀘스트SO)
         private QuestData[] questDataList; 
@@ -42,7 +46,14 @@ namespace AFKHero.Quest
 
         private void Start()
         {
-            AddProgress(QuestConditionType.DailyLogin); //테스트 ( 일일접속 퀘스트 진행도 관련 )
+            AddProgress(QuestConditionType.DailyLogin); //일일접속
+
+            battleManager.UnitDied += OnUnitDied; //적 처치
+        }
+
+        private void OnDestroy()
+        {
+            battleManager.UnitDied -= OnUnitDied;
         }
 
         #region 퀘스트 초기화
@@ -275,7 +286,6 @@ namespace AFKHero.Quest
         }
 
         //스테이지 클리어 퀘스트 (스테이지와 섹션 비교를 위해 별도처리)
-        //스테이지 클리어
         public void OnStageClear(int stageNumber, int sectionNumber)
         {
             if (isMainQuestAllCompleted) return;
@@ -292,6 +302,14 @@ namespace AFKHero.Quest
             currentMainQuestCount = currentQuest.TargetCount; //메인 퀘스트 완료
 
             OnQuestChanged?.Invoke(); //퀘스트 UI 갱신
+        }
+
+        //적 n회 처치 퀘스트
+        private void OnUnitDied(BattleUnit deadUnit)
+        {
+            if (deadUnit.Team != TeamType.Enemy) return; //아군 사망은 return
+
+            AddProgress(QuestConditionType.EnemyKill);
         }
 
         //다음 메인 퀘스트로 이동
@@ -347,10 +365,8 @@ namespace AFKHero.Quest
                     int lastStage = StageManager.Instance.LastStageNumber;
                     int lastSection = StageManager.Instance.LastSectionNumber;
 
-                    bool isCleared =
-                        lastStage > currentQuest.TargetStageNumber ||
-                        (lastStage == currentQuest.TargetStageNumber &&
-                         lastSection >= currentQuest.TargetSectionNumber);
+                    bool isCleared = lastStage > currentQuest.TargetStageNumber
+                         || (lastStage == currentQuest.TargetStageNumber && lastSection >= currentQuest.TargetSectionNumber);
 
                     if (isCleared)
                     {
