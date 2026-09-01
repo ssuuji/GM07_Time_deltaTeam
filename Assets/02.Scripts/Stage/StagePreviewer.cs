@@ -1,5 +1,6 @@
 ﻿using AFKHero.UI;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -26,6 +27,9 @@ public class StagePreviewer : MonoBehaviour
     //소환할 위치. 프리뷰 패널 프리팹에 5개 있습니다.
     [Header("소환할 위치")]
     [SerializeField] private Transform[] enemyPrefabs;
+
+    [Header("적 정보 텍스트")]
+    [SerializeField] private TMP_Text[] enemyInfoTexts;
 
     [Header("프리팹 복사본 리스트")]
     [SerializeField] private List<GameObject> copiedPrefabs;
@@ -136,6 +140,13 @@ public class StagePreviewer : MonoBehaviour
 
             //소환한 프리팹은 리스트로 등록해둡니다.
             copiedPrefabs.Add(enemy);
+
+
+            //11레벨짜리 적을 StageInfo에 셋팅하는 게 아니라, 소환 시점에서 레벨을 결정하니까...
+            //우선 이대로도 동작은 할 것이므로... 나중에 개선하는 걸로...
+            int enemyLevel = StageCalculator.CalculateEnemyLevel(StageManager.Instance.CurrentStageNumber, StageManager.Instance.CurrentSectionNumber);
+
+            enemyInfoTexts[i].text = $"Lv. {enemyLevel} {enemies[i].HeroName}";
         }        
     }
 
@@ -146,6 +157,12 @@ public class StagePreviewer : MonoBehaviour
         for (int i = 0; i < copiedPrefabs.Count; i++)
         {
             Destroy(copiedPrefabs[i]);
+        }
+
+        //레벨과 이름 표시했던 것도 지움
+        for (int i = 0; i < enemyInfoTexts.Length; i++)
+        {
+            enemyInfoTexts[i].text = "";
         }
 
         //리스트를 초기화

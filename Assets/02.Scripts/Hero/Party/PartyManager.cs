@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PartyManager : MonoBehaviour
@@ -13,6 +14,8 @@ public class PartyManager : MonoBehaviour
     public float totalBonusAttackRate = 0f;
     public float totalBonusHpRate = 0f;
     public List<string> activeSynergyDescriptions = new List<string>();
+
+    public event Action partyChanged;
 
     private void Awake()
     {
@@ -42,6 +45,7 @@ public class PartyManager : MonoBehaviour
 
         partySlots[slotIndex] = hero;
         UpdateSynergy();
+        partyChanged?.Invoke();
     }
 
     // ============================
@@ -60,6 +64,7 @@ public class PartyManager : MonoBehaviour
                 Debug.Log($"[PartyManager] {heroToRemove.data.HeroName} 파티에서 해제됨.");
                 partySlots[i] = null;
                 UpdateSynergy(); // 인원이 빠졌으므로 시너지 즉시 재계산
+                partyChanged?.Invoke();
                 break; // 영웅을 찾아서 뺐으므로 반복문 종료
             }
         }
