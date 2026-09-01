@@ -860,11 +860,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 110.44
+      value: 117.32
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 118.29
+      value: 141.71
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -896,11 +896,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 217.76001
+      value: 216
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -86.87
+      value: -123
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -931,7 +931,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6356818091213238567, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       insertIndex: -1
@@ -14037,6 +14038,10 @@ PrefabInstance:
       propertyPath: plusIconObject
       value: 
       objectReference: {fileID: 255685532}
+    - target: {fileID: 3562762832305684682, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
+      propertyPath: checkmarkObject
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3848525551829292436, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -14107,11 +14112,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 110.44
+      value: 117.32
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 118.29
+      value: 141.71
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -14143,11 +14148,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -224
+      value: -216
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -87.670006
+      value: -123
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -14178,7 +14183,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6356818091213238567, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       insertIndex: -1
@@ -16519,11 +16525,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 110.44
+      value: 117.32
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 118.29
+      value: 141.71
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -16555,11 +16561,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 217.76001
+      value: 216
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 79.729996
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -16590,7 +16596,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6356818091213238567, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       insertIndex: -1
@@ -25895,8 +25902,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e0e1271480e05c4ca714ba6b4f78e3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.UI.UIManager
+  battlePanel: {fileID: 0}
   heroPanel: {fileID: 1349625304}
   shopPanel: {fileID: 602560054}
+  battleIcon: {fileID: 0}
+  heroIcon: {fileID: 0}
+  shopIcon: {fileID: 0}
+  closeIcon: {fileID: 0}
   partyPanel: {fileID: 461947358}
   upgradePanel: {fileID: 1808750564}
   sharePanel: {fileID: 614106041}
@@ -30265,6 +30277,10 @@ PrefabInstance:
       propertyPath: plusIconObject
       value: 
       objectReference: {fileID: 1877174183}
+    - target: {fileID: 3562762832305684682, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
+      propertyPath: checkmarkObject
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3848525551829292436, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -30339,11 +30355,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 110.44
+      value: 117.32
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 118.29
+      value: 141.71
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -30375,11 +30391,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -224
+      value: -216
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 74
+      value: 70.67998
       objectReference: {fileID: 0}
     - target: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -30410,7 +30426,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6356818091213238567, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5089159449658908175, guid: ada3abd9d9993804380474c723ee81aa, type: 3}
       insertIndex: -1
