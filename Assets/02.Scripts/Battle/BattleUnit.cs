@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace AFKHero.Battle
 {
@@ -16,14 +17,14 @@ namespace AFKHero.Battle
         [SerializeField] private UnitStatusEffectController statusEffectController;
 
         [Header("2D Depth")]
-        [SerializeField] private SpriteRenderer[] spriteRenderers;
-
+        [SerializeField] private SortingGroup sortingGroup; //[SerializeField] private SpriteRenderer[] spriteRenderers;
+        
         // 배경과 겹치지 않게
         [SerializeField] private int sortingBaseOrder = 1000;
 
         // Sorting Order 미세 조정
         [SerializeField] private int sortingPrecision = 100;
-
+        
         [Header("유닛 이동 제한 범위")] 
         private Vector2 maximumBattlePosition = new Vector2(2.2f, 3.5f);
         private Vector2 minimumBattlePosition = new Vector2(-2.2f, -1.5f);
@@ -149,9 +150,15 @@ namespace AFKHero.Battle
                 statusEffectController = GetComponent<UnitStatusEffectController>();
             }
 
+            /*
             if (spriteRenderers == null || spriteRenderers.Length == 0)
             {
                 spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+            }
+            */
+            if (sortingGroup == null)
+            {
+                sortingGroup = GetComponentInChildren<SortingGroup>(true);
             }
         }
 
@@ -225,6 +232,15 @@ namespace AFKHero.Battle
         // Y 좌표가 낮으면 스프라이트 sorting order가 아래로 내려가도록 설정
         private void RefreshSortingOrder()
         {
+            if (sortingGroup == null)
+            {
+                return;
+            }
+
+            int order = sortingBaseOrder - Mathf.RoundToInt(transform.position.y * sortingPrecision);
+            sortingGroup.sortingOrder = order;
+            
+            /*
             if(spriteRenderers == null)
             {
                 return;
@@ -239,6 +255,7 @@ namespace AFKHero.Battle
                     spriteRenderers[i].sortingOrder = order + i;
                 }
             }
+            */
         }
 
 #if UNITY_EDITOR
@@ -268,7 +285,7 @@ namespace AFKHero.Battle
             ultimateController = GetComponent<UnitUltimateController>();
             statusEffectController = GetComponent<UnitStatusEffectController>();
 
-            spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+            sortingGroup = GetComponentInChildren<SortingGroup>(true); //spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
         }
 #endif
     }

@@ -114,6 +114,8 @@ namespace AFKHero.UI
         //전투 탭의 주요 UI 전체 갱신
         public void UpdateBattleUI()
         {
+            if (StageManager.Instance?.CurrentState == StageState.Working) return;
+
             UpdateStageUI(); //현재 진행 중인 스테이지 번호 갱신
             UpdatePartyUI(); //현재 파티 편성 정보를 영웅 슬롯 UI에 반영
         }
