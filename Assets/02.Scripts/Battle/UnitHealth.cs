@@ -68,6 +68,11 @@ namespace AFKHero.Battle
         //유닛, 현재 체력, 최대 체력, 전달
         public event Action<BattleUnit, int, int> HealthChanged;
 
+        // 보호막 흡수량과 체력 피해량을 합친 실제 피해량 전달
+        public event Action<BattleUnit, int> DamageApplied;
+
+        // 최대 체력 제한까지 실제로 회복된 수치만 전달
+        public event Action<BattleUnit, int> HealthRestored;
         public void Initialize(BattleUnit unitOwner, BattleManager manager)
         {
             owner = unitOwner;
@@ -219,104 +224,105 @@ namespace AFKHero.Battle
                 }
             }
 
-                int appliedHealthDamage = owner.Stats.ApplyDamage(remainingDamage);
-                int totalAppliedDamage = absorbedDamage + appliedHealthDamage;
+            int appliedHealthDamage = owner.Stats.ApplyDamage(remainingDamage);
+            int totalAppliedDamage = absorbedDamage + appliedHealthDamage;
 
+            if (totalAppliedDamage <= 0) return 0;
 
+            // 보호막 피해를 포함한 총 피해량 전달
+            DamageApplied?.Invoke(owner, totalAppliedDamage);
 
-                if (totalAppliedDamage <= 0) return 0;
+            if (appliedHealthDamage > 0)
+            {
+                HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth);
 
-                if (appliedHealthDamage > 0)
+                // 흡혈 적용 : 내 피가 깎인 만큼 공격자에게 피를 채움
+                if (attacker != null && attacker.Health != null)
                 {
-                    HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth);
+                    attacker.Health.ApplyLifeStealFromDamage(appliedHealthDamage);
 
-                    // 흡혈 적용 : 내 피가 깎인 만큼 공격자에게 피를 채움
-                    if (attacker != null && attacker.Health != null)
+                    // 추가 : 내가 맞았으니, 날 때린 공격자의 스택을 1 올려줌
+                    attacker.Health.AddAttackStack(owner);
+                }
+
+                // 추가 : 처형 세트 (체력 5% 이하 즉사 기믹)
+                if (attacker != null && attacker.HeroInstance != null)
+                {
+                    int executeSetCount = attacker.HeroInstance.GetSetCount(ExecuteSetName);
+
+                    if (executeSetCount >= 2) // 2세트 이상일 때 발동
                     {
-                        attacker.Health.ApplyLifeStealFromDamage(appliedHealthDamage);
+                        float hpPercent = (float)CurrentHealth / MaxHealth;
+                        // 4세트면 10% 이하, 2세트면 5% 이하일 때 즉사
+                        float executeThreshold = (executeSetCount >= 4) ? 0.10f : 0.05f;
 
-                        // 추가 : 내가 맞았으니, 날 때린 공격자의 스택을 1 올려줌
-                        attacker.Health.AddAttackStack(owner);
-                    }
-
-                    // 추가 : 처형 세트 (체력 5% 이하 즉사 기믹)
-                    if (attacker != null && attacker.HeroInstance != null)
-                    {
-                        int executeSetCount = attacker.HeroInstance.GetSetCount(ExecuteSetName);
-
-                        if (executeSetCount >= 2) // 2세트 이상일 때 발동
+                        // 기준 체력 이하로 떨어졌고, 아직 살아있다면 처형!
+                        if (hpPercent <= executeThreshold && CurrentHealth > 0)
                         {
-                            float hpPercent = (float)CurrentHealth / MaxHealth;
-                            // 4세트면 10% 이하, 2세트면 5% 이하일 때 즉사
-                            float executeThreshold = (executeSetCount >= 4) ? 0.10f : 0.05f;
-
-                            // 기준 체력 이하로 떨어졌고, 아직 살아있다면 처형!
-                            if (hpPercent <= executeThreshold && CurrentHealth > 0)
-                            {
-                                Debug.Log($"<color=purple>[처형 발동!]</color> {owner.name}의 체력이 {executeThreshold * 100}% 이하가 되어 즉사합니다!");
-                                owner.Stats.ApplyDamage(CurrentHealth); // 남은 체력만큼 피해를 줘서 확인 사살
-                                HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth);
-                            }
+                            Debug.Log($"<color=purple>[처형 발동!]</color> {owner.name}의 체력이 {executeThreshold * 100}% 이하가 되어 즉사합니다!");
+                            owner.Stats.ApplyDamage(CurrentHealth); // 남은 체력만큼 피해를 줘서 확인 사살
+                            HealthChanged?.Invoke(owner, CurrentHealth, MaxHealth);
                         }
                     }
                 }
+            }
 
-                if (logDamage)
+            if (logDamage)
+            {
+                bool isUltimateDamage =
+               attacker != null &&
+               battleManager != null &&
+               battleManager.CurrentUltimateUnit ==
+               attacker;
+
+                // 일반 공격은 기존 logDamage 설정을 사용하고,
+                // 궁극기는 시전자의 궁극기 디버그 설정을 사용합니다.
+                bool shouldLogDamage =
+                    isUltimateDamage
+                        ? ShouldLogUltimateResult(attacker)
+                        : logDamage;
+
+                if (shouldLogDamage)
                 {
-                    bool isUltimateDamage =
-                   attacker != null &&
-                   battleManager != null &&
-                   battleManager.CurrentUltimateUnit ==
-                   attacker;
+                    string attackerName =
+                        attacker != null
+                            ? attacker.name
+                            : "Unknown";
 
-                    // 일반 공격은 기존 logDamage 설정을 사용하고,
-                    // 궁극기는 시전자의 궁극기 디버그 설정을 사용합니다.
-                    bool shouldLogDamage =
+                    string damageType =
                         isUltimateDamage
-                            ? ShouldLogUltimateResult(attacker)
-                            : logDamage;
+                            ? "궁극기 피해"
+                            : "피해";
 
-                    if (shouldLogDamage)
-                    {
-                        string attackerName =
-                            attacker != null
-                                ? attacker.name
-                                : "Unknown";
+                    string color =
+                        isUltimateDamage
+                            ? "#FF6B6B"
+                            : "white";
 
-                        string damageType =
-                            isUltimateDamage
-                                ? "궁극기 피해"
-                                : "피해";
-
-                        string color =
-                            isUltimateDamage
-                                ? "#FF6B6B"
-                                : "white";
-
-                        Debug.Log(
-                            $"<color={color}>[{damageType}]</color> " +
-                            $"{attackerName} → {owner.name} / " +
-                            $"총 적용 피해: {totalAppliedDamage} / " +
-                            $"체력 피해: {appliedHealthDamage} / " +
-                            $"보호막 흡수: {absorbedDamage} / " +
-                            $"대상 HP: {CurrentHealth}/{MaxHealth}",
-                            owner);
-                    }
+                    Debug.Log(
+                        $"<color={color}>[{damageType}]</color> " +
+                        $"{attackerName} → {owner.name} / " +
+                        $"총 적용 피해: {totalAppliedDamage} / " +
+                        $"체력 피해: {appliedHealthDamage} / " +
+                        $"보호막 흡수: {absorbedDamage} / " +
+                        $"대상 HP: {CurrentHealth}/{MaxHealth}",
+                        owner);
                 }
+            }
 
-                // 부활 적용 구간 (죽었을 때 1회 부활)
-                if (!owner.Stats.IsAlive && !TryReviveFromSet())
-                {
-                    Die();
-                }
+            // 부활 적용 구간 (죽었을 때 1회 부활)
+            if (!owner.Stats.IsAlive && !TryReviveFromSet())
+            {
+                Die();
+            }
 
-                if (owner.Stats.IsAlive)
-                {
-                    owner.Energy?.GainFromDamageTake();
-                }
+            if (owner.Stats.IsAlive)
+            {
+                owner.Energy?.GainFromDamageTake();
+            }
 
-                return totalAppliedDamage;
-            
+            return totalAppliedDamage;
+
         }
 
         // 회피
@@ -410,6 +416,8 @@ namespace AFKHero.Battle
                     owner,
                     CurrentHealth,
                     MaxHealth);
+
+                HealthRestored?.Invoke(owner, restoredHealth);
             }
 
             if (ShouldLogUltimateResult(healer))
@@ -482,6 +490,8 @@ namespace AFKHero.Battle
                 owner,
                 CurrentHealth,
                 MaxHealth);
+
+            HealthRestored?.Invoke(owner, restoredHealth);
 
             Debug.Log(
                 $"<color=red>[흡혈 세트]</color> " +

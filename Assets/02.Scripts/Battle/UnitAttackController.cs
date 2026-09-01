@@ -34,7 +34,7 @@ namespace AFKHero.Battle
 
         private void Update()
         {
-            if (!CanAttack())
+            if (!TryGetAttackableTarget(out BattleUnit target))
             {
                 return;
             }
@@ -44,12 +44,13 @@ namespace AFKHero.Battle
                 return;
             }
 
-            PerformBasicAttack();
+            PerformBasicAttack(target);
         }
 
-        private bool CanAttack()
+        private bool TryGetAttackableTarget(out BattleUnit target)
         {
-            // 컴포넌트 검사
+            target = null;
+
             if (owner == null ||
                 owner.Stats == null ||
                 battleManager == null ||
@@ -59,41 +60,49 @@ namespace AFKHero.Battle
                 return false;
             }
 
-            // 전투 상태 검사
-            if (battleManager.CurrentState != BattleState.Fighting)
+            if (battleManager.CurrentState != BattleState.Fighting ||
+                !owner.Stats.IsAlive ||
+                !targetFinder.HasValidTarget)
             {
                 return false;
             }
 
-            // 생존 상태 확인
-            if (!owner.Stats.IsAlive || !targetFinder.HasValidTarget)
+            if (owner.StatusEffects != null && !owner.StatusEffects.CanUseBasicAttack)
             {
                 return false;
             }
 
-            if(owner.StatusEffects != null && !owner.StatusEffects.CanUseBasicAttack)
-            {
-                return false;
-            }
-
-            return unitMovement.IsTargetInAttackRange;
-        }
-
-        private void PerformBasicAttack()
-        {
-            BattleUnit target = targetFinder.CurrentTarget;
+            target = targetFinder.CurrentTarget;
 
             if (target == null ||
-               target.Health == null ||
-               target.Stats == null ||
-               !target.Stats.IsAlive)
+                target.Health == null ||
+                target.Stats == null ||
+                !target.Stats.IsAlive ||
+                target.Team == owner.Team)
+            {
+                targetFinder.ClearTarget();
+                target = null;
+                return false;
+            }
+
+            // 이동에서 검사한 것과 동일한 타깃과 동일한 여유 사거리 사용
+            return unitMovement.IsTargetInAttackRange(target);
+        }
+
+
+
+        private void PerformBasicAttack(BattleUnit target)
+        {
+            if (target == null ||
+       target.Health == null ||
+       target.Stats == null ||
+       !target.Stats.IsAlive)
             {
                 targetFinder.ClearTarget();
                 return;
             }
 
             float attackInterval = Mathf.Max(MinimumAttackInterval, owner.Stats.AttackInterval);
-
             nextAttackTime = Time.time + attackInterval;
 
             BasicAttackStarted?.Invoke(target);
@@ -102,11 +111,12 @@ namespace AFKHero.Battle
             {
                 return;
             }
+
             ApplyBasicAttackImmediately(target);
         }
 
         private bool TryLaunchProjectile(
-    BattleUnit target)
+            BattleUnit target)
         {
             if (owner == null ||
                 owner.Data == null ||
@@ -143,6 +153,7 @@ namespace AFKHero.Battle
 
             return ownerHero.SpawnProjectile(targetHero);
         }
+
         private void ApplyBasicAttackImmediately(BattleUnit target)
         {
             int finalDamage = DamageCalculator.CalculateBasicAttackDamage(owner.Stats, target.Stats);
