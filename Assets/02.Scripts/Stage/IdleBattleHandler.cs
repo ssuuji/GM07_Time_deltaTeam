@@ -45,6 +45,7 @@ public class IdleBattleHandler : MonoBehaviour
     {
         StageManager.Instance.StageStateChanged += StartIdleBattle;
         StageManager.Instance.StageStateChanged += ClearIdleBattle;
+        PartyManager.Instance.partyChanged += OnPartyChanaged;
     }
 
     //이벤트를 구독해제하는 과정에서(게임 종료 시점에서) NullReferenceException이 발생하고,
@@ -57,6 +58,11 @@ public class IdleBattleHandler : MonoBehaviour
             StageManager.Instance.StageStateChanged -= StartIdleBattle;
             StageManager.Instance.StageStateChanged -= ClearIdleBattle;
         }
+        if(PartyManager.Instance != null)
+        {
+            PartyManager.Instance.partyChanged -= OnPartyChanaged;
+        }
+
     }
 
     //StageManager의 이벤트 발행에 의해, Idle 상태로 전환되었을 때만 방치 전투가 실행됩니다.
@@ -75,6 +81,13 @@ public class IdleBattleHandler : MonoBehaviour
             return;
         }
 
+        if(idleBattleCoroutine != null)
+        {
+            StopCoroutine(idleBattleCoroutine);
+            idleBattleCoroutine = null;
+        }
+
+
         SpawnParty();
 
         ToggleDummyTarget(true);
@@ -84,7 +97,7 @@ public class IdleBattleHandler : MonoBehaviour
         //배치한 영웅 수나 영웅들 중 가장 낮거나 높은 레벨도 계산에 반영하도록 CalculateIdleBattleReward를 수정할 수도 있겠지.
 
         int IdleReward = StageCalculator.CaculateIdleBattleReward(StageManager.Instance.LastStageNumber, StageManager.Instance.LastSectionNumber);
-
+           
         idleBattleCoroutine = StartCoroutine(HandleIdleBattleCo(IdleReward));
     }
 
@@ -190,5 +203,16 @@ public class IdleBattleHandler : MonoBehaviour
 
         //리스트를 초기화합니다.
         copiedPrefabs.Clear();
+    }
+
+
+    //파티매니저의 이벤트를 구독하여 방치 전투 현황을 갱신할 메서드
+    public void OnPartyChanaged()
+    {
+        //클리어 메서드를 실행하기 위해서, 강제로 StageState.Working을 넣습니다. 뭔가 아닌 것 같지만...
+        ClearIdleBattle(StageState.Working);
+
+        StartIdleBattle(StageManager.Instance.CurrentState);
+
     }
 }

@@ -49,6 +49,9 @@ public class StageManager : MonoBehaviour
     [SerializeField] private StageInfo currentStageInfo; // 현재 진행 중인 구간의 데이터
     [SerializeField] private StageState currentState = StageState.None;
 
+    [Header("적 레벨")]
+    [SerializeField] private int enemyLevel = 1;
+
     //IdleBattleHandler가 구독해야 할 이벤트
     //매개변수를 뭘로 받게 해야 할지 고민.
     //매개변수로는 StageState만 넘긴다. 어차피 프로퍼티 다 뚫려있어서 값을 읽을 순 있음.
@@ -81,8 +84,8 @@ public class StageManager : MonoBehaviour
     public int LastStageNumber => lastStageNumber;
     public int LastSectionNumber => lastSectionNumber;
     public StageState CurrentState => currentState;
-
     public StageData StageData => stageData;
+    public int EnemyLevel => enemyLevel;
 
     private void Awake()
     {
@@ -141,16 +144,18 @@ public class StageManager : MonoBehaviour
         //이게 어디선가에선 호출되어야 계속 currentStageInfo가 교체되는 건데, 그게 대체 어디냐고.
         currentStageInfo = stageData.GetStage(currentStageNumber, currentSectionNumber);
 
-        if(currentStageInfo == null) // 스테이지 데이터가 없으면 진행 중단
-        {
-            print("스테이지 데이터 null");
-            battleManager.ClearRegisteredUnits();
-            battleSpawner.ClearSpawnedUnits();
-            return;
-        }
-
         //현재 스테이지 UI 갱신
         UIBattleManager.Instance?.UpdateStageUI();
+
+        if (currentStageInfo == null) // 스테이지 데이터가 없으면 진행 중단
+        {
+            Debug.Log("[StageManager] : StageInfo가 셋팅되지 않았거나 마지막 스테이지를 클리어했습니다.");
+            battleManager.ClearRegisteredUnits();
+            battleSpawner.ClearSpawnedUnits();
+            ChangeState(StageState.Idle);
+
+            return;
+        }
 
         //배경화면 전환. 있을 때만 바꿈.
         if (stageBackgroundChanger != null)
@@ -159,7 +164,7 @@ public class StageManager : MonoBehaviour
         }
 
         //적의 레벨을 스테이지 기반으로 계산
-        int enemyLevel = StageCalculator.CalculateEnemyLevel(currentStageNumber, currentSectionNumber);
+        enemyLevel = StageCalculator.CalculateEnemyLevel(currentStageNumber, currentSectionNumber);
 
         // [수정한 부분: 적 목록(Enemies)과 방금 계산한 레벨(enemyLevel)을 같이 넘겨줍니다]
         //StageInfo의 리스트가 StageEnemyInfo가 아니라 UnitData로 변경되어 주석처리함. BattleSpawner 기반으로 변경하기
@@ -189,6 +194,7 @@ public class StageManager : MonoBehaviour
         if (!battleStarted)
         {
             Debug.LogError("[StageManager] 현재 스테이지 전투 생성에 실패했습니다.", this);
+            ChangeState(StageState.Idle);
             return;
         }
 
@@ -214,13 +220,6 @@ public class StageManager : MonoBehaviour
     //승리 시 호출될 메서드
     private void HandleVictory()
     {
-        //이 널체크는 필요한가?
-        if (currentStageInfo == null)
-        {
-            Debug.LogError("현재 스테이지의 정보가 null입니다.");
-            return;
-        }
-
         ChangeState(StageState.Result);
 
         //승리 보상 UI 갱신
@@ -249,6 +248,10 @@ public class StageManager : MonoBehaviour
             currentStageNumber += 1;
             currentSectionNumber = 1;
         }
+
+        //여기에서도 Getstage를 호출하여 미리 셋팅을 해놓는 게 좋으려나.
+        currentStageInfo = stageData.GetStage(currentStageNumber, currentSectionNumber);
+
 
         //TODO : SaveManager를 호출하여 값 저장
         GameSaveManager.Instance.SaveGame();
@@ -317,6 +320,17 @@ public class StageManager : MonoBehaviour
 
         victoryPanel.gameObject.SetActive(false);
         ChangeState(StageState.Idle);
+    }
+
+    //전투 진행 도중에 실행되면, 현재 전투 상태를 모두 초기화하고 StageManager를 Idle로 바꾸는 메서드
+    public void EscapeStage()
+    {
+        if(currentState == StageState.Working)
+        {
+            battleManager.ClearRegisteredUnits();
+            battleSpawner.ClearSpawnedUnits();
+            ChangeState(StageState.Idle);
+        }
     }
 
     private void TryGiveReward()

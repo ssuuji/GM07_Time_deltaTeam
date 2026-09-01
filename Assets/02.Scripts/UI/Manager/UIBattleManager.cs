@@ -125,7 +125,15 @@ namespace AFKHero.UI
         {
             if (StageManager.Instance == null || currentStageText == null) return;
 
-            currentStageText.text = $"STAGE {StageManager.Instance.CurrentStageNumber}-{StageManager.Instance.CurrentSectionNumber}";
+            if(StageManager.Instance.CurrentStageInfo != null)
+            {
+                currentStageText.text = $"STAGE {StageManager.Instance.CurrentStageNumber}-{StageManager.Instance.CurrentSectionNumber}";
+            }
+            else
+            {
+                currentStageText.text = $"STAGE {StageManager.Instance.LastStageNumber}-{StageManager.Instance.LastSectionNumber}";
+                UINoticePopup.Instance.ShowTime("모든 스테이지를 클리어했습니다.");
+            }                
         }
 
         //스테이지 상태 변경
