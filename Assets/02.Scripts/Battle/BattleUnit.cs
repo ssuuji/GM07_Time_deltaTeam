@@ -73,12 +73,6 @@ namespace AFKHero.Battle
             Team = team;
             FormationSlotIndex = formationSlotIndex;
 
-            //아군은 오른쪽을 바라보도록 방향 전환
-            if (Team == TeamType.Ally)
-            {
-                transform.rotation = Quaternion.Euler(0f, -180f, 0f);
-            }
-
             Stats = new UnitStats(heroInstance);
 
             FindMissingComponents();
