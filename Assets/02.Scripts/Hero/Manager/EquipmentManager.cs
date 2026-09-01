@@ -295,4 +295,58 @@ public class EquipmentManager : MonoBehaviour
 
         return score;
     }
+
+    // ===============================
+    // 장비 세이브 / 로드 시스템
+    // ===============================
+    public EquipmentSaveData CreateEquipmentSaveData()
+    {
+        EquipmentSaveData saveData = new EquipmentSaveData();
+
+        foreach (var equip in equipmentInventory)
+        {
+            EquipItemSaveData itemData = new EquipItemSaveData();
+            itemData.equipmentID = equip.BaseData.equipmentID;
+            itemData.grade = (int)equip.Grade;
+            itemData.enhanceLevel = equip.EnhanceLevel;
+            itemData.attack = equip.Attack;
+            itemData.defense = equip.Defense;
+            itemData.hp = equip.HP;
+
+            saveData.inventoryEquips.Add(itemData);
+        }
+
+        return saveData;
+    }
+
+    public void LoadEquipmentSaveData(EquipmentSaveData saveData)
+    {
+        if (saveData == null) return;
+
+        equipmentInventory.Clear();
+
+        foreach (var itemData in saveData.inventoryEquips)
+        {
+            EquipmentData baseData = Resources.Load<EquipmentData>($"Equipments/{itemData.equipmentID}");
+
+            // 원본 데이터를 찾지 못했다면 에러를 띄우고 건너뜀
+            if (baseData == null)
+            {
+                Debug.LogWarning($"[장비 로드 실패] Resources/Equipments 폴더 안에서 '{itemData.equipmentID}'(을)를 찾을 수 없습니다. 파일 이름이 ID와 똑같은지 확인해주세요!");
+                continue;
+            }
+
+            // 찾은 원본 데이터를 넣어서 장비를 생성
+            EquipmentInstance newEquip = new EquipmentInstance(baseData);
+
+            // 새로 생성되면서 랜덤 부여된 스탯들을, 저장되어 있던 기존 스탯으로 덮기
+            newEquip.Grade = (EquipmentGrade)itemData.grade;
+            newEquip.EnhanceLevel = itemData.enhanceLevel;
+            newEquip.Attack = itemData.attack;
+            newEquip.Defense = itemData.defense;
+            newEquip.HP = itemData.hp;
+
+            equipmentInventory.Add(newEquip);
+        }
+    }
 }

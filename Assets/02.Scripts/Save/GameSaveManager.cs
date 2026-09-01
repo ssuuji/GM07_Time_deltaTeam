@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using AFKHeroPlayerManager = AFKHero.Player.PlayerManager;
 
-[DefaultExecutionOrder(-100)]
+[DefaultExecutionOrder(-200)]
 public class GameSaveManager : MonoBehaviour
 {
     public static GameSaveManager Instance;
@@ -159,6 +159,12 @@ public class GameSaveManager : MonoBehaviour
             saveData.collectionSaveData = CollectionManager.Instance.GetCollectionSaveData();
         }
 
+        // 장비 인벤토리 세이브
+        if (EquipmentManager.Instance != null)
+        {
+            saveData.equipmentSaveData = EquipmentManager.Instance.CreateEquipmentSaveData();
+        }
+
         return saveData;
     }
 
@@ -272,6 +278,12 @@ public class GameSaveManager : MonoBehaviour
         if (CollectionManager.Instance != null)
         {
             CollectionManager.Instance.LoadCollectionSaveData(loadedSaveData.collectionSaveData);
+        }
+
+        // 장비 인벤토리 로드
+        if (EquipmentManager.Instance != null && loadedSaveData.equipmentSaveData != null)
+        {
+            EquipmentManager.Instance.LoadEquipmentSaveData(loadedSaveData.equipmentSaveData);
         }
 
         Debug.Log("[GameSaveManager] 저장 데이터 적용 완료");
