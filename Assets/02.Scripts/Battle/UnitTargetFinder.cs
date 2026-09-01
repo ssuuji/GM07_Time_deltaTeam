@@ -22,6 +22,8 @@ namespace AFKHero.Battle
 
         private BattleManager battleManager;
 
+        private TargetPriority targetRule = TargetPriority.NearestEnemy;
+
         // 다음 탐색 시간
         private float nextSrearchTime;
 
@@ -34,8 +36,22 @@ namespace AFKHero.Battle
         {
             owner = unitOwner;
             battleManager = manger;
+            targetRule = GetBattleTargetRule(unitOwner);
+
             CurrentTarget = null;
             nextSrearchTime = 0;
+        }
+
+        private static TargetPriority GetBattleTargetRule(BattleUnit unitOwner)
+        {
+            if (unitOwner == null ||
+                unitOwner.Data == null ||
+                unitOwner.Data.TargetRule == TargetPriority.LowestHpAlly)
+            {
+                return TargetPriority.NearestEnemy;
+            }
+
+            return unitOwner.Data.TargetRule;
         }
 
         private void Update()
@@ -120,9 +136,10 @@ namespace AFKHero.Battle
 
                 float sqrDistance = difference.sqrMagnitude;
 
-                int rowPriority = GetRowPriority(oppoenet);
+                int rowPriority = GetRowPriority(oppoenet, targetRule);
 
-                if(!IsHigherPriorityCandidate(
+
+                if (!IsHigherPriorityCandidate(
                     oppoenet,
                     rowPriority,
                     sqrDistance,
@@ -141,6 +158,20 @@ namespace AFKHero.Battle
             CurrentTarget = bestTarget;
         }
 
+        // 직업별 우선순위 계산
+        private static int GetRowPriority(BattleUnit unit, TargetPriority targetRule)
+        {
+            bool isFrontRow = unit.FormationSlotIndex >= 0 && unit.FormationSlotIndex < FrontRowSlotCount;
+
+            // 궁수처럼 BacklineEnemy를 사용하는 유닛은 후열을 먼저 공격합니다.
+            if (targetRule == TargetPriority.BacklineEnemy)
+            {
+                return isFrontRow ? 1 : 0;
+            }
+
+            // 기존 전투 규칙을 보존하여 그 외 직업은 전열을 먼저 공격합니다.
+            return isFrontRow ? 0 : 1;
+        }
 
         // 가장 가까운 유닛 탐색
         public void FindClosestTarget()

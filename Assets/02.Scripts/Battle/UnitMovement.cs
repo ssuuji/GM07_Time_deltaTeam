@@ -1,9 +1,11 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 namespace AFKHero.Battle
 {
     public class UnitMovement : MonoBehaviour
     {
+        private const float AttackRangeEpsilon = 0.0001f;
+
         private BattleUnit owner;
 
         private BattleManager battleManager;
@@ -14,23 +16,49 @@ namespace AFKHero.Battle
         {
             get
             {
-                if (owner == null ||
-                    owner.Stats == null ||
-                    targetFinder == null ||
-                    !targetFinder.HasValidTarget) 
+                if (!TryGetTargetDistanceData(out Vector2 difference, out float attackRange))
                 {
                     return false;
                 }
 
-                Vector2 currentPosition = transform.position;
-                Vector2 targetPosition = targetFinder.CurrentTarget.transform.position;
-
-                float sqrDistance = (targetPosition - currentPosition).sqrMagnitude;
-
-                float attackRange = owner.Stats.AttackRange;
-
-                return sqrDistance <= attackRange * attackRange;
+                return IsAttackRange(difference, attackRange);
             }
+        }
+
+        private bool TryGetTargetDistanceData(out Vector2 difference, out float attackRange)
+        {
+            difference = Vector2.zero;
+            attackRange = 0f;
+
+            if (owner == null ||
+                owner.Stats == null ||
+                targetFinder == null ||
+                !targetFinder.HasValidTarget)
+            {
+                return false;
+            }
+
+            BattleUnit target = targetFinder.CurrentTarget;
+
+            if (target == null)
+            {
+                return false;
+            }
+
+            Vector2 currentPosition = transform.position;
+            Vector2 targetPosition = target.transform.position;
+
+            difference = targetPosition - currentPosition;
+            attackRange = Mathf.Max(0f, owner.Stats.AttackRange);
+
+            return true;
+        }
+
+        private static bool IsAttackRange(Vector2 difference, float attackRange)
+        {
+            float attackRangeSqr = attackRange * attackRange;
+
+            return difference.sqrMagnitude <= attackRangeSqr + AttackRangeEpsilon;
         }
 
         public void Initialize(BattleUnit unitOwner, BattleManager manager, UnitTargetFinder finder)
@@ -50,7 +78,7 @@ namespace AFKHero.Battle
             MoveTowardTarget();
         }
 
-        // ÇöÀç À¯´ÖÀÌ ¿òÁ÷ÀÏ ¼ö ÀÖ´Â »óÅÂÀÎÁö
+        // í˜„ìž¬ ìœ ë‹›ì´ ì›€ì§ì¼ ìˆ˜ ìžˆëŠ” ìƒíƒœì¸ì§€
         private bool CanMove()
         {
             if (owner == null ||
@@ -73,45 +101,41 @@ namespace AFKHero.Battle
                 return false;
             }
 
-            // ÀÌ¹Ì »ç°Å¸® ¾È ÀÌ¶ó¸é °ø°ÝÇÏ´Â µ¿¾È ÀÌµ¿ X
+            // ì´ë¯¸ ì‚¬ê±°ë¦¬ ì•ˆ ì´ë¼ë©´ ê³µê²©í•˜ëŠ” ë™ì•ˆ ì´ë™ X
             return !IsTargetInAttackRange;
         }
 
-        // Å¸°ÙÀ» ÇâÇØ ÀÌµ¿ ¹× °ø°Ý »ç°Å¸®¿¡ µé¾î¿À¸é Á¤Áö
+        // íƒ€ê²Ÿì„ í–¥í•´ ì´ë™ ë° ê³µê²© ì‚¬ê±°ë¦¬ì— ë“¤ì–´ì˜¤ë©´ ì •ì§€
         private void MoveTowardTarget()
         {
-            BattleUnit target = targetFinder.CurrentTarget;
-
-            Vector2 currentPosition = transform.position;
-            Vector2 targetPosition = target.transform.position;
-            Vector2 direction = targetPosition - currentPosition;
-
-            float distance = direction.magnitude;
-            float attackRange = owner.Stats.AttackRange;
-
-            // Å¸°ÙÀÌ »ç°Å¸® ¾È¿¡ ÀÖ´Ù¸é ÀÌµ¿ X
-            if (distance <= attackRange ||
-                distance <= Mathf.Epsilon) 
+            if (!TryGetTargetDistanceData(out Vector2 direction, out float attackRange))
             {
                 return;
             }
 
-            // ÀÌ¹ø ÇÁ·¹ÀÓ ÀÌµ¿ ÃÖ´ë °Å¸®
+            if (IsAttackRange(direction, attackRange))
+            {
+                return;
+            }
+
+            float distance = direction.magnitude;
+
+            if (distance <= Mathf.Epsilon)
+            {
+                return;
+            }
+
+            BattleUnit target = targetFinder.CurrentTarget;
+
             float maximumMoveDistance = owner.Stats.MoveSpeed * Time.deltaTime;
-
-            // Å¸°Ù Áß½É±îÁö ÀÌµ¿ÇÏÁö ¾Ê°í, °ø°Ý »ç°Å¸® ±îÁö¸¸ ÀÌµ¿
-            float distanceUnitlAttackRange = distance - attackRange;
-
-            float moveDistance = Mathf.Min(maximumMoveDistance, distanceUnitlAttackRange);
+            float distanceUntilAttackRange = Mathf.Max(0f, distance - attackRange);
+            float moveDistance = Mathf.Min(maximumMoveDistance, distanceUntilAttackRange);
 
             Vector2 normalizedDirection = direction / distance;
-
+            Vector2 currentPosition = transform.position;
             Vector2 nextPosition = currentPosition + normalizedDirection * moveDistance;
 
             transform.position = new Vector3(nextPosition.x, nextPosition.y, transform.position.z);
-
         }
-
-
     }
 }
