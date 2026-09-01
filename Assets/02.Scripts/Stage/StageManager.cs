@@ -1,5 +1,6 @@
 ﻿using AFKHero.Battle;
 using AFKHero.Quest;
+using AFKHero.Sound;
 using AFKHero.UI;
 using System;
 using System.Collections;
@@ -378,6 +379,18 @@ public class StageManager : MonoBehaviour
         if (currentState == nextState) return;
 
         currentState = nextState;
+
+        //상태에 따른 BGM 변경
+        switch (currentState)
+        {
+            case StageState.Idle:
+                SoundManager.Instance?.PlayBGM(SoundKey.BGM_Idle);
+                break;
+
+            case StageState.Working:
+                SoundManager.Instance?.PlayBGM(SoundKey.BGM_Stage);
+                break;
+        }
 
         //이벤트 호출
         StageStateChanged?.Invoke(currentState);

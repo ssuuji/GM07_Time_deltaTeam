@@ -23,22 +23,19 @@ namespace AFKHero.Battle
         private BattleManager battleManager;
 
         private float defaultAnimatorSpeed = 1f;
-
-        private int previousHealth;
-
         private void Start()
         {
             owner = GetComponent<BattleUnit>();
 
-            if(owner == null || !owner.IsInitialized)
+            if (owner == null || !owner.IsInitialized)
             {
-                Debug.LogError("초기화 된 BattleUnit을 찾을 수 없습니다.",this);
+                Debug.LogError("초기화 된 BattleUnit을 찾을 수 없습니다.", this);
 
                 enabled = false;
                 return;
             }
 
-            if(animator == null)
+            if (animator == null)
             {
                 animator = GetComponentInChildren<Animator>(true);
             }
@@ -64,30 +61,29 @@ namespace AFKHero.Battle
             unitHealth = owner.Health;
             attackController = owner.AttackController;
 
-            if(damageTextAnchor == null)
+            if (damageTextAnchor == null)
             {
                 damageTextAnchor = transform;
             }
 
-            if(unitHealth != null)
+            if (unitHealth != null)
             {
-                previousHealth = unitHealth.CurrentHealth;
-                unitHealth.HealthChanged += HandleHealthChanged;
+                unitHealth.DamageApplied += HandleDamageApplied;
+                unitHealth.HealthRestored += HandleHealthRestored;
                 // 추가: 회피 신호를 들을 준비
-
                 unitHealth.OnEvaded += HandleEvaded;
             }
 
-            if(attackController != null)
+            if (attackController != null)
             {
                 attackController.BasicAttackStarted += HandleBasicAttackStarted;
             }
         }
 
-        // 기본 공격이 시작되면 실행
+        // 기본 공격 시 실행
         private void HandleBasicAttackStarted(BattleUnit target)
         {
-            if(animator == null || string.IsNullOrWhiteSpace(attackTrigger))
+            if (animator == null || string.IsNullOrWhiteSpace(attackTrigger))
             {
                 return;
             }
@@ -95,31 +91,40 @@ namespace AFKHero.Battle
             animator.SetTrigger(attackTrigger);
         }
 
-        // 체력 감소량 계산해서 Hit Trigger와 데미지 텍스트 실행
-        private void HandleHealthChanged(BattleUnit target, int currentHealth, int maxHealth)
+        // 실제 피해량으로 피격 연출과 텍스트 표시
+        private void HandleDamageApplied(BattleUnit target, int appliedDamage)
         {
-            int appliedDamage = Mathf.Max(0, previousHealth - currentHealth);
-
-            previousHealth = currentHealth;
-
-            if(appliedDamage <= 0)
+            if (target != owner || appliedDamage <= 0)
             {
                 return;
             }
 
-            if(animator != null && !string.IsNullOrWhiteSpace(hitTrigger))
+            if (animator != null && !string.IsNullOrWhiteSpace(hitTrigger))
             {
                 animator.SetTrigger(hitTrigger);
             }
 
-            if(damageTextPrefab != null)
-            {
-                DamageTextView damageText = SpawnDamageText();
+            DamageTextView damageText = SpawnDamageText();
 
-                if (damageText != null)
-                {
-                    damageText.Play(appliedDamage, damageTextAnchor.position);
-                }
+            if (damageText != null)
+            {
+                damageText.Play(appliedDamage, damageTextAnchor.position);
+            }
+        }
+
+        // 실제 회복된 수치를 숫자로 표시
+        private void HandleHealthRestored(BattleUnit target, int restoredHealth)
+        {
+            if (target != owner || restoredHealth <= 0)
+            {
+                return;
+            }
+
+            DamageTextView damageText = SpawnDamageText();
+
+            if (damageText != null)
+            {
+                damageText.PlayText($"+{restoredHealth}", damageTextAnchor.position, Color.green);
             }
         }
 
@@ -197,15 +202,16 @@ namespace AFKHero.Battle
 
         private void OnDestroy()
         {
-            if(unitHealth != null)
+            if (unitHealth != null)
             {
-                unitHealth.HealthChanged -= HandleHealthChanged;
+                unitHealth.DamageApplied -= HandleDamageApplied;
+                unitHealth.HealthRestored -= HandleHealthRestored;
 
                 // 추가: 스크립트 꺼질 때 듣기 종료
                 unitHealth.OnEvaded -= HandleEvaded;
             }
 
-            if(attackController != null)
+            if (attackController != null)
             {
                 attackController.BasicAttackStarted -= HandleBasicAttackStarted;
             }
