@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 public class EquipmentManager : MonoBehaviour
@@ -7,27 +7,35 @@ public class EquipmentManager : MonoBehaviour
 
     public List<EquipmentInstance> equipmentInventory = new List<EquipmentInstance>();
 
+    //0901 ì¶”ê°€ë¶€ë¶„
+    //EquipmentManagerì˜ ë‚´ë¶€ ë°°ì—´ì— ë§Œë“œì‹  ì¥ë¹„ë“¤ì„ ì „ë¶€ ë“±ë¡í•˜ì…”ì•¼ í•©ë‹ˆë‹¤.
+    //LoadAll ë©”ì„œë“œëŠ” Resources í´ë” ë‚´ë¶€ì— ìˆëŠ” ê²ƒë“¤ë§Œ ì°¾ì•„ì˜¤ê¸°ì— ì‚¬ìš©í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.
+    public EquipmentData[] allEquipments;
+
+
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // ¾ÀÀÌ ³Ñ¾î°¡µµ °¡¹æÀÌ ÆÄ±«µÇÁö ¾Ê°Ô À¯Áö
+            DontDestroyOnLoad(gameObject); // ì”¬ì´ ë„˜ì–´ê°€ë„ ê°€ë°©ì´ íŒŒê´´ë˜ì§€ ì•Šê²Œ ìœ ì§€
         }
         else
         {
             Destroy(gameObject);
         }
+
+
     }
 
-    // ¸ó½ºÅÍ¸¦ Àâ°í ¸¸µé¾îÁø 'ÁøÂ¥ Àåºñ'¸¦ °¡¹æ¿¡ ³Ö±â
+    // ëª¬ìŠ¤í„°ë¥¼ ì¡ê³  ë§Œë“¤ì–´ì§„ 'ì§„ì§œ ì¥ë¹„'ë¥¼ ê°€ë°©ì— ë„£ê¸°
     public void AddEquipment(EquipmentInstance newEquipment)
     {
         if (newEquipment == null) return;
         equipmentInventory.Add(newEquipment);
     }
 
-    //  ¿µ¿õ¿¡°Ô Àåºñ¸¦ ÀÔÈ÷´Â ·ÎÁ÷
+    //  ì˜ì›…ì—ê²Œ ì¥ë¹„ë¥¼ ì…íˆëŠ” ë¡œì§
     public void EquipToHero(HeroInstance hero, EquipmentInstance equipmentToEquip)
     {
         if (hero == null || equipmentToEquip == null) return;
@@ -43,15 +51,15 @@ public class EquipmentManager : MonoBehaviour
             case EquipmentType.Helmet: existingEquip = hero.equippedHelmet; break;
         }
 
-        // ÀÌ¹Ì ³¢°í ÀÖ´Â Àåºñ°¡ ÀÖ´Ù¸é °¡¹æÀ¸·Î ´Ù½Ã µ¹·Áº¸³»±â
+        // ì´ë¯¸ ë¼ê³  ìˆëŠ” ì¥ë¹„ê°€ ìˆë‹¤ë©´ ê°€ë°©ìœ¼ë¡œ ë‹¤ì‹œ ëŒë ¤ë³´ë‚´ê¸°
         if (existingEquip != null) equipmentInventory.Add(existingEquip);
 
-        // »õ Àåºñ¸¦ ¿µ¿õ¿¡°Ô ÀÔÈ÷°í, °¡¹æ¿¡¼­´Â »èÁ¦
+        // ìƒˆ ì¥ë¹„ë¥¼ ì˜ì›…ì—ê²Œ ì…íˆê³ , ê°€ë°©ì—ì„œëŠ” ì‚­ì œ
         hero.EquipItem(equipmentToEquip);
         equipmentInventory.Remove(equipmentToEquip);
     }
 
-    // 4°³ ºÎÀ§¸¦ ¼ø»çÇÏ¸ç °¡Àå ÁÁÀº Àåºñ¸¦ ÀÚµ¿À¸·Î Ã£¾Æ ÀåÂø
+    // 4ê°œ ë¶€ìœ„ë¥¼ ìˆœì‚¬í•˜ë©° ê°€ì¥ ì¢‹ì€ ì¥ë¹„ë¥¼ ìë™ìœ¼ë¡œ ì°¾ì•„ ì¥ì°©
     public void AutoEquip(HeroInstance hero)
     {
         if (hero == null) return;
@@ -61,18 +69,18 @@ public class EquipmentManager : MonoBehaviour
         EquipBestItemForType(hero, EquipmentType.Helmet);
     }
 
-    // Æ¯Á¤ ºÎÀ§¿¡¼­ ½ºÅÈ ÃÑÇÕÀÌ °¡Àå ³ôÀº Àåºñ¸¦ Ã£´Â ÇÔ¼ö
+    // íŠ¹ì • ë¶€ìœ„ì—ì„œ ìŠ¤íƒ¯ ì´í•©ì´ ê°€ì¥ ë†’ì€ ì¥ë¹„ë¥¼ ì°¾ëŠ” í•¨ìˆ˜
     private void EquipBestItemForType(HeroInstance hero, EquipmentType type)
     {
         EquipmentInstance bestItem = null;
         int maxStat = -1;
 
-        // °¡¹æÀ» ´Ù µÚÁ®¼­ ½ºÅÈ ÃÑÇÕ(°ø+¹æ+Ã¼)ÀÌ °¡Àå ³ôÀº ³à¼®À» Ã£½À´Ï´Ù.
+        // ê°€ë°©ì„ ë‹¤ ë’¤ì ¸ì„œ ìŠ¤íƒ¯ ì´í•©(ê³µ+ë°©+ì²´)ì´ ê°€ì¥ ë†’ì€ ë…€ì„ì„ ì°¾ìŠµë‹ˆë‹¤.
         foreach (var item in equipmentInventory)
         {
             if (item.BaseData.type == type)
             {
-                int itemStat = item.Attack + item.Defense + item.HP; // ·£´ıÀ¸·Î È®Á¤µÈ ÁøÂ¥ ½ºÅÈ »ç¿ë
+                int itemStat = item.Attack + item.Defense + item.HP; // ëœë¤ìœ¼ë¡œ í™•ì •ëœ ì§„ì§œ ìŠ¤íƒ¯ ì‚¬ìš©
                 if (itemStat > maxStat)
                 {
                     maxStat = itemStat;
@@ -92,11 +100,11 @@ public class EquipmentManager : MonoBehaviour
 
         int currentStat = currentEquip != null ? (currentEquip.Attack + currentEquip.Defense + currentEquip.HP) : -1;
 
-        // Ã£Àº Àåºñ°¡ Áö±İ ³¢°í ÀÖ´Â °Íº¸´Ù ÁÁÀ¸¸é ±³Ã¼
+        // ì°¾ì€ ì¥ë¹„ê°€ ì§€ê¸ˆ ë¼ê³  ìˆëŠ” ê²ƒë³´ë‹¤ ì¢‹ìœ¼ë©´ êµì²´
         if (bestItem != null && maxStat > currentStat) EquipToHero(hero, bestItem);
     }
 
-    // °¡¹æ¿¡ ÀÖ´Â ¸ğµç Àåºñ¸¦ ÆÈ°í µî±Ş¿¡ µû¶ó °ñµå Áö±Ş
+    // ê°€ë°©ì— ìˆëŠ” ëª¨ë“  ì¥ë¹„ë¥¼ íŒ”ê³  ë“±ê¸‰ì— ë”°ë¼ ê³¨ë“œ ì§€ê¸‰
     public void BulkSell()
     {
         if (equipmentInventory.Count == 0) return;
@@ -104,7 +112,7 @@ public class EquipmentManager : MonoBehaviour
         int totalEarnedGold = 0;
         foreach (var item in equipmentInventory)
         {
-            // ¿¡ÇÈÀº 1000°ñµå, ·¹¾î´Â 300°ñµå, ³ë¸»Àº 100°ñµå·Î Â÷µî Áö±Ş
+            // ì—í”½ì€ 1000ê³¨ë“œ, ë ˆì–´ëŠ” 300ê³¨ë“œ, ë…¸ë§ì€ 100ê³¨ë“œë¡œ ì°¨ë“± ì§€ê¸‰
             if (item.Grade == EquipmentGrade.Epic) totalEarnedGold += 1000;
             else if (item.Grade == EquipmentGrade.Rare) totalEarnedGold += 300;
             else totalEarnedGold += 100;
@@ -115,38 +123,38 @@ public class EquipmentManager : MonoBehaviour
             AFKHero.Player.PlayerManager.Instance.AddGold(totalEarnedGold);
         }
 
-        equipmentInventory.Clear(); // ÆÇ µÚ¿¡´Â °¡¹æÀ» ½Ï ºñ¿ó´Ï´Ù.
+        equipmentInventory.Clear(); // íŒ ë’¤ì—ëŠ” ê°€ë°©ì„ ì‹¹ ë¹„ì›ë‹ˆë‹¤.
     }
 
     // ==========================
-    // °³º° Àåºñ ÆÇ¸Å
+    // ê°œë³„ ì¥ë¹„ íŒë§¤
     // ==========================
     public void SellEquipment(EquipmentInstance itemToSell)
     {
-        // °¡¹æ¿¡ ¾ø´Â ¾ÆÀÌÅÛÀÌ°Å³ª ºñ¾îÀÖÀ¸¸é Ãë¼Ò
+        // ê°€ë°©ì— ì—†ëŠ” ì•„ì´í…œì´ê±°ë‚˜ ë¹„ì–´ìˆìœ¼ë©´ ì·¨ì†Œ
         if (itemToSell == null || !equipmentInventory.Contains(itemToSell)) return;
 
         int earnedGold = 0;
 
-        // µî±Ş¿¡ µû¶ó °ñµå Â÷µî Áö±Ş (¿¡ÇÈ 1000, ·¹¾î 300, ³ë¸» 100)
+        // ë“±ê¸‰ì— ë”°ë¼ ê³¨ë“œ ì°¨ë“± ì§€ê¸‰ (ì—í”½ 1000, ë ˆì–´ 300, ë…¸ë§ 100)
         if (itemToSell.Grade == EquipmentGrade.Epic) earnedGold = 1000;
         else if (itemToSell.Grade == EquipmentGrade.Rare) earnedGold = 300;
         else earnedGold = 100;
 
-        // ÇÃ·¹ÀÌ¾î¿¡°Ô °ñµå Áö±Ş
+        // í”Œë ˆì´ì–´ì—ê²Œ ê³¨ë“œ ì§€ê¸‰
         if (AFKHero.Player.PlayerManager.Instance != null)
         {
             AFKHero.Player.PlayerManager.Instance.AddGold(earnedGold);
         }
 
-        // °¡¹æ¿¡¼­ ÇØ´ç ¾ÆÀÌÅÛ¸¸ »©¼­ »èÁ¦
+        // ê°€ë°©ì—ì„œ í•´ë‹¹ ì•„ì´í…œë§Œ ë¹¼ì„œ ì‚­ì œ
         equipmentInventory.Remove(itemToSell);
 
-        Debug.Log($"<color=orange>[Àåºñ ÆÇ¸Å]</color> {itemToSell.BaseData.equipmentName}À»(¸¦) ÆÈ°í {earnedGold}°ñµå¸¦ ¾ò¾ú½À´Ï´Ù!");
+        Debug.Log($"<color=orange>[ì¥ë¹„ íŒë§¤]</color> {itemToSell.BaseData.equipmentName}ì„(ë¥¼) íŒ”ê³  {earnedGold}ê³¨ë“œë¥¼ ì–»ì—ˆìŠµë‹ˆë‹¤!");
     }
 
     // ==========================
-    // ´ÙÁß ¼±ÅÃ Àåºñ ÆÇ¸Å 
+    // ë‹¤ì¤‘ ì„ íƒ ì¥ë¹„ íŒë§¤ 
     // ==========================
     public void SellSelectedEquipments(List<EquipmentInstance> itemsToSell)
     {
@@ -159,7 +167,7 @@ public class EquipmentManager : MonoBehaviour
         {
             if (equipmentInventory.Contains(item))
             {
-                // µî±Ş¿¡ µû¸¥ °ñµå ÇÕ»ê
+                // ë“±ê¸‰ì— ë”°ë¥¸ ê³¨ë“œ í•©ì‚°
                 if (item.Grade == EquipmentGrade.Epic) totalEarnedGold += 1000;
                 else if (item.Grade == EquipmentGrade.Rare) totalEarnedGold += 300;
                 else totalEarnedGold += 100;
@@ -169,17 +177,17 @@ public class EquipmentManager : MonoBehaviour
             }
         }
 
-        // ÇÃ·¹ÀÌ¾î¿¡°Ô ÃÑ °ñµå Áö±Ş
+        // í”Œë ˆì´ì–´ì—ê²Œ ì´ ê³¨ë“œ ì§€ê¸‰
         if (AFKHero.Player.PlayerManager.Instance != null)
         {
             AFKHero.Player.PlayerManager.Instance.AddGold(totalEarnedGold);
         }
 
-        Debug.Log($"<color=orange>[¼±ÅÃ ÆÇ¸Å]</color> Àåºñ {sellCount}°³¸¦ ÆÈ°í {totalEarnedGold}°ñµå¸¦ ¾ò¾ú½À´Ï´Ù!");
+        Debug.Log($"<color=orange>[ì„ íƒ íŒë§¤]</color> ì¥ë¹„ {sellCount}ê°œë¥¼ íŒ”ê³  {totalEarnedGold}ê³¨ë“œë¥¼ ì–»ì—ˆìŠµë‹ˆë‹¤!");
     }
 
     // ===============================
-    // ½º¸¶Æ® ÀÏ°ı ÀåÂø ½Ã½ºÅÛ
+    // ìŠ¤ë§ˆíŠ¸ ì¼ê´„ ì¥ì°© ì‹œìŠ¤í…œ
     // ===============================
 
     public void AutoEquipHero(HeroInstance hero)
@@ -189,14 +197,14 @@ public class EquipmentManager : MonoBehaviour
         EquipmentType[] slotTypes = { EquipmentType.Weapon, EquipmentType.Armor, EquipmentType.Helmet, EquipmentType.Pants };
         bool isEquippedAnything = false;
 
-        // ¿µ¿õÀÌ ³¥ ¼ö ÀÖ´Â ¸ğµç Àåºñ Ç®À» ÇÏ³ª·Î ¸ğÀ¸±â
+        // ì˜ì›…ì´ ë‚„ ìˆ˜ ìˆëŠ” ëª¨ë“  ì¥ë¹„ í’€ì„ í•˜ë‚˜ë¡œ ëª¨ìœ¼ê¸°
         List<EquipmentInstance> allAvailable = new List<EquipmentInstance>(equipmentInventory);
         if (hero.equippedWeapon != null) allAvailable.Add(hero.equippedWeapon);
         if (hero.equippedArmor != null) allAvailable.Add(hero.equippedArmor);
         if (hero.equippedHelmet != null) allAvailable.Add(hero.equippedHelmet);
         if (hero.equippedPants != null) allAvailable.Add(hero.equippedPants);
 
-        // °¡¹æÀ» ½ºÄµÇØ¼­, ¾î¶² ¼¼Æ®¸¦ ¸î ºÎÀ§³ª ¸ÂÃâ ¼ö ÀÖ´ÂÁö ¹Ì¸® ÆÄ¾Ç
+        // ê°€ë°©ì„ ìŠ¤ìº”í•´ì„œ, ì–´ë–¤ ì„¸íŠ¸ë¥¼ ëª‡ ë¶€ìœ„ë‚˜ ë§ì¶œ ìˆ˜ ìˆëŠ”ì§€ ë¯¸ë¦¬ íŒŒì•…
         Dictionary<string, HashSet<EquipmentType>> possibleSetParts = new Dictionary<string, HashSet<EquipmentType>>();
 
         foreach (var eq in allAvailable)
@@ -207,11 +215,11 @@ public class EquipmentManager : MonoBehaviour
             if (!possibleSetParts.ContainsKey(setName))
                 possibleSetParts[setName] = new HashSet<EquipmentType>();
 
-            // HashSetÀ» »ç¿ëÇÏ¿© Áßº¹ ºÎÀ§(¿¹: ¹«±â¸¸ 2°³)´Â 1ºÎÀ§·Î Ãë±Ş
+            // HashSetì„ ì‚¬ìš©í•˜ì—¬ ì¤‘ë³µ ë¶€ìœ„(ì˜ˆ: ë¬´ê¸°ë§Œ 2ê°œ)ëŠ” 1ë¶€ìœ„ë¡œ ì·¨ê¸‰
             possibleSetParts[setName].Add(eq.BaseData.type);
         }
 
-        // ºÎÀ§º°·Î °¡Àå Á¡¼ö°¡ ³ôÀº ÃÖ°íÀÇ Àåºñ¸¦ Ã£¾Æ ÀåÂø
+        // ë¶€ìœ„ë³„ë¡œ ê°€ì¥ ì ìˆ˜ê°€ ë†’ì€ ìµœê³ ì˜ ì¥ë¹„ë¥¼ ì°¾ì•„ ì¥ì°©
         foreach (var type in slotTypes)
         {
             List<EquipmentInstance> availableForSlot = allAvailable.FindAll(e => e.BaseData.type == type);
@@ -223,7 +231,7 @@ public class EquipmentManager : MonoBehaviour
 
             foreach (var equip in availableForSlot)
             {
-                // Á¡¼ö °è»ê ½Ã, ÀÌ ÀåºñÀÇ ¼¼Æ®°¡ ÃÑ ¸î ºÎÀ§±îÁö ¿Ï¼ºµÉ ¼ö ÀÖ´ÂÁö Á¤º¸¸¦ ³Ñ±è
+                // ì ìˆ˜ ê³„ì‚° ì‹œ, ì´ ì¥ë¹„ì˜ ì„¸íŠ¸ê°€ ì´ ëª‡ ë¶€ìœ„ê¹Œì§€ ì™„ì„±ë  ìˆ˜ ìˆëŠ”ì§€ ì •ë³´ë¥¼ ë„˜ê¹€
                 string setName = GetSetName(equip.BaseData.equipmentID);
                 int maxPossibleSetCount = string.IsNullOrEmpty(setName) ? 0 : possibleSetParts[setName].Count;
 
@@ -235,7 +243,7 @@ public class EquipmentManager : MonoBehaviour
                 }
             }
 
-            // °¡Àå ÁÁÀº Àåºñ°¡ Áö±İ ³¢°í ÀÖ´Â °Í°ú ´Ù¸£´Ù¸é »õ°ÍÀ¸·Î ±³Ã¼
+            // ê°€ì¥ ì¢‹ì€ ì¥ë¹„ê°€ ì§€ê¸ˆ ë¼ê³  ìˆëŠ” ê²ƒê³¼ ë‹¤ë¥´ë‹¤ë©´ ìƒˆê²ƒìœ¼ë¡œ êµì²´
             if (bestEquip != null && bestEquip != currentEquip)
             {
                 EquipToHero(hero, bestEquip);
@@ -243,11 +251,11 @@ public class EquipmentManager : MonoBehaviour
             }
         }
 
-        if (isEquippedAnything) Debug.Log($"<color=green>[ÀÏ°ı ÀåÂø]</color> {hero.data.HeroName}¿¡°Ô ÃÖÀûÀÇ ¼¼ÆÃÀ» ÀåÂøÇß½À´Ï´Ù!");
-        else Debug.Log($"<color=yellow>[ÀÏ°ı ÀåÂø]</color> {hero.data.HeroName}Àº(´Â) ÀÌ¹Ì ÃÖÀûÀÇ ¼¼ÆÃÀÔ´Ï´Ù.");
+        if (isEquippedAnything) Debug.Log($"<color=green>[ì¼ê´„ ì¥ì°©]</color> {hero.data.HeroName}ì—ê²Œ ìµœì ì˜ ì„¸íŒ…ì„ ì¥ì°©í–ˆìŠµë‹ˆë‹¤!");
+        else Debug.Log($"<color=yellow>[ì¼ê´„ ì¥ì°©]</color> {hero.data.HeroName}ì€(ëŠ”) ì´ë¯¸ ìµœì ì˜ ì„¸íŒ…ì…ë‹ˆë‹¤.");
     }
 
-    // Àåºñ ID¿¡¼­ ¼¼Æ® ÀÌ¸§À» ½±°Ô »Ì¾Æ³»´Â ÇïÆÛ ÇÔ¼ö
+    // ì¥ë¹„ IDì—ì„œ ì„¸íŠ¸ ì´ë¦„ì„ ì‰½ê²Œ ë½‘ì•„ë‚´ëŠ” í—¬í¼ í•¨ìˆ˜
     private string GetSetName(string equipmentID)
     {
         if (equipmentID.Contains("VampSet")) return "VampSet";
@@ -259,17 +267,17 @@ public class EquipmentManager : MonoBehaviour
         return "";
     }
 
-    // 2¼¼Æ® ÀÌ»ó ¸ÂÃçÁú ¶§¸¸ ¼¼Æ® Á¡¼ö
+    // 2ì„¸íŠ¸ ì´ìƒ ë§ì¶°ì§ˆ ë•Œë§Œ ì„¸íŠ¸ ì ìˆ˜
     private float CalculateEquipScore(EquipmentInstance equip, int maxPossibleSetCount)
     {
         float score = 0;
 
-        // 1¼øÀ§ : ÀåºñÀÇ ¼ø¼ö µî±Ş Á¡¼ö
+        // 1ìˆœìœ„ : ì¥ë¹„ì˜ ìˆœìˆ˜ ë“±ê¸‰ ì ìˆ˜
         if (equip.Grade == EquipmentGrade.Epic) score += 50000;
         else if (equip.Grade == EquipmentGrade.Rare) score += 20000;
         else score += 5000;
 
-        // 2¼øÀ§ : ¼¼Æ® È¿°ú Á¡¼ö
+        // 2ìˆœìœ„ : ì„¸íŠ¸ íš¨ê³¼ ì ìˆ˜
         if (maxPossibleSetCount >= 2)
         {
             string equipName = equip.BaseData.equipmentID;
@@ -282,13 +290,13 @@ public class EquipmentManager : MonoBehaviour
             else if (equipName.Contains("ReviveSet")) setBonus = 1000;
             else if (equipName.Contains("ImmortalSet")) setBonus = 1500;
 
-            // ¸¸¾à 4¼¼Æ® Ç®¼ÂÀÌ °¡´ÉÇÏ´Ù¸é? ¼¼Æ® °¡ÁßÄ¡¸¦ 2¹è·Î Áà¼­ Ç®¼ÂÀ» ¿ì¼±ÀûÀ¸·Î ÀåÂøÇÏµµ·Ï À¯µµ
+            // ë§Œì•½ 4ì„¸íŠ¸ í’€ì…‹ì´ ê°€ëŠ¥í•˜ë‹¤ë©´? ì„¸íŠ¸ ê°€ì¤‘ì¹˜ë¥¼ 2ë°°ë¡œ ì¤˜ì„œ í’€ì…‹ì„ ìš°ì„ ì ìœ¼ë¡œ ì¥ì°©í•˜ë„ë¡ ìœ ë„
             if (maxPossibleSetCount >= 4) setBonus *= 2;
 
             score += setBonus;
         }
 
-        // 3¼øÀ§ : ±ø½ºÅÈ Á¡¼ö
+        // 3ìˆœìœ„ : ê¹¡ìŠ¤íƒ¯ ì ìˆ˜
         score += equip.HP * 1f;
         score += equip.Attack * 5f;
         score += equip.Defense * 4f;
@@ -297,7 +305,7 @@ public class EquipmentManager : MonoBehaviour
     }
 
     // ===============================
-    // Àåºñ ¼¼ÀÌºê / ·Îµå ½Ã½ºÅÛ
+    // ì¥ë¹„ ì„¸ì´ë¸Œ / ë¡œë“œ ì‹œìŠ¤í…œ
     // ===============================
     public EquipmentSaveData CreateEquipmentSaveData()
     {
@@ -329,17 +337,17 @@ public class EquipmentManager : MonoBehaviour
         {
             EquipmentData baseData = Resources.Load<EquipmentData>($"Equipments/{itemData.equipmentID}");
 
-            // ¿øº» µ¥ÀÌÅÍ¸¦ Ã£Áö ¸øÇß´Ù¸é ¿¡·¯¸¦ ¶ç¿ì°í °Ç³Ê¶Ü
+            // ì›ë³¸ ë°ì´í„°ë¥¼ ì°¾ì§€ ëª»í–ˆë‹¤ë©´ ì—ëŸ¬ë¥¼ ë„ìš°ê³  ê±´ë„ˆëœ€
             if (baseData == null)
             {
-                Debug.LogWarning($"[Àåºñ ·Îµå ½ÇÆĞ] Resources/Equipments Æú´õ ¾È¿¡¼­ '{itemData.equipmentID}'(À»)¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù. ÆÄÀÏ ÀÌ¸§ÀÌ ID¿Í ¶È°°ÀºÁö È®ÀÎÇØÁÖ¼¼¿ä!");
+                Debug.LogWarning($"[ì¥ë¹„ ë¡œë“œ ì‹¤íŒ¨] Resources/Equipments í´ë” ì•ˆì—ì„œ '{itemData.equipmentID}'(ì„)ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤. íŒŒì¼ ì´ë¦„ì´ IDì™€ ë˜‘ê°™ì€ì§€ í™•ì¸í•´ì£¼ì„¸ìš”!");
                 continue;
             }
 
-            // Ã£Àº ¿øº» µ¥ÀÌÅÍ¸¦ ³Ö¾î¼­ Àåºñ¸¦ »ı¼º
+            // ì°¾ì€ ì›ë³¸ ë°ì´í„°ë¥¼ ë„£ì–´ì„œ ì¥ë¹„ë¥¼ ìƒì„±
             EquipmentInstance newEquip = new EquipmentInstance(baseData);
 
-            // »õ·Î »ı¼ºµÇ¸é¼­ ·£´ı ºÎ¿©µÈ ½ºÅÈµéÀ», ÀúÀåµÇ¾î ÀÖ´ø ±âÁ¸ ½ºÅÈÀ¸·Î µ¤±â
+            // ìƒˆë¡œ ìƒì„±ë˜ë©´ì„œ ëœë¤ ë¶€ì—¬ëœ ìŠ¤íƒ¯ë“¤ì„, ì €ì¥ë˜ì–´ ìˆë˜ ê¸°ì¡´ ìŠ¤íƒ¯ìœ¼ë¡œ ë®ê¸°
             newEquip.Grade = (EquipmentGrade)itemData.grade;
             newEquip.EnhanceLevel = itemData.enhanceLevel;
             newEquip.Attack = itemData.attack;
@@ -349,4 +357,31 @@ public class EquipmentManager : MonoBehaviour
             equipmentInventory.Add(newEquip);
         }
     }
+
+    // ===============================
+    // 0901 ì¶”ê°€ë¶€ë¶„ : ëœë¤ì¥ë¹„ ì§€ê¸‰í•˜ëŠ” ë©”ì„œë“œ
+    // í™•ë¥ ì„ ì„¤ì •í•˜ëŠ” ê²ƒê¹Œì§€ë§Œ ì§€ê¸‰í•  í´ë˜ìŠ¤ì˜ ì±…ì„ìœ¼ë¡œ ë‘¡ë‹ˆë‹¤.
+    // ===============================
+    public void GiveRandomEquipment()
+    {
+        //ì •ìƒì ìœ¼ë¡œ ëª¨ë“  ì¥ë¹„ê°€ ë“¤ì–´ìˆëŠ” ë°°ì—´ì´ ì…‹íŒ…ëë‹¤ë©´
+        if (allEquipments.Length > 0)
+        {
+            //0ë¶€í„° ë°°ì—´ ê¸¸ì´ ì¤‘ ëœë¤ ìˆ«ì í•˜ë‚˜ ë½‘ì•„ì„œ
+            int randomIndex = UnityEngine.Random.Range(0, allEquipments.Length);
+
+            //ë°ì´í„° ìƒì„±í•œ ë‹¤ìŒ
+            EquipmentData randomData = allEquipments[randomIndex];
+
+            //ì¥ë¹„ë¥¼ ì§€ê¸‰í•©ë‹ˆë‹¤.
+            AddEquipment(new EquipmentInstance(randomData));
+            Debug.Log($"{randomData.equipmentName} íšë“!");
+        }
+        else
+        {
+            Debug.LogWarning("EquipmentManager : allEquipments ë°°ì—´ì— ì¥ë¹„ê°€ ë“±ë¡ë˜ì§€ ì•Šì•„ ì§€ê¸‰í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤");
+            return;
+        }
+    }
+
 }

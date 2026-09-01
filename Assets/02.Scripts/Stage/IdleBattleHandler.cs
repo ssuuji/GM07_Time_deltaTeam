@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using System.Linq;
+using AFKHero.UI;
+
 
 /*
 [방치 전투의 조건(파기된 안건입니다)]
@@ -32,6 +34,11 @@ public class IdleBattleHandler : MonoBehaviour
     [Header("보상 지급 및 애니메이션 실행 주기")]
     [SerializeField] private float rewardTime = 1.0f;
     private WaitForSeconds wait;
+
+    [Header("장비드랍확률")]
+    [Tooltip("장비가 드롭될 확률 (0 ~ 100%)")]
+    [Range(0f, 1f)]
+    [SerializeField] private float equipmentRate = 0.3f;
 
     private Coroutine idleBattleCoroutine;
 
@@ -96,9 +103,11 @@ public class IdleBattleHandler : MonoBehaviour
         //이 메서드가 실행되는 시점에서 파티의 정보를 불러오고,
         //배치한 영웅 수나 영웅들 중 가장 낮거나 높은 레벨도 계산에 반영하도록 CalculateIdleBattleReward를 수정할 수도 있겠지.
 
-        int IdleReward = StageCalculator.CaculateIdleBattleReward(StageManager.Instance.LastStageNumber, StageManager.Instance.LastSectionNumber);
+        int idleReward = StageCalculator.CaculateIdleBattleReward(StageManager.Instance.LastStageNumber, StageManager.Instance.LastSectionNumber);
+
+        UINoticePopup.Instance.ShowTime($"훈련을 시작합니다.\n 매 {rewardTime}초마다 {idleReward} Gold가 지급됩니다.");
            
-        idleBattleCoroutine = StartCoroutine(HandleIdleBattleCo(IdleReward));
+        idleBattleCoroutine = StartCoroutine(HandleIdleBattleCo(idleReward));
     }
 
     //파티슬롯이 전부 비어있는지 체크할 메서드
@@ -163,11 +172,38 @@ public class IdleBattleHandler : MonoBehaviour
             }
 
             yield return wait;
-            Debug.Log($"[IdleBattleHandler] : {rewardTime} 초 기다렸습니다");
-            AFKHero.Player.PlayerManager.Instance.AddGold(IdleReward);
-            Debug.Log($"[IdleBattleHandler] : {IdleReward} 지급함");
+            //Debug.Log($"[IdleBattleHandler] : {rewardTime} 초 기다렸습니다");
+            //AFKHero.Player.PlayerManager.Instance.AddGold(IdleReward);
+            //Debug.Log($"[IdleBattleHandler] : {IdleReward} 지급함");
+
+            GiveIdleBattleReward(IdleReward);
         }
     }
+
+    private void GiveIdleBattleReward(int IdleReward)
+    {
+        if(AFKHero.Player.PlayerManager.Instance == null)
+        {
+            Debug.LogWarning($"[IdleBattleHandler] : PlayerManager를 찾을 수 없습니다.");
+            return;
+        }    
+
+        AFKHero.Player.PlayerManager.Instance.AddGold(IdleReward);
+
+        if (EquipmentManager.Instance == null)
+        {
+            Debug.LogWarning($"[IdleBattleHandler] : EquipmentManager를 찾을 수 없습니다.");
+            return;
+        }
+
+        //설정한 확률을 통과했다면 장비지급 메서드를 호출합니다.
+        if(UnityEngine.Random.value <= equipmentRate)
+        {
+            Debug.Log($"<color=cyan>[IdleBattleHandler]</color> 방치 전투로 장비를 획득했습니다.");
+            EquipmentManager.Instance.GiveRandomEquipment();
+        }     
+    }
+
 
     private void ToggleDummyTarget(bool toggle)
     {
