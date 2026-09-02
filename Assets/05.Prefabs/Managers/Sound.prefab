@@ -49,25 +49,35 @@ MonoBehaviour:
   bgmSounds:
   - Key: 0
     Clip: {fileID: 8300000, guid: adb143a32c7f510449d01b0e4a4ae9a9, type: 3}
+    Volume: 1
   - Key: 1
     Clip: {fileID: 8300000, guid: b21f1af3d7bde224c9f9f5233d20f4d1, type: 3}
+    Volume: 0.2
   - Key: 2
     Clip: {fileID: 8300000, guid: 0bd37365a1f14b24cb2d43ee0fbb2666, type: 3}
+    Volume: 0.2
   - Key: 3
     Clip: {fileID: 8300000, guid: dcb1b58283a20004ba19bf57c73c489e, type: 3}
+    Volume: 0.2
   - Key: 4
     Clip: {fileID: 8300000, guid: 8a4b35c27bb0cad46adaa68e84aa98f3, type: 3}
+    Volume: 0.2
   - Key: 5
     Clip: {fileID: 8300000, guid: dcb1b58283a20004ba19bf57c73c489e, type: 3}
+    Volume: 0.2
   - Key: 6
     Clip: {fileID: 8300000, guid: dcb1b58283a20004ba19bf57c73c489e, type: 3}
+    Volume: 0.2
   - Key: 7
     Clip: {fileID: 8300000, guid: b996a28e918631b4e8e02d5aa174c34c, type: 3}
+    Volume: 0.2
   uiSounds:
   - Key: 8
     Clip: {fileID: 0}
+    Volume: 1
   - Key: 9
     Clip: {fileID: 0}
+    Volume: 1
   sfxPoolSize: 10
   masterVolume: 1
   bgmVolume: 1

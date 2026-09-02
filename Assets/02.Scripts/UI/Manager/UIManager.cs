@@ -1,4 +1,5 @@
-﻿using AFKHero.Quest;
+﻿using DG.Tweening;
+using AFKHero.Quest;
 using AFKHero.Shop;
 using TMPro;
 using UnityEngine;
@@ -28,6 +29,21 @@ namespace AFKHero.UI
         [SerializeField] private GameObject upgradePanel;      //성장
         [SerializeField] private GameObject sharePanel;        //공명
         [SerializeField] private TMP_Text heroTitletxt;        //영웅탭 타이틀
+        
+        [SerializeField] private GameObject equipmentPanel;
+        [SerializeField] private GameObject itemPopupPanel;
+
+
+        [Header("영웅 탭 UI 셀렉터")]
+        [SerializeField] private RectTransform heroSelector;                          //현재 선택된 영웅 탭 표시 이미지
+        [SerializeField] private TMP_Text partyText;                                  //파티탭 텍스트
+        [SerializeField] private TMP_Text upgradeText;                                //성장탭 텍스트
+        [SerializeField] private TMP_Text shareText;                                  //공명탭 텍스트
+        private const float PartySelectorX = -270f;                                   //파티 탭 선택시 셀렉터 X위치
+        private const float UpgradeSelectorX = 0f;                                    //성장 탭 선택시 셀렉터 X위치
+        private const float ShareSelectorX = 270f;                                    //공명 탭 선택시 셀렉터 X위치
+        private readonly Color selectedTextColor = new Color32(74, 40, 26, 255);      //선택
+        private readonly Color unselectedTextColor = new Color32(114, 87, 71, 255);   //미선택
 
         private UIMainTab defaultView = UIMainTab.None;        //게임 시작 시 "방치전투" 화면을 기본으로 함
         private UIHeroTab defaultHeroView = UIHeroTab.Party;   //게임 시작 시 영웅 내부 탭의 "파티"를 기본으로 함.
@@ -52,6 +68,11 @@ namespace AFKHero.UI
         //지정한 메인 탭 열기
         public void OpenView(UIMainTab view)
         {
+            if (CurrentView == UIMainTab.Hero && view != UIMainTab.Hero)
+            {
+                CloseEquipmentUI();
+            }
+
             SetPanelActive(battlePanel, view == UIMainTab.Battle); //전투탭이면 true
             SetPanelActive(heroPanel, view == UIMainTab.Hero);     //영웅탭이면 true
             SetPanelActive(shopPanel, view == UIMainTab.Shop);     //상점탭이면 true
@@ -246,6 +267,8 @@ namespace AFKHero.UI
             SetPanelActive(sharePanel,view == UIHeroTab.Share);      //공명탭 활성화
 
             CurrentHeroView = view;                                  //현재 화면 상태저장
+            UpdateHeroTabTextColor();                                //현재 탭에 맞게 글씨 색상 변경
+            UpdateHeroSelector(view);                   //현재 탭 위치로 셀렉터 이동
             UpdateHeroView(CurrentHeroView);                         //현재 화면의 데이터 갱신
         }
 
@@ -318,6 +341,51 @@ namespace AFKHero.UI
         public void OnClickedOpenShare()
         {
             OpenHeroView(UIHeroTab.Share);
+        }
+
+        #endregion
+
+        #region UI - 셀렉터 이동
+        //현재 선택된 영웅 탭에 맞게 텍스트 색상 변경
+        private void UpdateHeroTabTextColor()
+        {
+            partyText.color = CurrentHeroView == UIHeroTab.Party ? selectedTextColor : unselectedTextColor;
+            upgradeText.color = CurrentHeroView == UIHeroTab.Upgrade ? selectedTextColor : unselectedTextColor;
+            shareText.color = CurrentHeroView == UIHeroTab.Share ? selectedTextColor : unselectedTextColor;
+        }
+
+        //현재 선택된 영웅 탭 위치로 셀렉터 이동
+        private void UpdateHeroSelector(UIHeroTab view)
+        {
+            float targetX = PartySelectorX;
+
+            switch (view)
+            {
+                case UIHeroTab.Party:
+                    targetX = PartySelectorX;
+                    break;
+
+                case UIHeroTab.Upgrade:
+                    targetX = UpgradeSelectorX;
+                    break;
+
+                case UIHeroTab.Share:
+                    targetX = ShareSelectorX;
+                    break;
+            }
+
+            heroSelector.DOKill();
+            heroSelector.DOAnchorPosX(targetX, 0.15f).SetEase(Ease.OutQuad);
+        }
+        #endregion
+
+        #region UI - 탭 이동시 장비가방 닫기
+
+        //장비 UI 닫기
+        private void CloseEquipmentUI()
+        {
+            SetPanelActive(itemPopupPanel, false);
+            SetPanelActive(equipmentPanel, false);
         }
 
         #endregion

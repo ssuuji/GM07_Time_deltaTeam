@@ -14,6 +14,7 @@ namespace AFKHero.Sound
     {
         public SoundKey Key;
         public AudioClip Clip;
+        [Range(0.01f, 1f)] public float Volume;
     }
 
     public class SoundManager : MonoBehaviour
@@ -29,6 +30,7 @@ namespace AFKHero.Sound
         [SerializeField] private List<SoundInfo> uiSounds = new();
 
         private readonly Dictionary<SoundKey, AudioClip> soundData = new();
+        private float currentBGMVolume = 1f;
 
 
         [Header("SFX Pool")]
@@ -218,7 +220,10 @@ namespace AFKHero.Sound
             if (bgmSource.clip == clip && bgmSource.isPlaying)
                 return;
 
-            float finalBGMVolume = masterVolume * bgmVolume;
+            SoundInfo soundInfo = bgmSounds.Find(x => x.Key == key);
+            currentBGMVolume = soundInfo.Volume;
+
+            float finalBGMVolume = masterVolume * bgmVolume * currentBGMVolume;
 
             bgmSource.clip = clip;
             bgmSource.loop = true;
@@ -228,7 +233,7 @@ namespace AFKHero.Sound
 
         private void UpdateBGMVolume()
         {
-            bgmSource.volume = masterVolume * bgmVolume;
+            bgmSource.volume = masterVolume * bgmVolume * currentBGMVolume;
         }
 
         #endregion

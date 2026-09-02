@@ -219,13 +219,15 @@ namespace AFKHero.UI
 
             QuestData currentMainQuest = QuestManager.Instance.GetCurrentMainQuest(); //현재 메인 퀘스트
 
+            //모든 메인 퀘스트 완료
             if (currentMainQuest == null)
             {
-                mainQuestNumberText.text = "";
-                mainQuestText.text = "";
-                mainRewardText.text = "";
+                mainQuestBackground.gameObject.SetActive(false);
+                GuideManager.Instance?.EndGuide();
                 return;
             }
+
+            mainQuestBackground.gameObject.SetActive(true);
 
             int currentCount = QuestManager.Instance.GetCurrentCount(currentMainQuest); //현재 진행도
             bool isCompleted = currentCount >= currentMainQuest.TargetCount;            //퀘스트 완료 여부
@@ -233,7 +235,7 @@ namespace AFKHero.UI
             mainQuestNumberText.text = $"[메인-{currentMainQuest.Order}]"; //메인 퀘스트 순서
 
             mainQuestText.text = $"{currentMainQuest.QuestName}\n" +
-                                 $"( {currentCount} / {currentMainQuest.TargetCount} )";   //퀘스트명 + 진행도
+                                 $"( {currentCount} / {currentMainQuest.TargetCount} )"; //퀘스트명 + 진행도
 
             mainQuestBackground.color = isCompleted ? completedColor : progressingColor; //완료 여부에 따라 배경색 변경
 
@@ -276,18 +278,22 @@ namespace AFKHero.UI
         {
             if (QuestManager.Instance == null) return;
 
-            QuestData currentMainQuest = QuestManager.Instance.GetCurrentMainQuest(); //현재 메인 퀘스트
-
+            QuestData currentMainQuest = QuestManager.Instance.GetCurrentMainQuest();
             if (currentMainQuest == null) return;
 
-            //완료 상태면 보상 수령
             if (QuestManager.Instance.CanClaimReward(currentMainQuest))
             {
                 QuestManager.Instance.ClaimReward(currentMainQuest);
                 return;
             }
 
-            //진행중이면 가이드 시작 후 목적지로 이동
+            //스테이지 퀘스트인데 이미 전투 진행 중이면 이동하지 않음
+            if (currentMainQuest.GuideTarget == GuideTarget.Battle && StageManager.Instance != null && StageManager.Instance.CurrentState != StageState.Idle)
+            {
+                UINoticePopup.Instance?.ShowTime("현재 스테이지가 진행 중입니다.");
+                return;
+            }
+
             GuideManager.Instance?.StartQuestGuide(currentMainQuest);
             UIManager.Instance?.OpenGuideTarget(currentMainQuest.GuideTarget);
         }

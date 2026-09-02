@@ -1,35 +1,88 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using TMPro;
-using AFKHero.Shop; // HeroSummonManager¸¦ °¡Á®¿À±â À§ÇØ ÇÊ¿äÇÕ´Ï´Ù.
+using AFKHero.Shop;
+using UnityEngine.UI; // HeroSummonManagerë¥¼ ê°€ì ¸ì˜¤ê¸° ìœ„í•´ í•„ìš”í•©ë‹ˆë‹¤.
 
 namespace AFKHero.UI
 {
     public class UISummonProbability : MonoBehaviour
     {
-        [SerializeField] private TMP_Text probabilityText;
+        [Header("í™•ë¥ ")]
+        [SerializeField] private TMP_Text normalRateText;
+        [SerializeField] private TMP_Text rareRateText;
+        [SerializeField] private TMP_Text epicRateText;
+
+        [Header("ë ˆë²¨ ì´ë™")]
+        [SerializeField] private TMP_Text levelText;
+        [SerializeField] private GameObject leftArrow;
+        [SerializeField] private GameObject rightArrow;
+        private int previewLevel;
+
+        [Header("ë’¤ë¡œê°€ê¸°")]
+        [SerializeField] private GameObject backButton;
 
         private void OnEnable()
         {
+            previewLevel = HeroSummonManager.Instance.SummonLevel;
+
             UpdateProbabilityText();
+            backButton.SetActive(true);     
+        }
+
+        private void OnDisable()
+        {
+            backButton.SetActive(false);    
         }
 
         private void UpdateProbabilityText()
         {
-            // ¸Å´ÏÀú°¡ ¾ÆÁ÷ ¾È ¸¸µé¾îÁ³´Ù¸é Ãë¼Ò
+            // ë§¤ë‹ˆì €ê°€ ì•„ì§ ì•ˆ ë§Œë“¤ì–´ì¡Œë‹¤ë©´ ì·¨ì†Œ
             if (HeroSummonManager.Instance == null) return;
 
-            // ÇöÀç ·¹º§ÀÇ È®·ü µ¥ÀÌÅÍ¸¦ °¡Á®¿É´Ï´Ù.
+            /*
+            // í˜„ì¬ ë ˆë²¨ì˜ í™•ë¥  ë°ì´í„°ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
             SummonLevelData currentData = HeroSummonManager.Instance.GetCurrentLevelData();
 
             if (currentData != null)
             {
                 int currentLevel = HeroSummonManager.Instance.SummonLevel;
 
-                probabilityText.text = $"<size=120%><b>[ LV.{currentLevel} ¿µ¿õ ¼ÒÈ¯ È®·ü ]</b></size>\n\n" +
-                                       $"<color=#A0A0A0>³ë¸Ö (Normal)</color> : {currentData.normalRate}%\n" +
-                                       $"<color=#00BFFF>·¹¾î (Rare)</color> : {currentData.rareRate}%\n" +
-                                       $"<color=#BA55D3>¿¡ÇÈ (Epic)</color> : {currentData.epicRate}%";
+                probabilityText.text = $"<size=120%><b>[ LV.{currentLevel} ì˜ì›… ì†Œí™˜ í™•ë¥  ]</b></size>\n\n" +
+                                       $"<color=#A0A0A0>ë…¸ë©€ (Normal)</color> : {currentData.normalRate}%\n" +
+                                       $"<color=#00BFFF>ë ˆì–´ (Rare)</color> : {currentData.rareRate}%\n" +
+                                       $"<color=#BA55D3>ì—í”½ (Epic)</color> : {currentData.epicRate}%";
             }
+            */
+
+            SummonLevelData levelData = HeroSummonManager.Instance.GetLevelData(previewLevel);
+            if (levelData == null) return;
+
+            levelText.text = $"LV. {previewLevel}";
+            normalRateText.text = $"{levelData.normalRate}%";
+            rareRateText.text = $"{levelData.rareRate}%";
+            epicRateText.text = $"{levelData.epicRate}%";
+
+            leftArrow.SetActive(previewLevel > 1);
+            rightArrow.SetActive(previewLevel < HeroSummonManager.Instance.MaxSummonLevel);
+
+        }
+
+        //ì´ì „ ë ˆë²¨ í™•ë¥ 
+        public void OnClickedPreviousLevel()
+        {
+            if (previewLevel <= 1) return;
+
+            previewLevel--;
+            UpdateProbabilityText();
+        }
+
+        //ë‹¤ìŒ ë ˆë²¨ í™•ë¥ 
+        public void OnClickedNextLevel()
+        {
+            if (previewLevel >= HeroSummonManager.Instance.MaxSummonLevel) return;
+
+            previewLevel++;
+            UpdateProbabilityText();
         }
     }
 }

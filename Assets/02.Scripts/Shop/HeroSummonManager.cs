@@ -31,6 +31,7 @@ namespace AFKHero.Shop
                 return data.maxExp;
             }
         }
+        public int MaxSummonLevel => levelData.Count;
 
         private void Awake()
         {
@@ -131,6 +132,17 @@ namespace AFKHero.Shop
 
             summonExp -= currentData.maxExp;                    //남은 게이지는 다음레벨로 넘기기
             summonLevel++;                                      //제단 레벨업
+        }
+
+        //지정한 소환제단 레벨 데이터 반환
+        public SummonLevelData GetLevelData(int level)
+        {
+            foreach (SummonLevelData data in levelData)
+            {
+                if (data.level == level) return data;
+            }
+
+            return null;
         }
 
         #region 저장
