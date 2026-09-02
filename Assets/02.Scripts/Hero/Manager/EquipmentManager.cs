@@ -24,8 +24,6 @@ public class EquipmentManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-
     }
 
     // 몬스터를 잡고 만들어진 '진짜 장비'를 가방에 넣기
@@ -335,12 +333,22 @@ public class EquipmentManager : MonoBehaviour
 
         foreach (var itemData in saveData.inventoryEquips)
         {
-            EquipmentData baseData = Resources.Load<EquipmentData>($"Equipments/{itemData.equipmentID}");
+            // 수정 : Resources.Load 대신, 미리 등록된 allEquipments 배열에서 장비찾기
+            EquipmentData baseData = null;
 
-            // 원본 데이터를 찾지 못했다면 에러를 띄우고 건너뜀
+            foreach (var equipData in allEquipments)
+            {
+                if (equipData.equipmentID == itemData.equipmentID)
+                {
+                    baseData = equipData;
+                    break;
+                }
+            }
+
+            // 원본 데이터를 찾지 못했다면 에러를 띄우고 건너뜐다.
             if (baseData == null)
             {
-                Debug.LogWarning($"[장비 로드 실패] Resources/Equipments 폴더 안에서 '{itemData.equipmentID}'(을)를 찾을 수 없습니다. 파일 이름이 ID와 똑같은지 확인해주세요!");
+                Debug.LogWarning($"[장비 로드 실패] 배열에서 '{itemData.equipmentID}'(을)를 찾을 수 없습니다. EquipmentManager 프리팹의 allEquipments 배열에 잘 등록되었는지 확인해주세요!");
                 continue;
             }
 
@@ -359,8 +367,7 @@ public class EquipmentManager : MonoBehaviour
     }
 
     // ===============================
-    // 0901 추가부분 : 랜덤장비 지급하는 메서드
-    // 확률을 설정하는 것까지만 지급할 클래스의 책임으로 둡니다.
+    // 랜덤장비 지급하는 메서드
     // ===============================
     public void GiveRandomEquipment()
     {
@@ -373,7 +380,7 @@ public class EquipmentManager : MonoBehaviour
             //데이터 생성한 다음
             EquipmentData randomData = allEquipments[randomIndex];
 
-            //장비를 지급합니다.
+            //장비를 지급
             AddEquipment(new EquipmentInstance(randomData));
             Debug.Log($"{randomData.equipmentName} 획득!");
         }
@@ -383,5 +390,4 @@ public class EquipmentManager : MonoBehaviour
             return;
         }
     }
-
 }
