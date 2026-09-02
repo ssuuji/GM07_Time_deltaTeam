@@ -1,4 +1,5 @@
-﻿using AFKHero.UI;
+﻿using AFKHero.Quest;
+using AFKHero.UI;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -42,6 +43,9 @@ public class StagePreviewer : MonoBehaviour
 
     [Header("프리팹 복사본 리스트")]
     [SerializeField] private List<GameObject> copiedPrefabs;
+
+    [Header("가이드")]
+    [SerializeField] private RectTransform stageStartButton;
 
     /*                                                                 //버튼연결부분 -> UIManager로 옮겼습니다
     private void Awake()                                               //OnEnable , OnDisable : 전투프리뷰 패널이 열리고 닫힐때 실행되도록 추가했습니다
@@ -93,6 +97,7 @@ public class StagePreviewer : MonoBehaviour
     private void OnEnable()
     {
         ShowEnemyPrefab();
+        ShowGuide();
     }
 
     //전투 프리뷰 패널이 닫혔을 때
@@ -192,6 +197,12 @@ public class StagePreviewer : MonoBehaviour
 
         //StageManager의 StartStage를 호출합니다.
         StageManager.Instance.StartStage();
+
+        //가이드 종료
+        if (StageManager.Instance.CurrentState == StageState.Working && GuideManager.Instance != null && GuideManager.Instance.IsTarget(GuideTarget.Battle) && GuideManager.Instance.IsStep(GuideStep.ClickStageStart))
+        {
+            GuideManager.Instance.EndGuide();
+        }
     }
 
     //스테이지 정보 표시 UI
@@ -225,5 +236,16 @@ public class StagePreviewer : MonoBehaviour
         {
             freeTicketText.text = currentStage.ClearTicket.ToString();
         }
+    }
+
+    //스테이지 시작 가이드 표시
+    private void ShowGuide()
+    {
+        if (GuideManager.Instance == null) return;
+        if (!GuideManager.Instance.IsTarget(GuideTarget.Battle)) return;
+        if (!GuideManager.Instance.IsStep(GuideStep.ClickStageStart)) return;
+        if (stageStartButton == null) return;
+
+        GuideManager.Instance.ShowGuide(stageStartButton);
     }
 }

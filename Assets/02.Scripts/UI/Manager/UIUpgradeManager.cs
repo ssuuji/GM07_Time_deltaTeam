@@ -74,6 +74,7 @@ namespace AFKHero.UI
             if (upgradeContent == null) return;
 
             heroList.UpdateList(upgradeContent, UIHeroSlotType.All, null, UIHeroSlotMode.Upgrade); //전체 영웅 표시
+            ShowSelectHeroGuide();
         }
 
         //영웅 선택
@@ -84,6 +85,8 @@ namespace AFKHero.UI
             selectedHero = hero;                                    //선택한 영웅 저장
             SetSelectedHeroUI(true);                                //상단에 영웅UI 표시
             UpdateSelectedHero();                                   //선택한 영웅정보 표시
+
+            ShowLevelUpGuide();
         }
 
         //선택한 영웅 UI 갱신
@@ -183,6 +186,11 @@ namespace AFKHero.UI
             QuestManager.Instance?.AddProgress(QuestConditionType.HeroLevelUp);              //영웅 레벨업 퀘스트 진행도 증가
             UpdateSelectedHero();   //영웅UI 갱신
             UpdateHeroList();
+
+            if (GuideManager.Instance != null && GuideManager.Instance.IsTarget(GuideTarget.HeroUpgrade) && GuideManager.Instance.IsStep(GuideStep.ClickLevelUpButton))
+            {
+                GuideManager.Instance.EndGuide();
+            }
         }
         #endregion
 
@@ -256,6 +264,44 @@ namespace AFKHero.UI
             // 장착 완료 후 현재 창의 스탯 및 장비 슬롯 UI를 갱신
             UpdateSelectedHero();
         }
+
+        #region 가이드
+
+        //영웅 선택 가이드 표시
+        private void ShowSelectHeroGuide()
+        {
+            if (GuideManager.Instance == null) return;
+            if (!GuideManager.Instance.IsTarget(GuideTarget.HeroUpgrade)) return;
+            if (!GuideManager.Instance.IsStep(GuideStep.SelectHero)) return;
+
+            UIHeroSlot[] heroSlots = upgradeContent.GetComponentsInChildren<UIHeroSlot>();
+
+            foreach (UIHeroSlot heroSlot in heroSlots)
+            {
+                HeroInstance hero = heroSlot.Hero;
+
+                if (hero == null) continue;
+                if (hero.level >= 50) continue;
+                if (hero.isResonanced) continue;
+                if (AFKHeroPlayerManager.Instance.Gold < hero.LevelUpCost) continue;
+
+                GuideManager.Instance.ShowGuide(heroSlot.GetComponent<RectTransform>());
+                return;
+            }
+        }
+
+        //레벨업 버튼 가이드 표시
+        private void ShowLevelUpGuide()
+        {
+            if (GuideManager.Instance == null) return;
+            if (!GuideManager.Instance.IsTarget(GuideTarget.HeroUpgrade)) return;
+            if (!GuideManager.Instance.IsStep(GuideStep.SelectHero)) return;
+            if (!levelUpButton.interactable) return;
+
+            GuideManager.Instance.ChangeStep(GuideStep.ClickLevelUpButton);
+            GuideManager.Instance.ShowGuide(levelUpButton.GetComponent<RectTransform>());
+        }
+        #endregion
     }
 }
 

@@ -30,6 +30,7 @@ namespace AFKHero.Quest
         [Header("메인 퀘스트")]
         [SerializeField] private int order;                                  //메인 퀘스트 진행 순서
         [SerializeField] private GuideTarget guideTarget = GuideTarget.None; //가이드 이동 목적지
+        [SerializeField] private bool autoGuide;                             //퀘스트 진입 시 자동 가이드 여부
 
 
 
@@ -47,6 +48,7 @@ namespace AFKHero.Quest
         public List<QuestReward> Rewards => rewards;               //퀘스트 보상 목록
         public int Order => order;                                 //메인 퀘스트 진행 순서
         public GuideTarget GuideTarget => guideTarget;             //가이드 이동 목적지
+        public bool AutoGuide => autoGuide;                        //자동 가이드 여부
     }
 }
 

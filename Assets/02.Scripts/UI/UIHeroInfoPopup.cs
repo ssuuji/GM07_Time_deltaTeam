@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using AFKHero.Quest;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -47,6 +48,8 @@ namespace AFKHero.UI
 
             backButton.SetActive(true);     //뒤로가기버튼 : 배경 클릭
             heroInfoPopup.SetActive(true);  //팝업창 활성화
+
+            ShowDeployButtonGuide(hero);
         }
 
         //영웅정보
@@ -185,6 +188,11 @@ namespace AFKHero.UI
             else
             {
                 UIPartyManager.Instance.StartPlaceHero(selectedHero); //없으면 배치시작
+
+                if (GuideManager.Instance != null && GuideManager.Instance.IsTarget(GuideTarget.Party) && GuideManager.Instance.IsStep(GuideStep.ClickDeployButton))
+                {
+                    GuideManager.Instance.ChangeStep(GuideStep.SelectDeployPosition);
+                }
             }
 
             InfoClose();
@@ -204,6 +212,19 @@ namespace AFKHero.UI
             }
 
             InfoClose();
+        }
+
+        //배치 버튼 가이드 표시
+        private void ShowDeployButtonGuide(HeroInstance hero)
+        {
+            if (currentMode != UIHeroSlotMode.Party) return;
+            if (PartyManager.Instance.IsHeroInParty(hero)) return;
+            if (GuideManager.Instance == null) return;
+            if (!GuideManager.Instance.IsTarget(GuideTarget.Party)) return;
+            if (!GuideManager.Instance.IsStep(GuideStep.SelectHero)) return;
+
+            GuideManager.Instance.ChangeStep(GuideStep.ClickDeployButton);
+            GuideManager.Instance.ShowGuide(ButtonText.rectTransform);
         }
     }
 

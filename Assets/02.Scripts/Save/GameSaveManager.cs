@@ -54,6 +54,8 @@ public class GameSaveManager : MonoBehaviour
         {
             LoadSaveData();
             ApplyLoadedData();
+
+            GuideManager.Instance?.TryStartAutoGuide();
         }
     }
 
@@ -79,6 +81,8 @@ public class GameSaveManager : MonoBehaviour
         if (!IsGameScene(scene)) return;
 
         ApplyLoadedData();
+
+        GuideManager.Instance?.TryStartAutoGuide();
     }
 
     #region 저장

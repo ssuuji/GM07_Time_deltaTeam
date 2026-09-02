@@ -182,6 +182,7 @@ public class StageManager : MonoBehaviour
             return;
         }
 
+        UIBattleManager.Instance?.UpdatePartyUI();
 
         //방치전투 소환 로직은 이걸 참고해서 구현하면 될 듯.
         bool battleStarted = battleSpawner.SpawnBattle(
