@@ -26,3 +26,4 @@ MonoBehaviour:
     amount: 5000
   order: 3
   guideTarget: 1
+  autoGuide: 1

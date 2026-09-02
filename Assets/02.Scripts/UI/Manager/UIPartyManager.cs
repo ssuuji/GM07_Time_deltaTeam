@@ -50,6 +50,7 @@ namespace AFKHero.UI
             if (partyContent == null) return;
 
             heroList.UpdateList(partyContent, UIHeroSlotType.All, null, UIHeroSlotMode.Party); //현재 보유 중인 모든 영웅 표시
+            ShowSelectHeroGuide();
         }
 
         //UI 갱신
@@ -135,6 +136,27 @@ namespace AFKHero.UI
             }
         }
 
+        //영웅 선택 가이드 표시
+        private void ShowSelectHeroGuide()
+        {
+            if (GuideManager.Instance == null) return;
+            if (!GuideManager.Instance.IsTarget(GuideTarget.Party)) return;
+            if (!GuideManager.Instance.IsStep(GuideStep.SelectHero)) return;
+
+            UIHeroSlot[] heroSlots = partyContent.GetComponentsInChildren<UIHeroSlot>();
+
+            foreach (UIHeroSlot heroSlot in heroSlots)
+            {
+                HeroInstance hero = heroSlot.Hero;
+
+                if (hero == null) continue;
+                if (PartyManager.Instance.IsHeroInParty(hero)) continue;
+
+                GuideManager.Instance.ShowGuide(heroSlot.GetComponent<RectTransform>());
+                return;
+            }
+        }
+
         #endregion
 
         #region 파티 배치
@@ -166,6 +188,11 @@ namespace AFKHero.UI
             SetPlaceBack(false);           //배치중 배경 제거
             SetSlotAlpha(false);           //자리 이미지 원래 상태로
             UpdatePartyUI();               //UI갱신
+
+            if (GuideManager.Instance != null && GuideManager.Instance.IsTarget(GuideTarget.Party) && GuideManager.Instance.IsStep(GuideStep.SelectDeployPosition))
+            {
+                GuideManager.Instance.EndGuide();
+            }
         }
 
         //영웅 배치 해제

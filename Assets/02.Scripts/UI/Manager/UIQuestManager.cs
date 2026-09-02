@@ -47,6 +47,18 @@ namespace AFKHero.UI
             {
                 QuestManager.Instance.OnQuestChanged += RefreshQuestUI; //퀘스트 상태 변경 이벤트
             }
+
+            if (GuideManager.Instance != null)
+            {
+                GuideManager.Instance.OnGuideStepChanged += OnGuideStepChanged;
+                OnGuideStepChanged(GuideManager.Instance != null ? GuideManager.Instance.CurrentStep : GuideStep.None);
+            }
+
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.OnMainViewChanged += OnMainViewChanged;
+            }
+
             UpdateMainQuestUI(); //게임 시작 시 메인 퀘스트 표시
         }
 
@@ -57,6 +69,15 @@ namespace AFKHero.UI
                 QuestManager.Instance.OnQuestChanged -= RefreshQuestUI;
             }
 
+            if (GuideManager.Instance != null)
+            {
+                GuideManager.Instance.OnGuideStepChanged -= OnGuideStepChanged;
+            }
+
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.OnMainViewChanged -= OnMainViewChanged;
+            }
         }
 
         #region 퀘스트 목록
@@ -66,6 +87,8 @@ namespace AFKHero.UI
         {
             UpdateMainQuestUI(); //메인 퀘스트 갱신
             RefreshQuestList();  //일일 / 반복 퀘스트 목록 갱신
+
+            GuideManager.Instance?.TryStartAutoGuide();
         }
 
         //일일 / 반복 퀘스트 목록 갱신
@@ -117,6 +140,8 @@ namespace AFKHero.UI
                 return;
             }
 
+            GuideManager.Instance?.PauseGuide();
+
             questPanel.SetActive(true);
             backButton.gameObject.SetActive(true);
 
@@ -128,6 +153,8 @@ namespace AFKHero.UI
         {
             questPanel.SetActive(false);
             backButton.gameObject.SetActive(false);
+
+            GuideManager.Instance?.ResumeGuide();
         }
 
         #endregion
@@ -260,8 +287,33 @@ namespace AFKHero.UI
                 return;
             }
 
-            //진행중이면 가이드 목적지로 이동
+            //진행중이면 가이드 시작 후 목적지로 이동
+            GuideManager.Instance?.StartQuestGuide(currentMainQuest);
             UIManager.Instance?.OpenGuideTarget(currentMainQuest.GuideTarget);
+        }
+
+        //가이드 단계에 따라 메인 퀘스트 화살표 표시
+        private void OnGuideStepChanged(GuideStep step)
+        {
+            if (step != GuideStep.ClickQuestButton) return;
+
+            GuideManager.Instance?.ShowGuide(mainQuestBackground.rectTransform);
+        }
+
+        //메인 탭 변경 시 퀘스트 가이드 표시 여부 갱신
+        private void OnMainViewChanged(UIMainTab view)
+        {
+            if (GuideManager.Instance == null) return;
+            if (!GuideManager.Instance.IsStep(GuideStep.ClickQuestButton)) return;
+
+            if (view == UIMainTab.None)
+            {
+                GuideManager.Instance.ShowGuide(mainQuestBackground.rectTransform);
+            }
+            else
+            {
+                GuideManager.Instance.HideGuide();
+            }
         }
         #endregion
     }
