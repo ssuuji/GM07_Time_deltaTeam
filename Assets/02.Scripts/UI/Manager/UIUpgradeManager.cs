@@ -1,7 +1,9 @@
 ﻿using AFKHero.Quest;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 using AFKHeroPlayerManager = AFKHero.Player.PlayerManager;
@@ -26,6 +28,10 @@ namespace AFKHero.UI
         [Header("레벨업")]
         [SerializeField] private Button levelUpButton;           //레벨업 버튼
         [SerializeField] private TMP_Text levelUpCostText;       //레벨업 비용
+        private float levelUpHoldDelay = 0.4f;                   //연속 레벨업 시작 대기시간
+        private float levelUpRepeatInterval = 0.08f;             //연속 레벨업 간격
+        private Coroutine levelUpHoldCoroutine; //연속 레벨업 코루틴
+        private bool levelUpHoldTriggered;      //길게 누르기 실행 여부
 
         [Header("영웅 합성")]
         [SerializeField] private Button gradeUpButton;           //영웅 합성 버튼
@@ -50,6 +56,7 @@ namespace AFKHero.UI
 
         private void Start()
         {
+            SetLevelUpHoldEvent();
             UpdateHeroList();
         }
 
@@ -63,6 +70,13 @@ namespace AFKHero.UI
             if (heroHpText != null) heroHpText.gameObject.SetActive(active); //체력
             levelUpCostText.gameObject.SetActive(active);        //레벨업 비용
             gradeUpShardCountText.gameObject.SetActive(active);  //영웅 합성 재료
+
+            //선택된 영웅이 없으면 버튼 비활성화
+            if (!active)
+            {
+                levelUpButton.interactable = false;
+                gradeUpButton.interactable = false;
+            }
         }
 
         #region 영웅 리스트
@@ -175,11 +189,23 @@ namespace AFKHero.UI
         //레벨업 버튼
         public void OnClickedLevelUp()
         {
+            //길게 눌러서 이미 연속 레벨업이 실행된 경우
+            //버튼을 뗄 때 발생하는 OnClick은 무시
+            if (levelUpHoldTriggered)
+            {
+                levelUpHoldTriggered = false;
+                return;
+            }
+
+            LevelUpOnce();
+        }
+
+        //레벨업 1회
+        private void LevelUpOnce()
+        {
             if (selectedHero == null || selectedHero.data == null) return;
             if (selectedHero.level >= 50) return;                                            //최고레벨이면 return
             if (!AFKHeroPlayerManager.Instance.TryUseGold(selectedHero.LevelUpCost)) return; //비용이 부족하면 return
-
-            //selectedHero.LevelUp(); //레벨업
 
             HeroManager.Instance.LevelUpHero(selectedHero.data.HeroID);
 
@@ -191,6 +217,86 @@ namespace AFKHero.UI
             {
                 GuideManager.Instance.EndGuide();
             }
+        }
+
+        //레벨업 버튼 길게 누르기 이벤트 설정
+        private void SetLevelUpHoldEvent()
+        {
+            if (levelUpButton == null) return;
+
+            EventTrigger trigger = levelUpButton.GetComponent<EventTrigger>();
+
+            if (trigger == null)
+            {
+                trigger = levelUpButton.gameObject.AddComponent<EventTrigger>();
+            }
+
+            //버튼 누름
+            EventTrigger.Entry pointerDown = new EventTrigger.Entry();
+            pointerDown.eventID = EventTriggerType.PointerDown;
+            pointerDown.callback.AddListener((data) => StartLevelUpHold());
+            trigger.triggers.Add(pointerDown);
+
+            //버튼 뗌
+            EventTrigger.Entry pointerUp = new EventTrigger.Entry();
+            pointerUp.eventID = EventTriggerType.PointerUp;
+            pointerUp.callback.AddListener((data) => StopLevelUpHold());
+            trigger.triggers.Add(pointerUp);
+
+            //버튼 영역에서 벗어남
+            EventTrigger.Entry pointerExit = new EventTrigger.Entry();
+            pointerExit.eventID = EventTriggerType.PointerExit;
+            pointerExit.callback.AddListener((data) => CancelLevelUpHold());
+            trigger.triggers.Add(pointerExit);
+        }
+
+        //레벨업 버튼 누르기 시작
+        private void StartLevelUpHold()
+        {
+            if (!levelUpButton.interactable) return;
+
+            levelUpHoldTriggered = false;
+
+            if (levelUpHoldCoroutine != null)
+            {
+                StopCoroutine(levelUpHoldCoroutine);
+            }
+
+            levelUpHoldCoroutine = StartCoroutine(LevelUpHoldRoutine());
+        }
+
+        //레벨업 버튼 길게 누르기
+        private IEnumerator LevelUpHoldRoutine()
+        {
+            yield return new WaitForSecondsRealtime(levelUpHoldDelay);
+
+            levelUpHoldTriggered = true;
+
+            while (levelUpButton.interactable)
+            {
+                LevelUpOnce();
+
+                yield return new WaitForSecondsRealtime(levelUpRepeatInterval);
+            }
+
+            levelUpHoldCoroutine = null;
+        }
+
+        //레벨업 버튼 뗌
+        private void StopLevelUpHold()
+        {
+            if (levelUpHoldCoroutine != null)
+            {
+                StopCoroutine(levelUpHoldCoroutine);
+                levelUpHoldCoroutine = null;
+            }
+        }
+
+        //버튼 영역에서 벗어남
+        private void CancelLevelUpHold()
+        {
+            StopLevelUpHold();
+            levelUpHoldTriggered = false;
         }
         #endregion
 

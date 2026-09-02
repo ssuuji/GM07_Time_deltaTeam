@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -16,7 +16,7 @@ public class UI_ItemSlot : MonoBehaviour
     private UI_EquipmentPanel mainPanel;
     private bool isEquippedSlot;
 
-    [Header("¼±ÅÃ ÆÇ¸Å UI")]
+    [Header("ì„ íƒ íŒë§¤ UI")]
     public GameObject checkmarkObject;
 
     public void Setup(EquipmentInstance equipData, HeroInstance hero, UI_EquipmentPanel panel, bool isEquipped)
@@ -26,7 +26,7 @@ public class UI_ItemSlot : MonoBehaviour
         mainPanel = panel;
         isEquippedSlot = isEquipped;
 
-        // ½½·ÔÀÌ »õ·Î ¸¸µé¾îÁö°Å³ª °»½ÅµÉ ¶§ Ã¼Å©¹Ú½º´Â ²ô°í ½ÃÀÛ
+        // ìŠ¬ë¡¯ì´ ìƒˆë¡œ ë§Œë“¤ì–´ì§€ê±°ë‚˜ ê°±ì‹ ë  ë•Œ ì²´í¬ë°•ìŠ¤ëŠ” ë„ê³  ì‹œì‘
         if (checkmarkObject != null) checkmarkObject.SetActive(false);
 
         if (myEquipment != null)
@@ -43,15 +43,15 @@ public class UI_ItemSlot : MonoBehaviour
                 nameText.color = Color.black;
             }
 
-            // Àåºñ µî±Ş¿¡ µû¸¥ ¹è°æ»ö º¯°æ ·ÎÁ÷
+            // ì¥ë¹„ ë“±ê¸‰ì— ë”°ë¥¸ ë°°ê²½ìƒ‰ ë³€ê²½ ë¡œì§
             if (backgroundImage != null)
             {
                 if (myEquipment.Grade == EquipmentGrade.Epic)
-                    backgroundImage.color = new Color(0.9f, 0.7f, 1f); // ¿¡ÇÈ
+                    backgroundImage.color = new Color(0.9f, 0.7f, 1f); // ì—í”½
                 else if (myEquipment.Grade == EquipmentGrade.Rare)
-                    backgroundImage.color = new Color(0.7f, 0.9f, 1f); // ·¹¾î
+                    backgroundImage.color = new Color(0.7f, 0.9f, 1f); // ë ˆì–´
                 else
-                    backgroundImage.color = new Color(0.9f, 0.9f, 0.9f); // ³ë¸»
+                    backgroundImage.color = new Color(0.9f, 0.9f, 0.9f); // ë…¸ë§
             }
 
             if (plusIconObject != null) plusIconObject.SetActive(false);
@@ -69,7 +69,7 @@ public class UI_ItemSlot : MonoBehaviour
                 nameText.text = "";
             }
 
-            // ºó ½½·ÔÀÏ ¶§ÀÇ ±âº» ¹è°æ»ö
+            // ë¹ˆ ìŠ¬ë¡¯ì¼ ë•Œì˜ ê¸°ë³¸ ë°°ê²½ìƒ‰
             if (backgroundImage != null)
             {
                 backgroundImage.color = new Color(0.8f, 0.8f, 0.8f);
@@ -92,14 +92,14 @@ public class UI_ItemSlot : MonoBehaviour
     {
         if (myEquipment == null) return;
 
-        // ÇöÀç ÆĞ³ÎÀÌ ÆÇ¸Å ¸ğµåÀÎÁö È®ÀÎÇÏ°í, ÆÇ¸Å ¸ğµåÀÏ °æ¿ì ÆË¾÷À» ¶ç¿ìÁö ¾Ê°í ¼±ÅÃ Ã³¸®¸¸ ¼öÇà
+        // í˜„ì¬ íŒ¨ë„ì´ íŒë§¤ ëª¨ë“œì¸ì§€ í™•ì¸í•˜ê³ , íŒë§¤ ëª¨ë“œì¼ ê²½ìš° íŒì—…ì„ ë„ìš°ì§€ ì•Šê³  ì„ íƒ ì²˜ë¦¬ë§Œ ìˆ˜í–‰
         if (mainPanel != null && mainPanel.isSellMode && !isEquippedSlot)
         {
             mainPanel.ToggleItemSelection(myEquipment, this);
-            return; // ÆË¾÷ÀÌ ¾È ¶ßµµ·Ï ¿©±â¼­ ÇÔ¼ö Á¾·á
+            return; // íŒì—…ì´ ì•ˆ ëœ¨ë„ë¡ ì—¬ê¸°ì„œ í•¨ìˆ˜ ì¢…ë£Œ
         }
 
-        // ÆÇ¸Å ¸ğµå°¡ ¾Æ´Ò ¶§¸¸ ±âÁ¸Ã³·³ ÆË¾÷Ã¢ ¿­±â
+        // íŒë§¤ ëª¨ë“œê°€ ì•„ë‹ ë•Œë§Œ ê¸°ì¡´ì²˜ëŸ¼ íŒì—…ì°½ ì—´ê¸°
         if (mainPanel != null && mainPanel.itemPopup != null)
         {
             mainPanel.itemPopup.OpenPopup(myEquipment, targetHero, mainPanel, isEquippedSlot);
