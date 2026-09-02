@@ -1,7 +1,10 @@
-﻿using System;
+﻿using AFKHero.Scene;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityScene = UnityEngine.SceneManagement.Scene;
 
 
 namespace AFKHero.Sound
@@ -54,6 +57,8 @@ namespace AFKHero.Sound
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
+
+                SceneManager.sceneLoaded += OnSceneLoaded;
             }
             else
             {
@@ -67,6 +72,19 @@ namespace AFKHero.Sound
             InitSFXPool();
         }
 
+        private void Start()
+        {
+            PlaySceneBGM(SceneManager.GetActiveScene());
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                SceneManager.sceneLoaded -= OnSceneLoaded;
+            }
+        }
+
         private void AddSoundData(List<SoundInfo> sounds)
         {
             foreach (SoundInfo info in sounds)
@@ -75,6 +93,24 @@ namespace AFKHero.Sound
             }
         }
 
+        //씬에 맞는 BGM 재생
+        private void OnSceneLoaded(UnityScene scene, LoadSceneMode mode)
+        {
+            PlaySceneBGM(scene);
+        }
+
+        //씬에 맞는 BGM 설정
+        private void PlaySceneBGM(UnityScene scene)
+        {
+            if (scene.name == SceneNames.GetSceneName(SceneType.Title))
+            {
+                PlayBGM(SoundKey.BGM_Title);
+            }
+            else if (scene.name == SceneNames.GetSceneName(SceneType.Game))
+            {
+                PlayBGM(SoundKey.BGM_Idle);
+            }
+        }
 
         #region SFX Pool
 

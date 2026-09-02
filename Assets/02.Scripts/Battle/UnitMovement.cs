@@ -4,7 +4,7 @@ namespace AFKHero.Battle
 {
     public class UnitMovement : MonoBehaviour
     {
-        private float AttackRangeEpsilon = 0.0001f;
+        private float AttackRangeEpsilon = 0.1f;
 
         private BattleUnit owner;
 

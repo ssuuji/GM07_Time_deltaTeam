@@ -21,6 +21,8 @@ public enum StageState //스테이지 매니저의 상태 측정용
 
 /////////////////////////////////
 
+
+
 /////////////////////////////////
 //////////// 사운드 /////////////
 public enum SoundKey 
@@ -29,6 +31,11 @@ public enum SoundKey
     BGM_Title,
     BGM_Idle,
     BGM_Stage,
+    BGM_Stage2,
+    BGM_Stage3,
+    BGM_Stage4,
+    BGM_Stage5,
+    BGM_Boss,
 
     //UI
     UI_ButtonSelect,
@@ -39,6 +46,9 @@ public enum SoundKey
 }
 
 /////////////////////////////////
+
+
+
 /////////////////////////////////
 //////////// Scene //////////////
 namespace AFKHero.Scene
@@ -134,8 +144,36 @@ namespace AFKHero.Quest
         Party,        //파티
         HeroUpgrade,  //성장 (레벨업)
         HeroSummon,   //영웅소환 (상점)
-        None          //이동없음 (전투? 화면 그대로)
+        Battle,       //전투
+        None          //이동없음
     }
 }
 /////////////////////////////////
 
+
+
+/////////////////////////////////
+//////////// 가이드 //////////////
+public enum GuideStep
+{
+    None,
+
+    SelectHero,           //영웅 선택
+
+    ClickDeployButton,    //배치 버튼
+    SelectDeployPosition, //배치 위치 선택
+
+    ClickLevelUpButton,   //레벨업 버튼
+
+    ClickQuestButton,     //퀘스트 버튼
+    ClaimQuestReward,     //퀘스트 보상
+
+    ClickShopButton,      //상점/소환 이동
+    ClickSummon,          //소환
+
+    ClickStageStart,      //스테이지 시작 버튼
+
+    Complete
+}
+
+/////////////////////////////////

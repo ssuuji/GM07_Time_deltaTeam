@@ -64,6 +64,8 @@ namespace AFKHero.UI
                 return;
             }
 
+            GuideManager.Instance?.PauseGuide();
+
             settingPanel.SetActive(true);
             backButton.gameObject.SetActive(true);
         }
@@ -74,6 +76,8 @@ namespace AFKHero.UI
             deleteSavePopup.SetActive(false);
             settingPanel.SetActive(false);
             backButton.gameObject.SetActive(false);
+
+            GuideManager.Instance?.ResumeGuide();
         }
 
         #endregion

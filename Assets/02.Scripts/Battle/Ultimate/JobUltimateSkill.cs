@@ -31,7 +31,7 @@ namespace AFKHero.Battle
         private const float ArcherDefenseIgnoreRate = 0.5f;
 
         // 탱커 도발 범위 및 시간
-        private const float TankTauntRange = 3f;
+        private const float TankTauntRange = 2f;
         private const float TankTauntDuration = 3f;
         // 탱커 보너스 힐 비율
         private const float TankBonusHealRate = 0.10f;

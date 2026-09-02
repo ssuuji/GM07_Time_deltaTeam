@@ -1,4 +1,5 @@
 ﻿using AFKHero.Quest;
+using AFKHero.Shop;
 using TMPro;
 using UnityEngine;
 
@@ -7,6 +8,9 @@ namespace AFKHero.UI
     public class UIManager : MonoBehaviour
     {
         public static UIManager Instance { get; private set; }
+
+        [Header("상점")]
+        [SerializeField] private ShopManager shopManager;
 
         [Header("메인 탭 Panel")]
         [SerializeField] private GameObject battlePanel;       //전투탭 패널
@@ -29,6 +33,8 @@ namespace AFKHero.UI
         private UIHeroTab defaultHeroView = UIHeroTab.Party;   //게임 시작 시 영웅 내부 탭의 "파티"를 기본으로 함.
         public UIMainTab CurrentView { get; private set; }     //현재 화면
         public UIHeroTab CurrentHeroView { get; private set; } //현재 영웅 내부 탭 화면
+
+        public event System.Action<UIMainTab> OnMainViewChanged;
 
         private void Awake()
         {
@@ -54,6 +60,8 @@ namespace AFKHero.UI
                                                                    
             UpdateMainTabIcon(view);                               //현재 탭에 맞게 아이콘 변경
             UpdateView(CurrentView);                               //현재 화면의 데이터 갱신
+
+            OnMainViewChanged?.Invoke(CurrentView);
         }
 
         //메인 탭 버튼 클릭 시 화면 열기/닫기
@@ -189,7 +197,7 @@ namespace AFKHero.UI
         //상점탭 화면 갱신
         private void UpdateShopView()
         {
-
+            shopManager?.ShowGuide();
         }
         #endregion
 
@@ -338,6 +346,11 @@ namespace AFKHero.UI
                 //영웅 소환
                 case GuideTarget.HeroSummon:
                     OpenView(UIMainTab.Shop); //상점탭 열기
+                    break;
+
+                //전투
+                case GuideTarget.Battle:
+                    OpenView(UIMainTab.Battle);
                     break;
 
                 //이동할 목적지 없음

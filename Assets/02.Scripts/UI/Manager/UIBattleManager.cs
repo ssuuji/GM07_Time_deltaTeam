@@ -3,6 +3,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 namespace AFKHero.UI
 {
@@ -22,8 +23,14 @@ namespace AFKHero.UI
         private readonly Color32 autoYellow = new Color32(255, 220, 60, 255); //자동 모드
         private readonly Color32 manualWhite = new Color32(255, 255, 255, 255); //수동 모드
 
-        [Header("현재 스테이지")]
+        [Header("현재 스테이지 정보")]
         [SerializeField] private TMP_Text currentStageText;       //현재 진행 중인 스테이지 표시
+
+        [Header("타이머 및 적 체력")]
+        [SerializeField] private GameObject stageTimer;
+        [SerializeField] private TMP_Text battleLimitTime;
+        [SerializeField] private Slider enemyUnitAllHp;
+        [SerializeField] private TMP_Text enemyUnitAllHpText;
 
         [Header("전투 보상")]
         [SerializeField] private GameObject rewardGoldPanel;      //골드
@@ -58,6 +65,10 @@ namespace AFKHero.UI
         private float originalCameraSize;                                     //기존 카메라 사이즈 
         private Vector3 originalCameraPosition;                               //기존 카메라 위치
 
+        [Header("스테이지 비상탈출 버튼")]
+        [SerializeField] private RectTransform escapeButton;
+        [SerializeField] private RectTransform escapePanel;
+
         private void Awake()
         {
             Instance = this;
@@ -69,6 +80,8 @@ namespace AFKHero.UI
                 originalCameraSize = battleCamera.orthographicSize;        //기존 카메라 사이즈 
                 originalCameraPosition = battleCamera.transform.position;  //기존 카메라 위치
             }
+
+            ToggleEscapePanel(false);
         }
 
         private void Start()
@@ -79,8 +92,12 @@ namespace AFKHero.UI
                 battleManager.UltimateStarted += OnUltimateStarted;           //궁극기 연출 시작
                 battleManager.UltimateFinished += OnUltimateFinished;         //궁극기 연출 종료
                 battleManager.UnitDied += OnUnitDied;                         //유닛 사망 이벤트 구독
+                
+                battleManager.StateChanged += OnBattleStateChanged;           //전투 상태 변경
+                battleManager.BattleTimeChanged += UpdateBattleTimeUI;        //전투 시간
 
                 UpdateUltimateModeUI(battleManager.UltimateMode);             //현재 궁극기 모드에 맞는 UI 반영
+                UpdateBattleTimeUI(battleManager.RemainingBattleTime,battleManager.BattleTimeLimit);
             }
             
             if (StageManager.Instance != null)
@@ -98,11 +115,14 @@ namespace AFKHero.UI
                 battleManager.UltimateStarted -= OnUltimateStarted;
                 battleManager.UltimateFinished -= OnUltimateFinished;
                 battleManager.UnitDied -= OnUnitDied;
+                battleManager.StateChanged -= OnBattleStateChanged;
+                battleManager.BattleTimeChanged -= UpdateBattleTimeUI;
             }
 
             if (StageManager.Instance != null)
             {
                 StageManager.Instance.StageStateChanged -= OnStageStateChanged;
+                StageManager.Instance.StageStateChanged -= ToggleEscapeButton;
             }
 
             //연출 초기화
@@ -120,12 +140,83 @@ namespace AFKHero.UI
             UpdatePartyUI(); //현재 파티 편성 정보를 영웅 슬롯 UI에 반영
         }
 
+        #region 스테이지 비상탈출
+        //bool값으로 직접 제어할수도 있고, 아니면 StageManager의 이벤트를 구독할 수도 있다.
+        //아... 이벤트로 실행되는 메서드 private로 해도 되는구나...
+
+        //엄....
+
+        //1단은 버튼이 활성화되어야지.
+        //그 다음, 버튼을 눌렀을 때 패널이 팝업되어야지
+        //그 다음, 내부의 버튼 중 "예"를 눌렀을 때 스테이지가 Idle로 돌아가야지
+        //그러니까... 이건 필요해.
+        public void ToggleEscapeButton(StageState state) 
+        {
+            if(escapeButton == null)
+            {
+                Debug.LogWarning("[UIBattleManager] : 비상탈출 버튼이 등록되지 않았습니다.");
+                return;
+            }
+
+            //아니... 어차피 이벤트 발행할 때 매개변수는 currentState라고
+            //그러니까 이런 데서 StageManager.Instance.CurrentState 이럴 필요 없다고...
+
+            //이 버튼은 스테이지가 진행중일 때만 활성화되어야 한다.
+            if(state != StageState.Working)
+            {
+                escapeButton.gameObject.SetActive(false);
+            }
+            else
+            {
+                escapeButton.gameObject.SetActive(true);
+            }
+        }
+                
+        //비상탈출 버튼을 누르면 패널을 출력합니다.
+        public void OnClickedEscapeButton()
+        {
+            escapePanel.gameObject.SetActive(true);
+        }
+
+        //패널에서 "예" 버튼을 누를 시 실행할 메서드
+        public void ConfirmEscape()
+        {            
+            ToggleEscapePanel(false);
+
+            StageManager.Instance.EscapeStage();
+        }
+
+        //패널에서 "아니오" 버튼을 누를 시 실행할 메서드
+        public void CancelEscape()
+        {
+            ToggleEscapePanel(false);
+        }
+
+        private void ToggleEscapePanel(bool toggle)
+        {
+
+            if (escapePanel == null)
+            {
+                Debug.LogWarning("[UIBattleManager] : escapePanel이 연결되지 않았습니다.");
+                return;
+            }
+
+            escapePanel.gameObject.SetActive(toggle);
+        }
+
+        #endregion
+
         //현재 진행 중인 스테이지 번호 갱신
         public void UpdateStageUI()
         {
             if (StageManager.Instance == null || currentStageText == null) return;
 
-            if (StageManager.Instance.CurrentState == StageState.Idle || StageManager.Instance.CurrentState == StageState.None)
+            if (StageManager.Instance.CurrentState == StageState.None)
+            {
+                currentStageText.text = "";
+                return;
+            }
+            if (StageManager.Instance.CurrentState == StageState.Idle)
             {
                 currentStageText.text = "훈련중";
                 return;
@@ -145,10 +236,76 @@ namespace AFKHero.UI
         //스테이지 상태 변경
         private void OnStageStateChanged(StageState state)
         {
+            //스테이지 전투 중일 때만 타이머 표시
+            if (stageTimer != null)
+            {
+                stageTimer.SetActive(state == StageState.Working);
+            }
+
             //실제 전투가 끝나고 방치전투 상태로 돌아왔을 때
             if (state != StageState.Idle) return;
 
             UpdatePartyUI();
+        }
+
+        //남은 전투 시간 갱신
+        private void UpdateBattleTimeUI(float remainingTime, float battleTimeLimit)
+        {
+            if (this.battleLimitTime == null) return;
+
+            this.battleLimitTime.text = remainingTime.ToString("F1"); // .0 표시
+        }
+
+        //전투 상태 변경
+        private void OnBattleStateChanged(BattleState state)
+        {
+            if (state != BattleState.Fighting) return;
+
+            SubscribeEnemyHealth();
+            UpdateEnemyAllHpUI();
+        }
+
+        //적 체력 변경 이벤트 구독
+        private void SubscribeEnemyHealth()
+        {
+            foreach (BattleUnit enemy in battleManager.EnemyUnits)
+            {
+                if (enemy == null || enemy.Health == null) continue;
+
+                //중복 구독 방지
+                enemy.Health.HealthChanged -= OnEnemyHealthChanged;
+                enemy.Health.HealthChanged += OnEnemyHealthChanged;
+            }
+        }
+
+        //적 체력 변경
+        private void OnEnemyHealthChanged(BattleUnit unit, int currentHealth, int maxHealth)
+        {
+            UpdateEnemyAllHpUI();
+        }
+
+        //적 전체 체력 갱신
+        private void UpdateEnemyAllHpUI()
+        {
+            if (battleManager == null || enemyUnitAllHp == null) return;
+
+            int currentHealth = 0;
+            int maxHealth = 0;
+
+            foreach (BattleUnit enemy in battleManager.EnemyUnits)
+            {
+                if (enemy == null || enemy.Health == null) continue;
+
+                currentHealth += enemy.Health.CurrentHealth;
+                maxHealth += enemy.Health.MaxHealth;
+            }
+
+            enemyUnitAllHp.minValue = 0f;
+            enemyUnitAllHp.maxValue = 1f;
+            float targetValue = maxHealth > 0 ? (float)currentHealth / maxHealth : 0f;
+            enemyUnitAllHp.DOKill();
+            enemyUnitAllHp.DOValue(targetValue, 0.25f).SetEase(Ease.OutQuad);
+            enemyUnitAllHpText.text = $"{currentHealth} / {maxHealth}";
         }
 
         #endregion
