@@ -37,8 +37,9 @@ public class StageManager : MonoBehaviour
     [SerializeField] private BattleManager battleManager;
     [SerializeField] private BattleSpawner battleSpawner;
 
-    [Header("배경화면 전환")]
+    [Header("배경화면과 사운드 교체 담당")]
     [SerializeField] private StageBackgroundChanger stageBackgroundChanger;
+    [SerializeField] private StageBGMChanger stageBGMChanger;
 
     [Header("결과 패널")]
     [SerializeField] private RectTransform victoryPanel;
@@ -378,17 +379,22 @@ public class StageManager : MonoBehaviour
 
         currentState = nextState;
 
-        //상태에 따른 BGM 변경
-        switch (currentState)
-        {
-            case StageState.Idle:
-                SoundManager.Instance?.PlayBGM(SoundKey.BGM_Idle);
-                break;
 
-            case StageState.Working:
-                SoundManager.Instance?.PlayBGM(SoundKey.BGM_Stage);
-                break;
+        if(stageBGMChanger != null )
+        {
+            stageBGMChanger.ChangeStageBGM(currentState, currentStageNumber);
         }
+        //상태에 따른 BGM 변경
+        //switch (currentState)
+        //{
+        //    case StageState.Idle:
+        //        SoundManager.Instance?.PlayBGM(SoundKey.BGM_Idle);
+        //        break;
+
+        //    case StageState.Working:
+        //        SoundManager.Instance?.PlayBGM(SoundKey.BGM_Stage);
+        //        break;
+        //}
 
         //이벤트 호출
         StageStateChanged?.Invoke(currentState);
