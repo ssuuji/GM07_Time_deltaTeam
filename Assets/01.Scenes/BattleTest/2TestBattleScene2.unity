@@ -1224,6 +1224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e0e1271480e05c4ca714ba6b4f78e3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.UI.UIManager
+  shopManager: {fileID: 0}
   battlePanel: {fileID: 336159813}
   heroPanel: {fileID: 248638291}
   shopPanel: {fileID: 646876493}
@@ -2673,37 +2674,6 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
---- !u!1 &128079009
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 128079010}
-  m_Layer: 0
-  m_Name: Nomal_HealerHeal
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &128079010
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 128079009}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &143403511
 GameObject:
   m_ObjectHideFlags: 0
@@ -5969,37 +5939,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 290406935}
   m_CullTransparentMesh: 1
---- !u!1 &292734398
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 292734399}
-  m_Layer: 0
-  m_Name: Nomal_TankShield
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &292734399
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 292734398}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &293165280
 GameObject:
   m_ObjectHideFlags: 0
@@ -15586,6 +15525,7 @@ MonoBehaviour:
   battleManager: {fileID: 1953213427}
   battleSpawner: {fileID: 1953213428}
   stageBackgroundChanger: {fileID: 800155330}
+  stageBGMChanger: {fileID: 0}
   victoryPanel: {fileID: 1096975813}
   defeatPanel: {fileID: 1503578388}
   currentStageNumber: 1
@@ -30878,7 +30818,7 @@ Transform:
   m_GameObject: {fileID: 1496284729}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.91, y: 1.72, z: 0}
+  m_LocalPosition: {x: -5.12, y: 4.52, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -36118,37 +36058,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1731321641}
   m_CullTransparentMesh: 1
---- !u!1 &1735698865
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1735698866}
-  m_Layer: 0
-  m_Name: Nomal_MageMeteor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1735698866
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1735698865}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1743182716
 GameObject:
   m_ObjectHideFlags: 0
@@ -36496,37 +36405,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1761457216}
   m_CullTransparentMesh: 1
---- !u!1 &1766154943
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1766154944}
-  m_Layer: 0
-  m_Name: Nomal_ArcherSnipe
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1766154944
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1766154943}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1767046627
 GameObject:
   m_ObjectHideFlags: 0
@@ -38548,7 +38426,7 @@ Transform:
   m_GameObject: {fileID: 1855934065}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.93, y: 0.8, z: 0}
+  m_LocalPosition: {x: -5.9, y: 0.98, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -40846,6 +40724,10 @@ MonoBehaviour:
   battleManager: {fileID: 1953213427}
   ultimateModeText: {fileID: 1218197049}
   currentStageText: {fileID: 1005711605}
+  stageTimer: {fileID: 0}
+  battleLimitTime: {fileID: 0}
+  enemyUnitAllHp: {fileID: 0}
+  enemyUnitAllHpText: {fileID: 0}
   rewardGoldPanel: {fileID: 1803658428}
   rewardDiaPanel: {fileID: 1989003284}
   rewardTicketPanel: {fileID: 1311876373}
@@ -40864,6 +40746,8 @@ MonoBehaviour:
   zoomDuration: 0.15
   cameraFocusStrength: 1
   ultimateCameraOffset: {x: 0, y: 0}
+  escapeButton: {fileID: 0}
+  escapePanel: {fileID: 0}
 --- !u!4 &1953213426
 Transform:
   m_ObjectHideFlags: 0
@@ -45581,6 +45465,9 @@ MonoBehaviour:
   heroSummonManager: {fileID: 2118242780}
   summonResult: {fileID: 1518261353}
   playerManager: {fileID: 184393527}
+  freeGuideTarget: {fileID: 0}
+  oneGuideTarget: {fileID: 0}
+  tenGuideTarget: {fileID: 0}
 --- !u!114 &2118242780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46271,7 +46158,3 @@ SceneRoots:
   - {fileID: 1178948470}
   - {fileID: 1409505404}
   - {fileID: 75387767}
-  - {fileID: 292734399}
-  - {fileID: 1766154944}
-  - {fileID: 1735698866}
-  - {fileID: 128079010}
