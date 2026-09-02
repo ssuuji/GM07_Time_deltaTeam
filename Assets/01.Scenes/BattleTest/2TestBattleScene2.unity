@@ -836,7 +836,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e0e1271480e05c4ca714ba6b4f78e3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.UI.UIManager
-  battlePanel: {fileID: 464611628}
+  battlePanel: {fileID: 0}
   heroPanel: {fileID: 61262845}
   shopPanel: {fileID: 1128472503}
   battleIcon: {fileID: 1063383335}
@@ -2204,6 +2204,37 @@ RectTransform:
   m_AnchoredPosition: {x: 475, y: -63.200005}
   m_SizeDelta: {x: 100, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &128079009
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 128079010}
+  m_Layer: 0
+  m_Name: Nomal_HealerHeal
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &128079010
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128079009}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &129101749
 GameObject:
   m_ObjectHideFlags: 0
@@ -5669,6 +5700,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d0b2e4e538bdd648b24091350b5c6a8, type: 3}
+--- !u!1 &292734398
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 292734399}
+  m_Layer: 0
+  m_Name: Nomal_TankShield
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &292734399
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 292734398}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &297204354
 GameObject:
   m_ObjectHideFlags: 0
@@ -8288,6 +8350,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2661940e727955c41b40daac8a541f88, type: 3}
+--- !u!224 &413490465 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7122630958478561917, guid: 2661940e727955c41b40daac8a541f88, type: 3}
+  m_PrefabInstance: {fileID: 413490464}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &419411212
 GameObject:
   m_ObjectHideFlags: 0
@@ -8994,16 +9061,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 456478620}
   m_CullTransparentMesh: 1
---- !u!1 &464611628 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8719093502716492123, guid: 2661940e727955c41b40daac8a541f88, type: 3}
-  m_PrefabInstance: {fileID: 413490464}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &464611629 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8730601770401057172, guid: 2661940e727955c41b40daac8a541f88, type: 3}
-  m_PrefabInstance: {fileID: 413490464}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &468036604
 GameObject:
   m_ObjectHideFlags: 0
@@ -18349,15 +18406,15 @@ MonoBehaviour:
   battleSpawner: {fileID: 881327954}
   testAllyHeroes:
   - {fileID: 11400000, guid: 70ab1537ef2c9104ab77e66f7c5668a7, type: 2}
-  - {fileID: 11400000, guid: ba5157846496f0148b68b93b90908a4a, type: 2}
-  - {fileID: 11400000, guid: 83369abcba5a332418ebcf1d597eab38, type: 2}
-  - {fileID: 11400000, guid: a4d752d765b92884a87339bdfa77e499, type: 2}
-  - {fileID: 11400000, guid: ad5a21e502378234186b39bbdba1789a, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   testEnemyHeroes:
   - {fileID: 11400000, guid: 70ab1537ef2c9104ab77e66f7c5668a7, type: 2}
-  - {fileID: 11400000, guid: 11b022b29d1c1304f94b2191855adf76, type: 2}
-  - {fileID: 11400000, guid: a4d752d765b92884a87339bdfa77e499, type: 2}
-  - {fileID: 11400000, guid: ad5a21e502378234186b39bbdba1789a, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   testAllyLevel: 1
   testEnemyLevel: 1
@@ -20157,6 +20214,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentManager
   equipmentInventory: []
+  allEquipments: []
 --- !u!114 &977008808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25659,7 +25717,7 @@ RectTransform:
   - {fileID: 431820394}
   - {fileID: 1912266297}
   - {fileID: 1102323980}
-  - {fileID: 464611629}
+  - {fileID: 413490465}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -30903,6 +30961,53 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3ac56dda913ba3d4fb6c38a1b00779ee, type: 2}
   - {fileID: 11400000, guid: 64c5f99e2fcc826489e7db0a987a88cb, type: 2}
   - {fileID: 11400000, guid: 90ba2faf1c16537499abd27ab7ee9002, type: 2}
+--- !u!1 &1496284729
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1496284731}
+  - component: {fileID: 1496284730}
+  m_Layer: 0
+  m_Name: "\uC804\uC0AC"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1496284730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1496284729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb7f5098604c21745a7a33ff446494cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UltimateRangeGizmo
+  skillName: "\uC804\uC0AC"
+  effectRange: 3
+  gizmoColor: {r: 1, g: 0.3, b: 0.1, a: 0.9}
+--- !u!4 &1496284731
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1496284729}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.48, y: 4.85, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1498674864
 GameObject:
   m_ObjectHideFlags: 0
@@ -32231,6 +32336,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1564424718}
   m_CullTransparentMesh: 1
+--- !u!1 &1573675516
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1573675518}
+  - component: {fileID: 1573675517}
+  m_Layer: 0
+  m_Name: "\uD0F1\uCEE4"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1573675517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1573675516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb7f5098604c21745a7a33ff446494cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UltimateRangeGizmo
+  skillName: "\uD0F1\uCEE4"
+  effectRange: 2
+  gizmoColor: {r: 1, g: 0.3, b: 0.1, a: 0.9}
+--- !u!4 &1573675518
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1573675516}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.16, y: -3.18, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1582870054
 GameObject:
   m_ObjectHideFlags: 0
@@ -35417,6 +35569,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1721503903}
   m_CullTransparentMesh: 1
+--- !u!1 &1735698865
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1735698866}
+  m_Layer: 0
+  m_Name: Nomal_MageMeteor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1735698866
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1735698865}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1758823940
 GameObject:
   m_ObjectHideFlags: 0
@@ -35448,6 +35631,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.UI.UISettingManager
   settingPanel: {fileID: 805055668}
   backButton: {fileID: 494643699}
+  masterVolumeSlider: {fileID: 0}
+  bgmVolumeSlider: {fileID: 0}
+  sfxVolumeSlider: {fileID: 0}
   deleteSavePopup: {fileID: 193438700}
 --- !u!4 &1758823942
 Transform:
@@ -35681,6 +35867,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1763449806}
   m_CullTransparentMesh: 1
+--- !u!1 &1766154943
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1766154944}
+  m_Layer: 0
+  m_Name: Nomal_ArcherSnipe
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1766154944
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766154943}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1767196018
 GameObject:
   m_ObjectHideFlags: 0
@@ -37974,6 +38191,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1855120292}
   m_CullTransparentMesh: 1
+--- !u!1 &1855934065
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1855934067}
+  - component: {fileID: 1855934066}
+  m_Layer: 0
+  m_Name: "\uB9C8\uBC95\uC0AC"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1855934066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1855934065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb7f5098604c21745a7a33ff446494cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UltimateRangeGizmo
+  skillName: "\uB9C8\uBC95\uC0AC"
+  effectRange: 1.5
+  gizmoColor: {r: 1, g: 0.3, b: 0.1, a: 0.9}
+--- !u!4 &1855934067
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1855934065}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.93, y: 0.8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1867402186
 GameObject:
   m_ObjectHideFlags: 0
@@ -44095,9 +44359,16 @@ CanvasRenderer:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1496284731}
+  - {fileID: 1855934067}
+  - {fileID: 1573675518}
   - {fileID: 591601433}
   - {fileID: 566940183}
   - {fileID: 881327952}
   - {fileID: 878708955}
   - {fileID: 1208912403}
   - {fileID: 1823706642}
+  - {fileID: 292734399}
+  - {fileID: 1766154944}
+  - {fileID: 1735698866}
+  - {fileID: 128079010}
