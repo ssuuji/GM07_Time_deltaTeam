@@ -29,6 +29,11 @@ public enum SoundKey
     BGM_Title,
     BGM_Idle,
     BGM_Stage,
+    BGM_Stage2,
+    BGM_Stage3,
+    BGM_Stage4,
+    BGM_Stage5,
+    BGM_Boss,
 
     //UI
     UI_ButtonSelect,

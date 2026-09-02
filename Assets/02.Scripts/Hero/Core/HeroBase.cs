@@ -320,7 +320,7 @@ public class HeroBase : MonoBehaviour
     private bool ExecuteWarriorUltimate(
         HeroBase[] allHeroes)
     {
-        const float attackRadius = 3f;
+        const float attackRadius = 1.5f;
         const float baseDamageMultiplier = 1.5f;
 
         float finalMultiplier =
@@ -379,7 +379,7 @@ public class HeroBase : MonoBehaviour
     private bool ExecuteMageUltimate(
         HeroBase[] allHeroes)
     {
-        const float attackRadius = 4f;
+        const float attackRadius = 1.5f;
         const float baseDamageMultiplier = 2f;
 
         HeroBase centerTarget =
