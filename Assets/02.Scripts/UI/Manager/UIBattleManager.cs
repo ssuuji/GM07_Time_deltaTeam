@@ -103,10 +103,6 @@ namespace AFKHero.UI
             if (StageManager.Instance != null)
             {
                 StageManager.Instance.StageStateChanged += OnStageStateChanged; //스테이지 상태 변경 이벤트 구독
-                StageManager.Instance.StageStateChanged += ToggleEscapeButton;
-
-                OnStageStateChanged(StageManager.Instance.CurrentState);        //현재 상태 UI 반영
-
             }
         }
 
@@ -240,8 +236,6 @@ namespace AFKHero.UI
         //스테이지 상태 변경
         private void OnStageStateChanged(StageState state)
         {
-            ResetUltimateEffect(); //스테이지 전투 시작/종료 시 진행 중인 궁극기 연출 강제 초기화
-
             //스테이지 전투 중일 때만 타이머 표시
             if (stageTimer != null)
             {

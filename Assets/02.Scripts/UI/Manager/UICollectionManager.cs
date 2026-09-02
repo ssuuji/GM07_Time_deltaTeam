@@ -85,6 +85,8 @@ namespace AFKHero.UI
                 return;
             }
 
+            GuideManager.Instance?.PauseGuide();
+
             SyncCollectedHeroes();
 
             collectionPanel.SetActive(true);
@@ -98,6 +100,8 @@ namespace AFKHero.UI
         {
             collectionPanel.SetActive(false);
             backButton.SetActive(false);
+
+            GuideManager.Instance?.ResumeGuide();
         }
 
         #endregion

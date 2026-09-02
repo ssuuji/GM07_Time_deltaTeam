@@ -42,6 +42,7 @@ namespace AFKHero.UI
         {
             for (int i = content.childCount - 1; i >= 0; i--)
             {
+                content.GetChild(i).gameObject.SetActive(false);
                 Destroy(content.GetChild(i).gameObject);
             }
         }

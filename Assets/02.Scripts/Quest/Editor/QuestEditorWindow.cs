@@ -324,8 +324,10 @@ namespace AFKHero.Quest
                     break;
 
                 case QuestConditionType.StageClear:
-                    EditorGUILayout.PropertyField(selectedQuestObject.FindProperty("targetStageNumber"));   //목표 스테이지
-                    EditorGUILayout.PropertyField(selectedQuestObject.FindProperty("targetSectionNumber")); //목표 구간
+                    EditorGUILayout.Space(3);
+                    EditorGUILayout.LabelField("스테이지 클리어 조건", EditorStyles.boldLabel);
+                    EditorGUILayout.PropertyField(selectedQuestObject.FindProperty("targetStageNumber"), new GUIContent("스테이지"));
+                    EditorGUILayout.PropertyField(selectedQuestObject.FindProperty("targetSectionNumber"), new GUIContent("구간"));
                     break;
             }
 
@@ -333,12 +335,15 @@ namespace AFKHero.Quest
 
             EditorGUILayout.PropertyField(selectedQuestObject.FindProperty("rewards"), true); //보상 목록
 
-            //메인 퀘스트 목적지
+            //메인 퀘스트 가이드
             if (selectedQuestData.QuestType == QuestType.Main)
             {
                 EditorGUILayout.Space(5);
-                EditorGUILayout.LabelField("목적지", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(selectedQuestObject.FindProperty("guideTarget"));
+                EditorGUILayout.LabelField("가이드", EditorStyles.boldLabel);
+
+                EditorGUILayout.PropertyField(selectedQuestObject.FindProperty("guideTarget"),new GUIContent("목적지"));
+
+                EditorGUILayout.PropertyField(selectedQuestObject.FindProperty("autoGuide"),new GUIContent("자동 가이드"));
             }
 
             selectedQuestObject.ApplyModifiedProperties(); //Editor에서 수정한 값을 실제 QuestData에 적용
