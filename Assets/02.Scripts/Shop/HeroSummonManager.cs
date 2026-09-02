@@ -46,7 +46,7 @@ namespace AFKHero.Shop
 
 
         //현재 소환제단 레벨에 해당하는 데이터 반환
-        private SummonLevelData GetCurrentLevelData()
+        public SummonLevelData GetCurrentLevelData()
         {
             foreach (SummonLevelData data in levelData)
             {
