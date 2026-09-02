@@ -384,6 +384,13 @@ public class StageManager : MonoBehaviour
         {
             stageBGMChanger.ChangeStageBGM(currentState, currentStageNumber);
         }
+        else
+        {
+            Debug.LogWarning("[StageManager] : StageBGMChanger 컴포넌트가 없습니다.");
+            stageBGMChanger = this.gameObject.AddComponent<StageBGMChanger>();
+            stageBGMChanger.ChangeStageBGM(currentState, currentStageNumber);
+
+        }
         //상태에 따른 BGM 변경
         //switch (currentState)
         //{

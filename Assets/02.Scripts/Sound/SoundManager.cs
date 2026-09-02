@@ -89,6 +89,12 @@ namespace AFKHero.Sound
         {
             foreach (SoundInfo info in sounds)
             {
+                if (soundData.ContainsKey(info.Key))
+                {
+                    Debug.LogError("<color=cyan>[SoundManager]</color> : 같은 Key로 사운드를 등록 시도하고 있습니다.");
+                    continue;
+                }
+
                 soundData[info.Key] = info.Clip;
             }
         }
@@ -162,7 +168,10 @@ namespace AFKHero.Sound
         public void PlaySFX(SoundKey key)
         {
             if (!soundData.TryGetValue(key, out AudioClip clip))
+            {
+                Debug.LogError($"<color=cyan>[SoundManager]</color> : 재생할 효과음 {key}가 올바르게 설정되지 않았습니다.");
                 return;
+            }
 
             AudioSource source = GetSFXSource();
 
@@ -201,7 +210,10 @@ namespace AFKHero.Sound
         public void PlayBGM(SoundKey key)
         {
             if (!soundData.TryGetValue(key, out AudioClip clip))
+            {
+                Debug.LogError($"<color=cyan>[SoundManager]</color> : 재생할 배경음 {key}가 올바르게 설정되지 않았습니다.");
                 return;
+            }
 
             if (bgmSource.clip == clip && bgmSource.isPlaying)
                 return;

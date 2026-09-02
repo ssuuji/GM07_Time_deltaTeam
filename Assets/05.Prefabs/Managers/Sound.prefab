@@ -64,10 +64,10 @@ MonoBehaviour:
   - Key: 7
     Clip: {fileID: 8300000, guid: b996a28e918631b4e8e02d5aa174c34c, type: 3}
   uiSounds:
-  - Key: 3
-    Clip: {fileID: 8300000, guid: f34eff77adb7e8b49807b45d919bd522, type: 3}
-  - Key: 4
-    Clip: {fileID: 8300000, guid: 97f6e2ef40448064390a7c9f023b96ae, type: 3}
+  - Key: 8
+    Clip: {fileID: 0}
+  - Key: 9
+    Clip: {fileID: 0}
   sfxPoolSize: 10
   masterVolume: 1
   bgmVolume: 1
