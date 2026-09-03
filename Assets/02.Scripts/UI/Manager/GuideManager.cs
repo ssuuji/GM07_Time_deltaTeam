@@ -37,6 +37,13 @@ namespace AFKHero.UI
                 return;
             }
 
+            //현재 퀘스트의 목표를 이미 달성했다면 가이드 종료
+            if (QuestManager.Instance.CanClaimReward(questData))
+            {
+                EndGuide();
+                return;
+            }
+
             //이전 퀘스트의 가이드가 남아있다면 종료
             if (!string.IsNullOrEmpty(currentGuideQuestId) && currentGuideQuestId != questData.QuestId)
             {
@@ -55,6 +62,12 @@ namespace AFKHero.UI
         public void StartQuestGuide(QuestData questData)
         {
             if (questData == null) return;
+
+            if (QuestManager.Instance != null && QuestManager.Instance.CanClaimReward(questData))
+            {
+                EndGuide();
+                return;
+            }
 
             currentGuideQuestId = questData.QuestId;
             StartGuide(questData);
