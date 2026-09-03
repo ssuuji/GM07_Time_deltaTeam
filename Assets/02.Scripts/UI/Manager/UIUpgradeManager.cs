@@ -52,6 +52,19 @@ namespace AFKHero.UI
         {
             selectedHero = null;
             SetSelectedHeroUI(false);
+
+            if (AFKHeroPlayerManager.Instance != null)
+            {
+                AFKHeroPlayerManager.Instance.OnPlayerInfoChanged += UpdateLevelUpCost;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (AFKHeroPlayerManager.Instance != null)
+            {
+                AFKHeroPlayerManager.Instance.OnPlayerInfoChanged -= UpdateLevelUpCost;
+            }
         }
 
         private void Start()
@@ -359,7 +372,7 @@ namespace AFKHero.UI
 
         #endregion
 
-        
+        //장비 일괄장착
         public void OnClickedAutoEquip()
         {
             if (selectedHero == null || selectedHero.data == null) return;
