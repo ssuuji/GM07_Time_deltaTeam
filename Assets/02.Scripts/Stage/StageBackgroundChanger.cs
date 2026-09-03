@@ -46,6 +46,9 @@ public class StageBackgroundChanger : MonoBehaviour
     }
 
     //엄... 시작 시에만 호출하여 배경화면을 셋팅하는 메서드
+    //아니... 너무 어렵게 생각했나?
+    //그냥 예외처리 정도만 하고,
+    //LastStageNumber로 셋팅하면 되는 거 아냐?
     public void SetBackgroundOnStart(int currentStageNumber, int lastStageNumber, int lastSectionNumber, StageInfo currentStageInfo)
     {
         if (backgroundList == null || backgroundList.Count == 0)
@@ -54,37 +57,45 @@ public class StageBackgroundChanger : MonoBehaviour
             return;
         }
 
-        //예외처리를 잘 해둬서... null인 경우는 엥간하면 마지막 스테이지 깬 다음이지만...
-        //이것 참 묘하네.
-        //로직상 문제가 있네. 이전 스테이지 정보를 확인해봐야 할 것 같은데?
-        if(currentStageInfo == null)
-        {
-            //현재 스테이지 정보가 null이다 = 이미 데이터베이스에 존재하는 마지막 스테이지를 깨둔 상태다.
-            //그렇다면, 이전 스테이지를 봐서 그게 보스스테이지인지 아닌지 확인해야 할 듯.
-            //이런 식으로 하지말고, 스테이지매니저에서 잘 검사해서 값을 넘겨주는 게 좋을 것 같은데,
-            //그 부분은 리팩토링의 영역으로 남겨둬야 할 듯.
-            StageInfo baseStage = StageManager.Instance.StageData.GetStage(lastStageNumber, lastSectionNumber);
+        int index = Mathf.Max(lastStageNumber, 1);
 
-            if(baseStage == null)
-            {
-                Debug.LogWarning("[StageBackgroundChanger] : 잘못된 값이 클리어 기록으로 들어있거나, 처음 시작한 겁니다.");
-                return;
-            }
+        ChangeBackground(index);
 
-            //만일 보스스테이지를 깼는데 다음 스테이지가 없는 경우(4-5를 깼는데 5-1이 없는 경우)
-            if (baseStage.IsBossStage)
-            {
-                ChangeBackground(currentStageNumber - 1); //기존에 바꾸던 방식에서 1빼서 바꿔달라고 하기
-            }
-            else if(!baseStage.IsBossStage)
-            {
-                ChangeBackground(currentStageNumber);
-            }          
-        }
-        else
-        {
-            ChangeBackground(currentStageNumber);
-        }
+
+
+        ////예외처리를 잘 해둬서... null인 경우는 엥간하면 마지막 스테이지 깬 다음이지만...
+        ////이것 참 묘하네.
+        ////로직상 문제가 있네. 이전 스테이지 정보를 확인해봐야 할 것 같은데?
+        //if (currentStageInfo == null)
+        //{
+        //    //현재 스테이지 정보가 null이다 = 이미 데이터베이스에 존재하는 마지막 스테이지를 깨둔 상태다.
+        //    //그렇다면, 이전 스테이지를 봐서 그게 보스스테이지인지 아닌지 확인해야 할 듯.
+        //    //이런 식으로 하지말고, 스테이지매니저에서 잘 검사해서 값을 넘겨주는 게 좋을 것 같은데,
+        //    //그 부분은 리팩토링의 영역으로 남겨둬야 할 듯.
+
+        //    //아예... 이걸 밖으로 빼서, 맨 밑에 else if로 baseStage를 검사하는건?
+        //    StageInfo baseStage = StageManager.Instance.StageData.GetStage(lastStageNumber, lastSectionNumber);
+
+        //    if (baseStage == null)
+        //    {
+        //        Debug.LogWarning("[StageBackgroundChanger] : 잘못된 값이 클리어 기록으로 들어있거나, 처음 시작한 겁니다.");
+        //        return;
+        //    }
+
+        //    //만일 보스스테이지를 깼는데 다음 스테이지가 없는 경우(4-5를 깼는데 5-1이 없는 경우)
+        //    if (baseStage.IsBossStage)
+        //    {
+        //        ChangeBackground(currentStageNumber - 1); //기존에 바꾸던 방식에서 1빼서 바꿔달라고 하기
+        //    }
+        //    else if (!baseStage.IsBossStage)
+        //    {
+        //        ChangeBackground(currentStageNumber);
+        //    }
+        //}
+        //else
+        //{
+        //    ChangeBackground(currentStageNumber);
+        //}
 
     }
 }
