@@ -53,8 +53,10 @@ namespace AFKHero.Battle
 
         private static bool IsAttackRange(Vector2 difference, float effectiveAttackRange)
         {
-            float effectiveAttackRangeSqr = effectiveAttackRange * effectiveAttackRange;
-            return difference.sqrMagnitude <= effectiveAttackRangeSqr;
+            //float effectiveAttackRangeSqr = effectiveAttackRange * effectiveAttackRange;
+            //return difference.sqrMagnitude <= effectiveAttackRangeSqr;
+
+            return difference.magnitude <= effectiveAttackRange; //MoveTowardTarget() 과 동일하게 .magnitude 으로 계산되도록 수정
         }
 
         public void Initialize(BattleUnit unitOwner, BattleManager manager, UnitTargetFinder finder)
