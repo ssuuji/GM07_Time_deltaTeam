@@ -96,6 +96,7 @@ public class StagePreviewer : MonoBehaviour
     //전투 프리뷰 패널이 열렸을 때
     private void OnEnable()
     {
+        ClearEnemyPrefab(); //활성화될 때도 한 번 비우고 하게끔
         ShowEnemyPrefab();
         ShowGuide();
     }
@@ -126,6 +127,8 @@ public class StagePreviewer : MonoBehaviour
         if (currentStage == null)
         {
             Debug.Log("[StagePreviewer] : 표시할 스테이지 정보가 null입니다.");
+            ClearStageInfo();
+            UINoticePopup.Instance.ShowTime("모든 스테이지를 클리어하였습니다. \n 다음 업데이트를 기대해주세요!");
             return;
         }
 
@@ -163,7 +166,14 @@ public class StagePreviewer : MonoBehaviour
             //우선 이대로도 동작은 할 것이므로... 나중에 개선하는 걸로...
             int enemyLevel = StageCalculator.CalculateEnemyLevel(StageManager.Instance.CurrentStageNumber, StageManager.Instance.CurrentSectionNumber);
 
-            enemyInfoTexts[i].text = $"Lv. {enemyLevel} {enemies[i].HeroName}";
+            if (enemies[i].HeroGrade == HeroGrade.Epic)
+            {
+                enemyInfoTexts[i].text = $"<color=red>Lv. {enemyLevel} {enemies[i].HeroName}</color>";
+            }
+            else
+            {
+                enemyInfoTexts[i].text = $"Lv. {enemyLevel} {enemies[i].HeroName}";
+            }
         }        
     }
 
@@ -206,9 +216,14 @@ public class StagePreviewer : MonoBehaviour
     }
 
     //스테이지 정보 표시 UI
+    //ShowEnemyPrefab 부분에서 return 걸려서 실행 안 됨.
     private void ShowStageInfo(StageInfo currentStage)
     {
+        //표시하기 전에 한 번 클리어한 상태로 사용
+        ClearStageInfo();
+
         stageInfo.text = $"STAGE {StageManager.Instance.CurrentStageNumber}-{StageManager.Instance.CurrentSectionNumber}";
+               
 
         //골드
         bool hasGold = currentStage.ClearGold > 0;
@@ -236,6 +251,18 @@ public class StagePreviewer : MonoBehaviour
         {
             freeTicketText.text = currentStage.ClearTicket.ToString();
         }
+    }
+
+    //오브젝트들 전부 끄고 텍스트도 초기화해버리는 메서드
+    private void ClearStageInfo()
+    {
+        stageInfo.text = "";
+        goldRewardObject.SetActive(false);
+        goldText.text = "";
+        diaRewardObject.SetActive(false);
+        diaText.text = "";
+        freeTicketRewardObject.SetActive(false);
+        freeTicketText.text = "";
     }
 
     //스테이지 시작 가이드 표시

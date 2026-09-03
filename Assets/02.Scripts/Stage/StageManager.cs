@@ -31,9 +31,8 @@ public class StageManager : MonoBehaviour
     [SerializeField] private StageData stageData;
 
     [Header("적 생성")]
-    [SerializeField] private EnemySpawner enemySpawner; //이걸 EnemySpawner가 아니라 BattleManager로 바꾸고,
+    //[SerializeField] private EnemySpawner enemySpawner; //이걸 EnemySpawner가 아니라 BattleManager로 바꾸고,
     //EnemySpawner의 기능을 BattleSpawner가 일부 흡수하는 방향으로 가야할 것 같음.
-
     [SerializeField] private BattleManager battleManager;
     [SerializeField] private BattleSpawner battleSpawner;
 
@@ -115,7 +114,7 @@ public class StageManager : MonoBehaviour
 
         if(stageBackgroundChanger != null)
         {
-            stageBackgroundChanger.ChangeBackground(currentStageNumber);
+            stageBackgroundChanger.SetBackgroundOnStart(currentStageNumber, lastStageNumber, lastSectionNumber, currentStageInfo); ;
         }
 
         ChangeState(StageState.Idle);
@@ -319,6 +318,8 @@ public class StageManager : MonoBehaviour
         }
 
         victoryPanel.gameObject.SetActive(false);
+        battleManager.ClearRegisteredUnits();
+        battleSpawner.ClearSpawnedUnits();
         ChangeState(StageState.Idle);
     }
 
