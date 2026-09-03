@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2613361096289714050}
   - component: {fileID: 4263837542711318471}
-  - component: {fileID: 125016577755683376}
   - component: {fileID: 2184872658433716345}
   - component: {fileID: 4401245311308441794}
   m_Layer: 0
@@ -47,8 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af2de90ea9a216b44a8b886265dc28f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageManager
-  stageData: {fileID: 11400000, guid: b48beeb15d2f91c4f9b2f26ec9e55ce1, type: 2}
-  enemySpawner: {fileID: 125016577755683376}
+  stageData: {fileID: 11400000, guid: f097ff0ca98e3cf499fe9a81f7a31cc3, type: 2}
+  enemySpawner: {fileID: 0}
   battleManager: {fileID: 0}
   battleSpawner: {fileID: 0}
   stageBackgroundChanger: {fileID: 2184872658433716345}
@@ -88,23 +87,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3ac56dda913ba3d4fb6c38a1b00779ee, type: 2}
   - {fileID: 11400000, guid: 64c5f99e2fcc826489e7db0a987a88cb, type: 2}
   - {fileID: 11400000, guid: 90ba2faf1c16537499abd27ab7ee9002, type: 2}
---- !u!114 &125016577755683376
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4531869407083200298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b27a101cf69953f4a9dc4d21956b9f78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  frontLeft: {fileID: 0}
-  frontRight: {fileID: 0}
-  backLeft: {fileID: 0}
-  backCenter: {fileID: 0}
-  backRight: {fileID: 0}
 --- !u!114 &2184872658433716345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,6 +104,7 @@ MonoBehaviour:
   - {fileID: -814020915313860238, guid: 8bfa56767c0dc1942b855d8f06ee868e, type: 3}
   - {fileID: -6358004935262571453, guid: bf60e9767a322024b9cdeea587f305b8, type: 3}
   - {fileID: -8700789073808021074, guid: 9f879c2b29165eb4aaf823dbbe8121a4, type: 3}
+  - {fileID: 2942440387666816961, guid: 533faad582f88af4eb4921743582d430, type: 3}
   backgroundImage: {fileID: 0}
 --- !u!114 &4401245311308441794
 MonoBehaviour:

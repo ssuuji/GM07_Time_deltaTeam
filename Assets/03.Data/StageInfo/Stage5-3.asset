@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5dc270139ba327a459ae897ebf2d5b87, type: 3}
-  m_Name: Stage3-4
+  m_Name: Stage5-3
   m_EditorClassIdentifier: Assembly-CSharp::StageInfo
-  stageNumber: 3
-  sectionNumber: 4
+  stageNumber: 5
+  sectionNumber: 3
   isBossStage: 0
   timeLimit: 120
   enemies:
-  - {fileID: 11400000, guid: 11b022b29d1c1304f94b2191855adf76, type: 2}
-  - {fileID: 11400000, guid: 1e493698dabd9204290d7d9fd4d15209, type: 2}
+  - {fileID: 11400000, guid: ba5157846496f0148b68b93b90908a4a, type: 2}
+  - {fileID: 11400000, guid: 70ab1537ef2c9104ab77e66f7c5668a7, type: 2}
   - {fileID: 11400000, guid: a4d752d765b92884a87339bdfa77e499, type: 2}
-  - {fileID: 11400000, guid: 83369abcba5a332418ebcf1d597eab38, type: 2}
-  clearGold: 2200
+  - {fileID: 11400000, guid: ad5a21e502378234186b39bbdba1789a, type: 2}
+  clearGold: 9300
   clearDia: 0
-  clearTicket: 0
+  clearTicket: 4
