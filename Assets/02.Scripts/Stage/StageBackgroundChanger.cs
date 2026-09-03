@@ -15,6 +15,7 @@ public class StageBackgroundChanger : MonoBehaviour
     [SerializeField] private Image backgroundImage;
 
 
+    //1넣으면 1스테이지로, 2넣으면 2스테이지 이런 식으로 배경을 변경하는 메서드
     public void ChangeBackground(int currentStage)
     {
         if(backgroundList == null || backgroundList.Count == 0)
@@ -96,6 +97,26 @@ public class StageBackgroundChanger : MonoBehaviour
         //{
         //    ChangeBackground(currentStageNumber);
         //}
+
+    }
+
+    //패배하거나 도주했을 때, Section번호가 1이라면 배경화면을 바꿔버릴 메서드
+    public void RevertStageBackground(int currentStageNumber, int currentSectionNumber)
+    {
+        if (backgroundList == null || backgroundList.Count == 0)
+        {
+            Debug.LogWarning("[StageBackgroundChanger] : 리스트가 비어있습니다.");
+            return;
+        }
+
+        if(currentSectionNumber != 1)
+        {
+            return;
+        }
+
+        int index = Mathf.Max(currentStageNumber, 2);
+
+        ChangeBackground(currentStageNumber - 1);
 
     }
 }
