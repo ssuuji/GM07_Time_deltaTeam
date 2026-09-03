@@ -42,7 +42,14 @@ public enum SoundKey
     UI_ButtonClose,
 
     //Battle
-    // ..등등 추가
+    SFX_Ultimate_Start,
+    SFX_Ultimate_Warrior,
+    SFX_Ultimate_Tank,
+    SFX_Ultimate_Mage,
+    SFX_Ultimate_Archer,
+    SFX_Ultimate_Healer,
+    SFX_Ultimate_Attack,
+    SFX_Ultimate_Damaged
 }
 
 /////////////////////////////////

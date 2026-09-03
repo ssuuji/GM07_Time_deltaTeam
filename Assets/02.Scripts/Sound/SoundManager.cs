@@ -29,6 +29,9 @@ namespace AFKHero.Sound
         [Header("UI")]
         [SerializeField] private List<SoundInfo> uiSounds = new();
 
+        [Header("Battle SFX")]
+        [SerializeField] private List<SoundInfo> battleSfxSounds = new();
+
         private readonly Dictionary<SoundKey, AudioClip> soundData = new();
         private float currentBGMVolume = 1f;
 
@@ -70,6 +73,8 @@ namespace AFKHero.Sound
 
             AddSoundData(bgmSounds);
             AddSoundData(uiSounds);
+
+            AddSoundData(battleSfxSounds);
 
             InitSFXPool();
         }

@@ -18,7 +18,7 @@ MonoBehaviour:
   raceType: 1
   jobType: 4
   ultimateSkillName: "\uCE58\uC720\uC758 \uBE5B"
-  ultimateEffectPrefab: {fileID: 0}
+  ultimateEffectPrefab: {fileID: 2202340541568617578, guid: e4cd36ea14993e146aa5a4c241bd9a7f, type: 3}
   projectilePrefab: {fileID: 1242348002347848851, guid: a6653e0c79e9e814bb9f690806ca6c1f, type: 3}
   moveSpeed: 2
   maxUltimateEnergy: 100

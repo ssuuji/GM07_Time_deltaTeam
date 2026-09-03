@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using AFKHero.Sound;
 using UnityEngine;
 
 namespace AFKHero.Battle
@@ -7,6 +8,9 @@ namespace AFKHero.Battle
     public sealed class UnitUltimateController : MonoBehaviour
     {
         private const float MinimumDuration = 0.01f;
+
+        [Header("궁극기 시작음 대기 시간")]
+        [SerializeField, Min(0f)] private float startSoundDelay = 0.5f;
 
         [Header("궁극기 실행 시간")]
         [SerializeField, Min(MinimumDuration)]
@@ -167,15 +171,61 @@ namespace AFKHero.Battle
 
             completionCallback = onCompleted;
 
-            if (animator != null && !string.IsNullOrWhiteSpace(animationTrigger))
-            {
-                animator.SetTrigger(animationTrigger);
-            }
+            PlayUltimateStartSFX();
 
             executionRoutine = StartCoroutine(ExecuteRoutine());
             ExecutionStarted?.Invoke(owner);
 
             return true;
+        }
+
+        private void PlayUltimateStartSFX()
+        {
+            if (SoundManager.Instance == null)
+            {
+                return;
+            }
+
+            SoundManager.Instance.PlaySFX(SoundKey.SFX_Ultimate_Start);
+        }
+
+        private void PlayUltimateJobSFX()
+        {
+            if (owner == null || owner.Data == null || SoundManager.Instance == null)
+            {
+                return;
+            }
+
+            SoundKey soundKey;
+
+            // 같은 직업의 영웅은 동일한 궁극기 효과음을 사용합니다.
+            switch (owner.Data.JobType)
+            {
+                case JobType.Warrior:
+                    soundKey = SoundKey.SFX_Ultimate_Warrior;
+                    break;
+
+                case JobType.Tank:
+                    soundKey = SoundKey.SFX_Ultimate_Tank;
+                    break;
+
+                case JobType.Mage:
+                    soundKey = SoundKey.SFX_Ultimate_Mage;
+                    break;
+
+                case JobType.Archer:
+                    soundKey = SoundKey.SFX_Ultimate_Archer;
+                    break;
+
+                case JobType.Healer:
+                    soundKey = SoundKey.SFX_Ultimate_Healer;
+                    break;
+
+                default:
+                    return;
+            }
+
+            SoundManager.Instance.PlaySFX(soundKey);
         }
 
         public int ApplyUltimateDamage(BattleUnit target, int finalDamage)
@@ -207,6 +257,21 @@ namespace AFKHero.Battle
 
         private IEnumerator ExecuteRoutine()
         {
+            float safeStartSoundDelay = Mathf.Max(0f, startSoundDelay);
+
+            // 궁극기 시작 효과음이 지나간 후 유닛의 궁극기 애니메이션을 시작
+            if (safeStartSoundDelay > 0f)
+            {
+                yield return new WaitForSeconds(safeStartSoundDelay);
+            }
+
+            if (animator != null && !string.IsNullOrWhiteSpace(animationTrigger))
+            {
+                animator.SetTrigger(animationTrigger);
+            }
+
+            PlayUltimateJobSFX();
+
             float safeDuration =
                 Mathf.Max(MinimumDuration, ultimateDuration);
 
@@ -222,9 +287,10 @@ namespace AFKHero.Battle
             // 직업별 궁극기 효과는 한 번만 실행됩니다.
             bool effectApplied = heroBase.ExecuteUltimateEffect();
 
+            // 궁극기 직업별 효과음 재생
             if (!effectApplied)
             {
-                Debug.LogWarning(  $"[{owner.name}] 궁극기를 적용할 대상이 없습니다.", owner);
+                Debug.LogWarning($"[{owner.name}] 궁극기를 적용할 대상이 없습니다.", owner);
             }
 
             float remainingDuration =  safeDuration - safeEffectDelay;
