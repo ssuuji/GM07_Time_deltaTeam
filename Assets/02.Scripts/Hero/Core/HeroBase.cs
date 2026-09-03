@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections.Generic;
 using AFKHero.Battle;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 public class HeroBase : MonoBehaviour
 {
@@ -113,6 +115,55 @@ public class HeroBase : MonoBehaviour
         //        }
         //    }
         //}
+    }
+
+    private bool SpawnUltimateProjectile(HeroBase target, Action<HeroBase, Vector3> onHit)
+    {
+        if (!IsLivingHero(this) ||
+            !IsLivingHero(target) ||
+            onHit == null ||
+            heroInstance.data.ProjectilePrefab == null ||
+            PoolManager.Instance == null)
+        {
+            return false;
+        }
+
+        GameObject projectileObject =
+            PoolManager.Instance.SpawnFromPool(
+                heroInstance.data.ProjectilePrefab,
+                transform.position,
+                Quaternion.identity);
+
+        Projectile projectile =
+            projectileObject.GetComponent<Projectile>();
+
+        if (projectile == null)
+        {
+            Debug.LogError(
+                $"[{projectileObject.name}] Projectile 컴포넌트가 없습니다.",
+                projectileObject);
+
+            projectileObject.GetComponent<Poolable>()?.Release();
+
+            return false;
+        }
+
+        projectile.InitUltimate(
+            battleUnit,
+            target.battleUnit,
+            (hitUnit, hitPosition) =>
+            {
+                // 발사한 대상과 실제 충돌 대상이 같고 아직 살아 있을 때만 효과를 적용
+                if (!IsLivingHero(target) ||
+                    hitUnit != target.battleUnit)
+                {
+                    return;
+                }
+
+                onHit.Invoke(target, hitPosition);
+            });
+
+        return true;
     }
 
     // ===============================
@@ -382,9 +433,7 @@ public class HeroBase : MonoBehaviour
         const float attackRadius = 1.5f;
         const float baseDamageMultiplier = 2f;
 
-        HeroBase centerTarget =
-            GetNearestOpponent(
-                allHeroes);
+        HeroBase centerTarget = GetNearestOpponent(allHeroes);
 
         if (centerTarget == null)
         {
@@ -393,54 +442,48 @@ public class HeroBase : MonoBehaviour
 
         float finalMultiplier =
             baseDamageMultiplier +
-            JobUltimateSkill.GetLevelMultiplierBonus(
-                battleUnit);
+            JobUltimateSkill.GetLevelMultiplierBonus(battleUnit);
 
-        float attackRadiusSqr =
-            attackRadius *
-            attackRadius;
+        float attackRadiusSqr = attackRadius * attackRadius;
 
-        bool appliedAnyDamage = false;
-
-        SpawnUltimateEffect(
-            centerTarget.transform.position,
-            2f);
-
-        foreach (HeroBase hero in allHeroes)
-        {
-            if (!IsLivingHero(hero) ||
-                !IsOpponent(hero))
+        return SpawnUltimateProjectile(
+            centerTarget,
+            (_, hitPosition) =>
             {
-                continue;
-            }
+                // 투사체가 도착한 순간에 마법 이펙트를 생성
+                SpawnUltimateEffect(hitPosition, 2f);
 
-            float distanceSqr =
-                (hero.transform.position -
-                 centerTarget.transform.position).sqrMagnitude;
+                foreach (HeroBase hero in allHeroes)
+                {
+                    if (!IsLivingHero(hero) ||
+                        !IsOpponent(hero))
+                    {
+                        continue;
+                    }
 
-            if (distanceSqr > attackRadiusSqr)
-            {
-                continue;
-            }
+                    float distanceSqr =
+                        (hero.transform.position - hitPosition).sqrMagnitude;
 
-            int appliedDamage =
-                ApplyUltimateDamage(
-                    hero,
-                    finalMultiplier);
+                    if (distanceSqr > attackRadiusSqr)
+                    {
+                        continue;
+                    }
 
-            if (appliedDamage <= 0)
-            {
-                continue;
-            }
+                    int appliedDamage =
+                        ApplyUltimateDamage(
+                            hero,
+                            finalMultiplier);
 
-            appliedAnyDamage = true;
+                    if (appliedDamage <= 0)
+                    {
+                        continue;
+                    }
 
-            JobUltimateSkill.ApplyMageGradeEffect(
-                battleUnit,
-                hero.battleUnit);
-        }
-
-        return appliedAnyDamage;
+                    JobUltimateSkill.ApplyMageGradeEffect(
+                        battleUnit,
+                        hero.battleUnit);
+                }
+            });
     }
 
     // 집중 저격: 가장 멀리 있는 적에게 공격력 300% 단일 피해
@@ -449,9 +492,7 @@ public class HeroBase : MonoBehaviour
     {
         const float baseDamageMultiplier = 3f;
 
-        HeroBase target =
-            GetFarthestOpponent(
-                allHeroes);
+        HeroBase target = GetFarthestOpponent(allHeroes);
 
         if (target == null)
         {
@@ -460,29 +501,39 @@ public class HeroBase : MonoBehaviour
 
         float finalMultiplier =
             baseDamageMultiplier +
-            JobUltimateSkill.GetLevelMultiplierBonus(
-                battleUnit);
+            JobUltimateSkill.GetLevelMultiplierBonus(battleUnit);
 
         float defenseIgnoreRate =
-            JobUltimateSkill.GetArcherDefenseIgnoreRate(
-                battleUnit);
+            JobUltimateSkill.GetArcherDefenseIgnoreRate(battleUnit);
 
-        SpawnUltimateEffect(
-            target.transform.position,
-            1f);
-
-        int appliedDamage =
-            ApplyUltimateDamage(
+        bool projectileLaunched =
+            SpawnUltimateProjectile(
                 target,
-                finalMultiplier,
-                defenseIgnoreRate);
+                (hitTarget, _) =>
+                {
+                    int appliedDamage =
+                        ApplyUltimateDamage(
+                            hitTarget,
+                            finalMultiplier,
+                            defenseIgnoreRate);
 
-        if (appliedDamage <= 0)
+                    if (appliedDamage <= 0)
+                    {
+                        return;
+                    }
+
+                    JobUltimateSkill.ApplyArcherKnockback(
+                        battleUnit,
+                        hitTarget.battleUnit);
+                });
+
+        if (!projectileLaunched)
         {
             return false;
         }
 
-        JobUltimateSkill.ApplyArcherKnockback(battleUnit, target.battleUnit);
+        // 궁수 스킬 이펙트는 궁극기를 사용하는 궁수 위치에 표시
+        SpawnUltimateEffect(transform.position, 1f);
 
         return true;
     }
@@ -727,6 +778,32 @@ public class HeroBase : MonoBehaviour
                hero.battleUnit.Health != null;
     }
 
+    private void ApplyUltimateEffectSorting(GameObject effectObject)
+    {
+        if (effectObject == null)
+        {
+            return;
+        }
+
+        SortingGroup ownerSortingGroup =
+            GetComponent<SortingGroup>();
+
+        SortingGroup effectSortingGroup =
+            effectObject.GetComponent<SortingGroup>();
+
+        if (ownerSortingGroup == null ||
+            effectSortingGroup == null)
+        {
+            return;
+        }
+
+        effectSortingGroup.sortingLayerID =
+            ownerSortingGroup.sortingLayerID;
+
+        effectSortingGroup.sortingOrder =
+            ownerSortingGroup.sortingOrder + 1;
+    }
+
     private void SpawnUltimateEffect(
         Vector3 position,
         float lifetime)
@@ -744,6 +821,8 @@ public class HeroBase : MonoBehaviour
                 heroInstance.data.UltimateEffectPrefab,
                 position,
                 Quaternion.identity);
+
+        ApplyUltimateEffectSorting(effectObject);
 
         Poolable poolable =
             effectObject.GetComponent<Poolable>();

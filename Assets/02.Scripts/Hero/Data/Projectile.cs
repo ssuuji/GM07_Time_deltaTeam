@@ -1,5 +1,7 @@
-﻿using AFKHero.Battle;
+﻿using System;
+using AFKHero.Battle;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Poolable))]
 public class Projectile : MonoBehaviour
@@ -13,9 +15,32 @@ public class Projectile : MonoBehaviour
     private BattleUnit target;
     private Poolable poolable;
 
+    // 기본 공격과 궁극기 투사체를 구분하기 위한 변수
+    private float ultimateSpeedMultiplier = 1.5f;
+
+    private Action<BattleUnit, Vector3> ultimateHitCallback;
+    private SortingGroup sortingGroup;
+    private int defaultSortingLayerId;
+    private int defaultSortingOrder;
+    private float currentSpeed;
+
+    // 궁극기 사용할 때 일반 투사체들도 멈추게 하기 위한 변수
+    private BattleManager battleManager;
+    private bool isUltimateProjectile;
+
     private void Awake()
     {
         poolable = GetComponent<Poolable>();
+
+        sortingGroup = GetComponent<SortingGroup>();
+
+        if (sortingGroup != null)
+        {
+            defaultSortingLayerId = sortingGroup.sortingLayerID;
+            defaultSortingOrder = sortingGroup.sortingOrder;
+        }
+
+        currentSpeed = speed;
     }
 
     // 투사체 발사 시 초기화
@@ -23,6 +48,40 @@ public class Projectile : MonoBehaviour
     {
         owner = projectileOwner;
         target = projectileTarget;
+
+        ultimateHitCallback = null;
+        currentSpeed = speed;
+        RestoreDefaultSorting();
+
+        battleManager =
+        projectileOwner != null
+            ? projectileOwner.BattleManager
+            : null;
+
+        isUltimateProjectile = false;
+    }
+
+    public void InitUltimate(
+    BattleUnit projectileOwner,
+    BattleUnit projectileTarget,
+    Action<BattleUnit, Vector3> onHit)
+    {
+        owner = projectileOwner;
+        target = projectileTarget;
+        ultimateHitCallback = onHit;
+
+        // 궁극기 종료 전에 도착할 수 있도록 기본 투사체보다 빠르게 이동
+        currentSpeed = Mathf.Max(speed, speed * ultimateSpeedMultiplier);
+
+        // 궁극기 투사체는 궁극기 중에도 계속 이동
+        battleManager =
+            projectileOwner != null
+           ? projectileOwner.BattleManager
+           : null;
+
+        isUltimateProjectile = true;
+
+        ApplyUltimateSorting(projectileOwner);
     }
 
     private void Update()
@@ -40,9 +99,15 @@ public class Projectile : MonoBehaviour
             return;
         }
 
+        // 궁극기 중에는 기본 투사체 이동 멈춤
+        if (ShouldPauseDuringUltimate())
+        {
+            return;
+        }
+
         // 타겟을 향해 이동함
         Vector3 direction = (target.transform.position - transform.position).normalized;
-        transform.position += direction * speed * Time.deltaTime;
+        transform.position += direction * currentSpeed * Time.deltaTime;
 
         // 타겟을 바라보도록 회전 처리
         //transform.LookAt(target.transform);
@@ -74,6 +139,20 @@ public class Projectile : MonoBehaviour
 
             return;
         }
+
+        if (ultimateHitCallback != null)
+        {
+            BattleUnit hitTarget = target;
+            Vector3 hitPosition = target.transform.position;
+            Action<BattleUnit, Vector3> callback = ultimateHitCallback;
+
+            // 콜백 실행 중 이 투사체가 다시 사용되어도 기존 상태가 섞이지 않도록 먼저 반환
+            ReleaseProjectile();
+            callback.Invoke(hitTarget, hitPosition);
+
+            return;
+        }
+
         int finalDamage =
            DamageCalculator.CalculateBasicAttackDamage(
                owner.Stats,
@@ -101,10 +180,56 @@ public class Projectile : MonoBehaviour
                unit.Stats.IsAlive;
     }
 
+    private bool ShouldPauseDuringUltimate()
+    {
+        return !isUltimateProjectile &&
+               battleManager != null &&
+               battleManager.IsUltimatePlaying;
+    }
+
+    private void ApplyUltimateSorting(BattleUnit projectileOwner)
+    {
+        if (sortingGroup == null || projectileOwner == null)
+        {
+            return;
+        }
+
+        SortingGroup ownerSortingGroup =
+            projectileOwner.GetComponent<SortingGroup>();
+
+        if (ownerSortingGroup == null)
+        {
+            RestoreDefaultSorting();
+
+            return;
+        }
+
+        sortingGroup.sortingLayerID = ownerSortingGroup.sortingLayerID;
+        sortingGroup.sortingOrder = ownerSortingGroup.sortingOrder + 1;
+    }
+
+    private void RestoreDefaultSorting()
+    {
+        if (sortingGroup == null)
+        {
+            return;
+        }
+
+        sortingGroup.sortingLayerID = defaultSortingLayerId;
+        sortingGroup.sortingOrder = defaultSortingOrder;
+    }
+
     private void ReleaseProjectile()
     {
         owner = null;
         target = null;
+
+        ultimateHitCallback = null;
+        currentSpeed = speed;
+        RestoreDefaultSorting();
+
+        battleManager = null;
+        isUltimateProjectile = false;
 
         poolable?.Release();
     }
@@ -113,5 +238,12 @@ public class Projectile : MonoBehaviour
     {
         owner = null;
         target = null;
+
+        ultimateHitCallback = null;
+        currentSpeed = speed;
+        RestoreDefaultSorting();
+
+        battleManager = null;
+        isUltimateProjectile = false;
     }
 }

@@ -74,7 +74,7 @@ public static class RaceJobData
                 skillName = "집중 저격";
                 jobDesc = "후열의 적을 우선 타겟팅하여 높은 단일 피해로 치명타를 입히는 원거리 딜러입니다.";
                 attackSpeed = 1.3f;
-                attackRange = 4.0f;
+                attackRange = 6.0f;
 
                 if (grade == HeroGrade.Normal) { hp = 500; attack = 100; defense = 30; }
                 else if (grade == HeroGrade.Rare) { hp = 800; attack = 180; defense = 50; }

@@ -11507,7 +11507,7 @@ MonoBehaviour:
   ultimateSortingOrder: 10000
   battleCamera: {fileID: 1940185525}
   cameraArea: {fileID: 1503258407}
-  ultimateZoomSize: 3.8
+  ultimateZoomSize: 4.5
   zoomDuration: 0.15
   cameraFocusStrength: 1
   ultimateCameraOffset: {x: 0, y: 0}
@@ -11528,21 +11528,21 @@ MonoBehaviour:
   battleManager: {fileID: 584118162}
   battleSpawner: {fileID: 584118161}
   testAllyHeroes:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 11400000, guid: 52cedf96ddb33d749bbeb1c1764db086, type: 2}
+  - {fileID: 11400000, guid: b340003f9bc08834194470bd7d6fb4eb, type: 2}
+  - {fileID: 11400000, guid: 6497791b2eb2d0045a79acf163e08bb9, type: 2}
+  - {fileID: 11400000, guid: f835f16a1448daf40be8d6f92783555a, type: 2}
+  - {fileID: 11400000, guid: 2e74b8c831a98284b861bbe0deeda661, type: 2}
+  - {fileID: 11400000, guid: 1158f6ad3469e3f43acffff5607f225d, type: 2}
   testEnemyHeroes:
+  - {fileID: 11400000, guid: 11b022b29d1c1304f94b2191855adf76, type: 2}
+  - {fileID: 11400000, guid: 1e493698dabd9204290d7d9fd4d15209, type: 2}
+  - {fileID: 11400000, guid: 83369abcba5a332418ebcf1d597eab38, type: 2}
   - {fileID: 11400000, guid: ba5157846496f0148b68b93b90908a4a, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   - {fileID: 0}
   testAllyLevel: 1
   testEnemyLevel: 1
   testBattleTimeLimit: 90
-  testHealthMultiplier: 10
+  testHealthMultiplier: 20
   testUnit: {fileID: 0}
   stunDuration: 3
   silenceDuration: 3
