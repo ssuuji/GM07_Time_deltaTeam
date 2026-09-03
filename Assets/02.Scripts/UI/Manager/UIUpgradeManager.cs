@@ -73,6 +73,17 @@ namespace AFKHero.UI
             UpdateHeroList();
         }
 
+        //성장 UI 전체 갱신
+        public void UpdateUpgradeUI()
+        {
+            UpdateHeroList();
+
+            if (selectedHero != null)
+            {
+                UpdateSelectedHero();
+            }
+        }
+
         //선택 영웅 UI 표시
         private void SetSelectedHeroUI(bool active)
         {
@@ -372,6 +383,8 @@ namespace AFKHero.UI
 
         #endregion
 
+        #region 장비 일괄장착
+
         //장비 일괄장착
         public void OnClickedAutoEquip()
         {
@@ -383,6 +396,7 @@ namespace AFKHero.UI
             // 장착 완료 후 현재 창의 스탯 및 장비 슬롯 UI를 갱신
             UpdateSelectedHero();
         }
+        #endregion
 
         #region 가이드
 

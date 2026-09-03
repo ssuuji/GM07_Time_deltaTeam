@@ -48,8 +48,8 @@ MonoBehaviour:
   bgmSource: {fileID: 7946225737558208801}
   bgmSounds:
   - Key: 0
-    Clip: {fileID: 8300000, guid: adb143a32c7f510449d01b0e4a4ae9a9, type: 3}
-    Volume: 1
+    Clip: {fileID: 8300000, guid: af9cf35f9bec02545b1a838e27d5b770, type: 3}
+    Volume: 0.2
   - Key: 1
     Clip: {fileID: 8300000, guid: 321fa444109aa4d46b886073cae0cda8, type: 3}
     Volume: 0.2
@@ -71,13 +71,7 @@ MonoBehaviour:
   - Key: 7
     Clip: {fileID: 8300000, guid: f6d55f7d9425ecc4aae57cda7368b062, type: 3}
     Volume: 0.2
-  uiSounds:
-  - Key: 8
-    Clip: {fileID: 0}
-    Volume: 1
-  - Key: 9
-    Clip: {fileID: 0}
-    Volume: 1
+  uiSounds: []
   sfxPoolSize: 10
   masterVolume: 1
   bgmVolume: 1
