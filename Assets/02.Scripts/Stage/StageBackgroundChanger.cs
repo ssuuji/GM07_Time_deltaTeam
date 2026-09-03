@@ -50,7 +50,7 @@ public class StageBackgroundChanger : MonoBehaviour
     //아니... 너무 어렵게 생각했나?
     //그냥 예외처리 정도만 하고,
     //LastStageNumber로 셋팅하면 되는 거 아냐?
-    public void SetBackgroundOnStart(int currentStageNumber, int lastStageNumber, int lastSectionNumber, StageInfo currentStageInfo)
+    public void SetBackgroundOnStart(int lastStageNumber)
     {
         if (backgroundList == null || backgroundList.Count == 0)
         {
@@ -58,6 +58,7 @@ public class StageBackgroundChanger : MonoBehaviour
             return;
         }
 
+        //마지막 클리어 스테이지가 0일 때 == 완전히 처음 시작했을 때는 1 넣을 수 있도록
         int index = Mathf.Max(lastStageNumber, 1);
 
         ChangeBackground(index);
@@ -109,14 +110,16 @@ public class StageBackgroundChanger : MonoBehaviour
             return;
         }
 
+        //만약 섹션 넘버가 1이 아니다 == 잘못된 값이거나, 2 이상임.
         if(currentSectionNumber != 1)
         {
             return;
         }
 
+        //1스테이지에서 패배나 비상탈출하면 0을 넣어버릴 수 있으므로 Mathf.Max 사용.
         int index = Mathf.Max(currentStageNumber, 2);
 
-        ChangeBackground(currentStageNumber - 1);
+        ChangeBackground(index);
 
     }
 }

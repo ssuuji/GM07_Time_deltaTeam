@@ -114,7 +114,7 @@ public class StageManager : MonoBehaviour
 
         if(stageBackgroundChanger != null)
         {
-            stageBackgroundChanger.SetBackgroundOnStart(currentStageNumber, lastStageNumber, lastSectionNumber, currentStageInfo); ;
+            stageBackgroundChanger.SetBackgroundOnStart(lastStageNumber);
         }
 
         ChangeState(StageState.Idle);
