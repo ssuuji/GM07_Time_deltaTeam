@@ -96,9 +96,9 @@ namespace AFKHero.UI
         private void SetHeroStat(HeroInstance hero)
         {
             heroLevelText.text = $"LV. {hero.level}";       //레벨
-            heroAttackText.text = hero.Attack.ToString();   //공격력
-            heroDefenseText.text = hero.Defense.ToString(); //방어력
-            if (heroHpText != null) heroHpText.text = hero.MaxHP.ToString(); //체력
+            heroAttackText.text = hero.FinalAttack.ToString();   //공격력
+            heroDefenseText.text = hero.FinalDefense.ToString(); //방어력
+            if (heroHpText != null) heroHpText.text = hero.FinalMaxHP.ToString(); //체력
         }
 
         //스킬설명
