@@ -18,14 +18,14 @@ namespace AFKHero.Battle
 
         [Header("2D Depth")]
         [SerializeField] private SortingGroup sortingGroup; //[SerializeField] private SpriteRenderer[] spriteRenderers;
-        
+
         // 배경과 겹치지 않게
         [SerializeField] private int sortingBaseOrder = 1000;
 
         // Sorting Order 미세 조정
         [SerializeField] private int sortingPrecision = 100;
-        
-        [Header("유닛 이동 제한 범위")] 
+
+        [Header("유닛 이동 제한 범위")]
         private Vector2 maximumBattlePosition = new Vector2(2.2f, 3.5f);
         private Vector2 minimumBattlePosition = new Vector2(-2.2f, -1.5f);
 
@@ -50,6 +50,7 @@ namespace AFKHero.Battle
         public UnitEnergy Energy => unitEnergy;
         public UnitUltimateController UltimateController => ultimateController;
         public UnitStatusEffectController StatusEffects => statusEffectController;
+        public BattleManager BattleManager { get; private set; }
 
         public void Initialize(
             HeroInstance heroInstance,
@@ -57,16 +58,18 @@ namespace AFKHero.Battle
             int formationSlotIndex,
             BattleManager battleManager)
         {
-            if(heroInstance == null || heroInstance.data == null)
+            if (heroInstance == null || heroInstance.data == null)
             {
                 Debug.LogError("heroInstance 또는 HeroData가 비어있습니다.", this);
                 return;
             }
-            if(battleManager == null)
+            if (battleManager == null)
             {
                 Debug.LogError("BattleManager가 비어있습니다.", this);
                 return;
             }
+
+            BattleManager = battleManager;
 
             HeroInstance = heroInstance;
             Data = heroInstance.data;
@@ -96,7 +99,7 @@ namespace AFKHero.Battle
             ultimateController.Initialize(this, battleManager);
 
             gameObject.name = $"{team}_{Data.HeroName}_{formationSlotIndex}";
-            
+
             // 생성 직후 올바른 SortingOrder로 표시되도록 계산
             RefreshSortingOrder();
         }
@@ -115,22 +118,22 @@ namespace AFKHero.Battle
 
         private void FindMissingComponents()
         {
-            if(targetFinder == null)
+            if (targetFinder == null)
             {
                 targetFinder = GetComponent<UnitTargetFinder>();
             }
 
-            if(unitMovemnet == null)
+            if (unitMovemnet == null)
             {
                 unitMovemnet = GetComponent<UnitMovement>();
             }
 
-            if(attackController == null)
+            if (attackController == null)
             {
                 attackController = GetComponent<UnitAttackController>();
             }
 
-            if(unitHealth == null)
+            if (unitHealth == null)
             {
                 unitHealth = GetComponent<UnitHealth>();
             }
@@ -140,12 +143,12 @@ namespace AFKHero.Battle
                 unitEnergy = GetComponent<UnitEnergy>();
             }
 
-            if(ultimateController == null)
+            if (ultimateController == null)
             {
                 ultimateController = GetComponent<UnitUltimateController>();
             }
 
-            if(statusEffectController == null)
+            if (statusEffectController == null)
             {
                 statusEffectController = GetComponent<UnitStatusEffectController>();
             }
@@ -180,35 +183,35 @@ namespace AFKHero.Battle
                 isValid = false;
             }
 
-            if(attackController == null)
+            if (attackController == null)
             {
                 Debug.LogError($"{name}에 AttackController가 비어있습니다.", this);
-                
+
                 isValid = false;
             }
-            
-            if(unitHealth == null)
+
+            if (unitHealth == null)
             {
                 Debug.LogError($"{name}에 UnitHealth가 비어있습니다.", this);
 
                 isValid = false;
             }
 
-            if(unitEnergy == null)
+            if (unitEnergy == null)
             {
                 Debug.LogError($"{name}에 UnitEnergy가 비어있습니다.", this);
 
                 isValid = false;
             }
 
-            if(ultimateController == null)
+            if (ultimateController == null)
             {
                 Debug.LogError($"{name}에 UnitUltimateController가 비어있습니다.", this);
 
                 isValid = false;
             }
-            
-            if(statusEffectController == null)
+
+            if (statusEffectController == null)
             {
                 Debug.LogError($"{name}에 UnitStatusEffectController 비어있습니다.", this);
 
@@ -239,7 +242,7 @@ namespace AFKHero.Battle
 
             int order = sortingBaseOrder - Mathf.RoundToInt(transform.position.y * sortingPrecision);
             sortingGroup.sortingOrder = order;
-            
+
             /*
             if(spriteRenderers == null)
             {

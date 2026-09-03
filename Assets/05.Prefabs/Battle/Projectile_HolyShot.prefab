@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4470902328502950204}
   - component: {fileID: 8269810454701021572}
   - component: {fileID: 3131574005175760112}
+  - component: {fileID: -6659950434293233220}
   m_Layer: 0
   m_Name: Projectile_HolyShot
   m_TagString: Untagged
@@ -60,6 +61,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   speed: 8
+--- !u!210 &-6659950434293233220
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1242348002347848851}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0
 --- !u!1 &2418013659407043817
 GameObject:
   m_ObjectHideFlags: 0
