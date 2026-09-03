@@ -18,10 +18,12 @@ namespace AFKHero.UI
         private UIBattleHeroSlot[] heroSlots = new UIBattleHeroSlot[5]; //전투 하단에 표시할 영웅 슬롯 5개
 
         [Header("궁극기 모드")]
-        [SerializeField] private BattleManager battleManager;     
-        [SerializeField] private TMP_Text ultimateModeText;       //자동(노란색)/수동(흰색) 텍스트
-        private readonly Color32 autoYellow = new Color32(255, 220, 60, 255); //자동 모드
-        private readonly Color32 manualWhite = new Color32(255, 255, 255, 255); //수동 모드
+        [SerializeField] private BattleManager battleManager;
+        [SerializeField] private UIBattleSpeedManager battleSpeedManager;
+        [SerializeField] private GameObject glowDot;
+        private RectTransform glowDotRect;
+        private int glowDotEdge = 0;
+        private bool isAutoUltimate = true;
 
         [Header("현재 스테이지 정보")]
         [SerializeField] private TMP_Text currentStageText;       //현재 진행 중인 스테이지 표시
@@ -69,6 +71,11 @@ namespace AFKHero.UI
         [SerializeField] private RectTransform escapeButton;
         [SerializeField] private RectTransform escapePanel;
 
+        [Header("전투 조작 버튼")]
+        [SerializeField] private GameObject autoButton;
+        [SerializeField] private GameObject speedButton;
+
+
         private void Awake()
         {
             Instance = this;
@@ -88,7 +95,6 @@ namespace AFKHero.UI
         {
             if (battleManager != null)
             {
-                battleManager.UltimateUseModeChanged += UpdateUltimateModeUI; //궁극기 모드 변경 
                 battleManager.UltimateStarted += OnUltimateStarted;           //궁극기 연출 시작
                 battleManager.UltimateFinished += OnUltimateFinished;         //궁극기 연출 종료
                 battleManager.UnitDied += OnUnitDied;                         //유닛 사망 이벤트 구독
@@ -96,7 +102,6 @@ namespace AFKHero.UI
                 battleManager.StateChanged += OnBattleStateChanged;           //전투 상태 변경
                 battleManager.BattleTimeChanged += UpdateBattleTimeUI;        //전투 시간
 
-                UpdateUltimateModeUI(battleManager.UltimateMode);             //현재 궁극기 모드에 맞는 UI 반영
                 UpdateBattleTimeUI(battleManager.RemainingBattleTime,battleManager.BattleTimeLimit);
             }
             
@@ -107,6 +112,27 @@ namespace AFKHero.UI
 
                 OnStageStateChanged(StageManager.Instance.CurrentState);        //현재 상태 UI 반영
             }
+
+            if (glowDot != null)
+            {
+                glowDotRect = glowDot.GetComponent<RectTransform>();
+
+                if (battleSpeedManager != null)
+                {
+                    battleSpeedManager.ResetHighlightPosition(glowDotRect, ref glowDotEdge);
+                }
+
+                glowDot.SetActive(false);
+            }
+        }
+
+        private void Update()
+        {
+            //궁극기 자동 사용 모드일 때 AUTO 버튼의 빛을 테두리 따라 이동
+            if (isAutoUltimate && battleSpeedManager != null && glowDotRect != null)
+            {
+                battleSpeedManager.MoveAlongSquare(glowDotRect, ref glowDotEdge);
+            }
         }
 
         private void OnDestroy()
@@ -114,7 +140,6 @@ namespace AFKHero.UI
             if (battleManager != null)
             {
                 //모든 이벤트 구독 해제
-                battleManager.UltimateUseModeChanged -= UpdateUltimateModeUI;
                 battleManager.UltimateStarted -= OnUltimateStarted;
                 battleManager.UltimateFinished -= OnUltimateFinished;
                 battleManager.UnitDied -= OnUnitDied;
@@ -241,6 +266,25 @@ namespace AFKHero.UI
         {
             ResetUltimateEffect(); //스테이지 전투 시작/종료 시 진행 중인 궁극기 연출 강제 초기화
 
+            bool isWorking = state == StageState.Working;
+
+            //스테이지 종료 시 배속 초기화
+            if (!isWorking && battleSpeedManager != null)
+            {
+                battleSpeedManager.ResetSpeed();
+            }
+
+            //스테이지 진행 중일 때만 Auto / 배속 버튼 활성화
+            if (autoButton != null)
+            {
+                autoButton.SetActive(isWorking);
+            }
+
+            if (speedButton != null)
+            {
+                speedButton.SetActive(isWorking);
+            }
+
             //스테이지 전투 중일 때만 타이머 표시
             if (stageTimer != null)
             {
@@ -365,15 +409,13 @@ namespace AFKHero.UI
             if (battleManager == null) return;
 
             battleManager.ToggleUltimateUseMode();
-        }
 
-        //현재 궁극기 모드에 따라 Auto 텍스트 색상 갱신
-        private void UpdateUltimateModeUI(UltimateUseMode mode)
-        {
-            if (ultimateModeText == null) return;
+            isAutoUltimate = !isAutoUltimate;
 
-            bool isAuto = mode == UltimateUseMode.Auto;
-            ultimateModeText.color = isAuto ? autoYellow : manualWhite; //자동(노란색) / 수동(흰색)
+            if (glowDot != null)
+            {
+                glowDot.SetActive(isAutoUltimate);
+            }
         }
 
         //영웅 카드 클릭을 통해 사용할 궁극기 선택
