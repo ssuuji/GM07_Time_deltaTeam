@@ -1,24 +1,24 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 namespace AFKHero.UI
 {
     public class UIBattleSpeedManager : MonoBehaviour
     {
-        [Header("¹è¼Ó ÀÌÆåÆ®")]
-        [SerializeField] private GameObject highlightEffect; // Å×µÎ¸®¸¦ ´Ş¸± ºû (GlowDot)
-        [SerializeField] private float moveSpeed = 400f;     // ºûÀÌ ÀÌµ¿ÇÏ´Â ¼Óµµ
-        [SerializeField] private float pathSize = 50f;       // ¹öÆ°ÀÇ Àı¹İ Å©±â (Å×µÎ¸® ¹üÀ§)
+        [Header("ë°°ì† ì´í™íŠ¸")]
+        [SerializeField] private GameObject highlightEffect; // í…Œë‘ë¦¬ë¥¼ ë‹¬ë¦´ ë¹› (GlowDot)
+        [SerializeField] private float moveSpeed = 400f;     // ë¹›ì´ ì´ë™í•˜ëŠ” ì†ë„
+        [SerializeField] private float pathSize = 50f;       // ë²„íŠ¼ì˜ ì ˆë°˜ í¬ê¸° (í…Œë‘ë¦¬ ë²”ìœ„)
 
         private bool isDoubleSpeed = false;
         private RectTransform effectRect;
-        private int currentEdge = 0; // 0:À§(¿ì·ÎÀÌµ¿), 1:¿À¸¥ÂÊ(¾Æ·¡·Î), 2:¾Æ·¡(ÁÂ·Î), 3:¿ŞÂÊ(À§·Î)
+        private int currentEdge = 0; // 0:ìœ„(ìš°ë¡œì´ë™), 1:ì˜¤ë¥¸ìª½(ì•„ë˜ë¡œ), 2:ì•„ë˜(ì¢Œë¡œ), 3:ì™¼ìª½(ìœ„ë¡œ)
 
         private void Start()
         {
             if (highlightEffect != null)
             {
                 effectRect = highlightEffect.GetComponent<RectTransform>();
-                // ½ÃÀÛÇÒ ¶§ ºûÀÇ À§Ä¡¸¦ ÁÂÃø »ó´Ü ¸ğ¼­¸®·Î ÃÊ±âÈ­
+                // ì‹œì‘í•  ë•Œ ë¹›ì˜ ìœ„ì¹˜ë¥¼ ì¢Œì¸¡ ìƒë‹¨ ëª¨ì„œë¦¬ë¡œ ì´ˆê¸°í™”
                 effectRect.anchoredPosition = new Vector2(-pathSize, pathSize);
             }
             SetNormalSpeed();
@@ -26,41 +26,43 @@ namespace AFKHero.UI
 
         private void Update()
         {
-            // 2¹è¼ÓÀÌ ÄÑÁ® ÀÖÀ» ¶§¸¸ »ç°¢Çü ±Ëµµ¸¦ µû¶ó ÀÌµ¿
+            // 2ë°°ì†ì´ ì¼œì ¸ ìˆì„ ë•Œë§Œ ì‚¬ê°í˜• ê¶¤ë„ë¥¼ ë”°ë¼ ì´ë™
             if (isDoubleSpeed && effectRect != null)
             {
-                MoveAlongSquare();
+                MoveAlongSquare(effectRect, ref currentEdge);
             }
         }
 
-        // »ç°¢Çü Å×µÎ¸®¸¦ µû¶ó ÀÌµ¿ÇÏ´Â ÇÔ¼ö
-        private void MoveAlongSquare()
+        // ì‚¬ê°í˜• í…Œë‘ë¦¬ë¥¼ ë”°ë¼ ì´ë™í•˜ëŠ” í•¨ìˆ˜
+        public void MoveAlongSquare(RectTransform targetRect, ref int edge)
         {
-            Vector2 pos = effectRect.anchoredPosition;
+            if (targetRect == null) return;
+
+            Vector2 pos = targetRect.anchoredPosition;
             float step = moveSpeed * Time.unscaledDeltaTime;
 
-            if (currentEdge == 0) // À§ÂÊ Å×µÎ¸® (¿À¸¥ÂÊÀ¸·Î ÀÌµ¿)
+            if (edge == 0) // ìœ„ìª½ í…Œë‘ë¦¬ (ì˜¤ë¥¸ìª½ìœ¼ë¡œ ì´ë™)
             {
                 pos.x += step;
-                if (pos.x >= pathSize) { pos.x = pathSize; currentEdge = 1; }
+                if (pos.x >= pathSize) { pos.x = pathSize; edge = 1; }
             }
-            else if (currentEdge == 1) // ¿À¸¥ÂÊ Å×µÎ¸® (¾Æ·¡·Î ÀÌµ¿)
+            else if (edge == 1) // ì˜¤ë¥¸ìª½ í…Œë‘ë¦¬ (ì•„ë˜ë¡œ ì´ë™)
             {
                 pos.y -= step;
-                if (pos.y <= -pathSize) { pos.y = -pathSize; currentEdge = 2; }
+                if (pos.y <= -pathSize) { pos.y = -pathSize; edge = 2; }
             }
-            else if (currentEdge == 2) // ¾Æ·¡ÂÊ Å×µÎ¸® (¿ŞÂÊÀ¸·Î ÀÌµ¿)
+            else if (edge == 2) // ì•„ë˜ìª½ í…Œë‘ë¦¬ (ì™¼ìª½ìœ¼ë¡œ ì´ë™)
             {
                 pos.x -= step;
-                if (pos.x <= -pathSize) { pos.x = -pathSize; currentEdge = 3; }
+                if (pos.x <= -pathSize) { pos.x = -pathSize; edge = 3; }
             }
-            else if (currentEdge == 3) // ¿ŞÂÊ Å×µÎ¸® (À§·Î ÀÌµ¿)
+            else if (edge == 3) // ì™¼ìª½ í…Œë‘ë¦¬ (ìœ„ë¡œ ì´ë™)
             {
                 pos.y += step;
-                if (pos.y >= pathSize) { pos.y = pathSize; currentEdge = 0; }
+                if (pos.y >= pathSize) { pos.y = pathSize; edge = 0; }
             }
 
-            effectRect.anchoredPosition = pos;
+            targetRect.anchoredPosition = pos;
         }
 
         public void OnClickedSpeedToggle()
@@ -81,6 +83,22 @@ namespace AFKHero.UI
         {
             Time.timeScale = 2.0f;
             if (highlightEffect != null) highlightEffect.SetActive(true);
+        }
+
+        public void ResetHighlightPosition(RectTransform targetRect, ref int edge)
+        {
+            if (targetRect == null) return;
+
+            edge = 0;
+            targetRect.anchoredPosition = new Vector2(-pathSize, pathSize);
+        }
+
+
+        //ë°°ì† ìƒíƒœ ì´ˆê¸°í™”
+        public void ResetSpeed()
+        {
+            isDoubleSpeed = false;
+            SetNormalSpeed();
         }
 
         private void OnDestroy()

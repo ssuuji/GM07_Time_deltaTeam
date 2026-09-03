@@ -305,7 +305,7 @@ namespace AFKHero.UI
         private void UpdateUpgradeView()
         {
             heroTitletxt.text = "성장";
-            UIUpgradeManager.Instance.UpdateHeroList(); //영웅리스트 조회
+            UIUpgradeManager.Instance.UpdateUpgradeUI(); //성장 UI 갱신
         }
 
         //공명탭 화면 갱신
