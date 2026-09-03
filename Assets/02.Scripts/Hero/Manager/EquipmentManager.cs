@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EquipmentManager : MonoBehaviour
@@ -309,20 +310,42 @@ public class EquipmentManager : MonoBehaviour
     {
         EquipmentSaveData saveData = new EquipmentSaveData();
 
+        //가방저장
         foreach (var equip in equipmentInventory)
         {
-            EquipItemSaveData itemData = new EquipItemSaveData();
-            itemData.equipmentID = equip.BaseData.equipmentID;
-            itemData.grade = (int)equip.Grade;
-            itemData.enhanceLevel = equip.EnhanceLevel;
-            itemData.attack = equip.Attack;
-            itemData.defense = equip.Defense;
-            itemData.hp = equip.HP;
+            saveData.inventoryEquips.Add(CreateEquipmentItemSaveData(equip));
+        }
 
-            saveData.inventoryEquips.Add(itemData);
+        //장착 장비저장
+        foreach (var hero in HeroManager.Instance.GetAllHeroes())
+        {
+            HeroEquipmentSaveData heroEquipData = new HeroEquipmentSaveData();
+
+            heroEquipData.heroID = hero.data.HeroID;
+            heroEquipData.weapon = CreateEquipmentItemSaveData(hero.equippedWeapon);
+            heroEquipData.armor = CreateEquipmentItemSaveData(hero.equippedArmor);
+            heroEquipData.pants = CreateEquipmentItemSaveData(hero.equippedPants);
+            heroEquipData.helmet = CreateEquipmentItemSaveData(hero.equippedHelmet);
+
+            saveData.heroEquipments.Add(heroEquipData);
         }
 
         return saveData;
+    }
+
+    private EquipItemSaveData CreateEquipmentItemSaveData(EquipmentInstance equip)
+    {
+        if (equip == null) return null;
+
+        EquipItemSaveData itemData = new EquipItemSaveData();
+        itemData.equipmentID = equip.BaseData.equipmentID;
+        itemData.grade = (int)equip.Grade;
+        itemData.enhanceLevel = equip.EnhanceLevel;
+        itemData.attack = equip.Attack;
+        itemData.defense = equip.Defense;
+        itemData.hp = equip.HP;
+
+        return itemData;
     }
 
     public void LoadEquipmentSaveData(EquipmentSaveData saveData)
@@ -331,39 +354,71 @@ public class EquipmentManager : MonoBehaviour
 
         equipmentInventory.Clear();
 
+        //가방 로드
         foreach (var itemData in saveData.inventoryEquips)
         {
-            // 수정 : Resources.Load 대신, 미리 등록된 allEquipments 배열에서 장비찾기
-            EquipmentData baseData = null;
+            EquipmentInstance newEquip = CreateEquipmentInstance(itemData);
 
-            foreach (var equipData in allEquipments)
+            if (newEquip != null)
             {
-                if (equipData.equipmentID == itemData.equipmentID)
-                {
-                    baseData = equipData;
-                    break;
-                }
+                equipmentInventory.Add(newEquip);
             }
-
-            // 원본 데이터를 찾지 못했다면 에러를 띄우고 건너뜐다.
-            if (baseData == null)
-            {
-                Debug.LogWarning($"[장비 로드 실패] 배열에서 '{itemData.equipmentID}'(을)를 찾을 수 없습니다. EquipmentManager 프리팹의 allEquipments 배열에 잘 등록되었는지 확인해주세요!");
-                continue;
-            }
-
-            // 찾은 원본 데이터를 넣어서 장비를 생성
-            EquipmentInstance newEquip = new EquipmentInstance(baseData);
-
-            // 새로 생성되면서 랜덤 부여된 스탯들을, 저장되어 있던 기존 스탯으로 덮기
-            newEquip.Grade = (EquipmentGrade)itemData.grade;
-            newEquip.EnhanceLevel = itemData.enhanceLevel;
-            newEquip.Attack = itemData.attack;
-            newEquip.Defense = itemData.defense;
-            newEquip.HP = itemData.hp;
-
-            equipmentInventory.Add(newEquip);
         }
+
+        if (saveData.heroEquipments == null) return;
+
+        foreach (var heroEquipData in saveData.heroEquipments)
+        {
+            HeroInstance hero = HeroManager.Instance.GetHeroByID(heroEquipData.heroID);
+
+            if (hero == null) continue;
+
+            EquipmentInstance weapon = CreateEquipmentInstance(heroEquipData.weapon);
+            EquipmentInstance armor = CreateEquipmentInstance(heroEquipData.armor);
+            EquipmentInstance pants = CreateEquipmentInstance(heroEquipData.pants);
+            EquipmentInstance helmet = CreateEquipmentInstance(heroEquipData.helmet);
+
+            if (weapon != null) hero.EquipItem(weapon);
+            if (armor != null) hero.EquipItem(armor);
+            if (pants != null) hero.EquipItem(pants);
+            if (helmet != null) hero.EquipItem(helmet);
+        }
+    }
+
+    private EquipmentInstance CreateEquipmentInstance(EquipItemSaveData itemData)
+    {
+        if (itemData == null) return null;
+
+        // 수정 : Resources.Load 대신, 미리 등록된 allEquipments 배열에서 장비찾기
+        EquipmentData baseData = null;
+
+        foreach (var equipData in allEquipments)
+        {
+            if (equipData.equipmentID == itemData.equipmentID)
+            {
+                baseData = equipData;
+                break;
+            }
+        }
+
+        // 원본 데이터를 찾지 못했다면 에러를 띄우고 건너뜐다.
+        if (baseData == null)
+        {
+            Debug.LogWarning($"[장비 로드 실패] 배열에서 '{itemData.equipmentID}'(을)를 찾을 수 없습니다. EquipmentManager 프리팹의 allEquipments 배열에 잘 등록되었는지 확인해주세요!");
+            return null;
+        }
+
+        // 찾은 원본 데이터를 넣어서 장비를 생성
+        EquipmentInstance newEquip = new EquipmentInstance(baseData);
+
+        // 새로 생성되면서 랜덤 부여된 스탯들을, 저장되어 있던 기존 스탯으로 덮기
+        newEquip.Grade = (EquipmentGrade)itemData.grade;
+        newEquip.EnhanceLevel = itemData.enhanceLevel;
+        newEquip.Attack = itemData.attack;
+        newEquip.Defense = itemData.defense;
+        newEquip.HP = itemData.hp;
+
+        return newEquip;
     }
 
     // ===============================

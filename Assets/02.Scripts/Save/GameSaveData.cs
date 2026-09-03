@@ -112,6 +112,20 @@ public class EquipmentSaveData
 {
     // 가방에 있는 장비 리스트
     public List<EquipItemSaveData> inventoryEquips = new List<EquipItemSaveData>();
+
+    //영웅별 장착 장비
+    public List<HeroEquipmentSaveData> heroEquipments = new List<HeroEquipmentSaveData>();
+}
+
+[Serializable]
+public class HeroEquipmentSaveData
+{
+    public int heroID;
+
+    public EquipItemSaveData weapon;
+    public EquipItemSaveData armor;
+    public EquipItemSaveData pants;
+    public EquipItemSaveData helmet;
 }
 
 [Serializable]

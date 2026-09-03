@@ -105,7 +105,7 @@ namespace AFKHero.UI
         private void SetHeroSkill(HeroInstance hero)
         {
             //레어등급 이상만 궁극기 해금
-            switch (hero.data.HeroGrade)
+            switch (hero.currentGrade)
             {
                 case HeroGrade.Rare:
                 case HeroGrade.RarePlus:

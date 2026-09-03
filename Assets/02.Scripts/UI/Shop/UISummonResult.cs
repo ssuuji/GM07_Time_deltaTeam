@@ -41,7 +41,7 @@ namespace AFKHero.UI
 
         //카드 - 기존값 저장
         private Vector3 oneCardOriginScale;                              //1회카드
-        private List<Vector3> cardOriginPositions = new List<Vector3>(); //10회카드 - 원래 위치
+        private List<Vector2> cardOriginPositions = new List<Vector2>(); //10회카드 - 원래 위치
         private List<Vector3> cardOriginScales = new List<Vector3>();    //10회카드 - 원래 크기
         private bool isSaveCard = false;                                 //10회카드 - 위치 저장 여부
 
@@ -139,6 +139,10 @@ namespace AFKHero.UI
 
             RectTransform cardRect = summon1Card.GetComponent<RectTransform>();
 
+            Vector3 riseStartPosition = summonRise.transform.parent.InverseTransformPoint(summonPoint.position);
+            Vector3 flashCenterPosition = summonFlash.transform.parent.InverseTransformPoint(summonPointCenter.position);
+
+
             cardRect.DOKill();
             cardRect.localScale = oneCardOriginScale;
 
@@ -146,13 +150,13 @@ namespace AFKHero.UI
             summonRise.transform.DOKill();
             summonRise.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             summonRise.transform.localScale = riseOriginScale;
-            summonRise.transform.position = summonPoint.position;
+            summonRise.transform.localPosition = riseStartPosition;
 
             //Flash 종료
             summonFlash.transform.DOKill();
             summonFlash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             summonFlash.transform.localScale = flashOriginScale;
-            summonFlash.transform.position = summonPointCenter.position;
+            summonFlash.transform.localPosition = flashCenterPosition;
 
             isSummon = false;
         }
@@ -169,7 +173,7 @@ namespace AFKHero.UI
             {
                 RectTransform cardRect = card.GetComponent<RectTransform>();
 
-                cardOriginPositions.Add(cardRect.position);
+                cardOriginPositions.Add(cardRect.anchoredPosition);
                 cardOriginScales.Add(cardRect.localScale);
             }
 
@@ -187,7 +191,7 @@ namespace AFKHero.UI
 
                 cardRect.DOKill();
 
-                cardRect.position = cardOriginPositions[i];
+                cardRect.anchoredPosition = cardOriginPositions[i];
                 cardRect.localScale = cardOriginScales[i];
             }
         }
@@ -203,17 +207,20 @@ namespace AFKHero.UI
 
             ResetCardTransform(); //카드 원래 위치로 복구
 
+            Vector3 riseStartPosition = summonRise.transform.parent.InverseTransformPoint(summonPoint.position);
+            Vector3 flashCenterPosition = summonFlash.transform.parent.InverseTransformPoint(summonPointCenter.position);
+
             //Rise 종료
-            summonRise.transform.DOKill(); 
-            summonRise.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); 
+            summonRise.transform.DOKill();
+            summonRise.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             summonRise.transform.localScale = riseOriginScale;
-            summonRise.transform.position = summonPoint.position;
+            summonRise.transform.localPosition = riseStartPosition;
 
             //Flash 종료
             summonFlash.transform.DOKill();
             summonFlash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             summonFlash.transform.localScale = flashOriginScale;
-            summonFlash.transform.position = summonPointCenter.position;
+            summonFlash.transform.localPosition = flashCenterPosition;
 
             isSummon = false;
             openAllButton.gameObject.SetActive(true); //연출 스킵 후 일괄 오픈 표시
@@ -310,6 +317,9 @@ namespace AFKHero.UI
             RectTransform cardRect = summon1Card.GetComponent<RectTransform>();
 
             //초기화//
+            Vector3 riseStartPosition = summonRise.transform.parent.InverseTransformPoint(summonPoint.position);
+            Vector3 riseCenterPosition = summonRise.transform.parent.InverseTransformPoint(summonPointCenter.position);
+            Vector3 flashCenterPosition = summonFlash.transform.parent.InverseTransformPoint(summonPointCenter.position);
 
             //카드                                                                                                                  
             cardRect.DOKill();                                                                                                       //이전 Tween 제거                         
@@ -319,20 +329,20 @@ namespace AFKHero.UI
             summonRise.transform.DOKill();                                                                                           //이전 Tween 제거
             summonRise.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);                                                  //이펙트 초기화
             summonRise.transform.localScale = riseOriginScale;                                                                       //원래 크기로 복구
-            summonRise.transform.position = summonPoint.position;                                                                    //시작 위치는 제단
+            summonRise.transform.localPosition = riseStartPosition;                                                                  //시작 위치는 제단
                                                                                                                                      
             //Flash                                                                                                                  
             summonFlash.transform.DOKill();                                                                                          //이전 Tween 제거
             summonFlash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);                                                 //이펙트 초기화
             summonFlash.transform.localScale = flashOriginScale;                                                                     //원래 크기로 복구
-            summonFlash.transform.position = summonPointCenter.position;                                                             //시작 위치는 중앙
+            summonFlash.transform.localPosition = flashCenterPosition;                                                               //시작 위치는 중앙
                                                                                                                                     
             oneSummonSequence?.Kill();
             oneSummonSequence = DOTween.Sequence();
 
             //1. Rise : 제단 -> 중앙 이동 후 잠깐 대기                                                                           
             summonRise.Play(true);                                                                                                   //Rise 이펙트 재생
-            oneSummonSequence.Append(summonRise.transform.DOMove(summonPointCenter.position, riseDuration).SetEase(Ease.InOutSine)); //이동
+            oneSummonSequence.Append(summonRise.transform.DOLocalMove(riseCenterPosition, riseDuration).SetEase(Ease.InOutSine));    //이동
             oneSummonSequence.AppendInterval(waitDuration);                                                                          //대기
 
             //2. Flash : 재생 전 잠깐 작아졌다가 플래쉬 터트리고 잠깐 대기                                                         
@@ -364,6 +374,9 @@ namespace AFKHero.UI
             isSummon = true;
 
             //초기화//                                                                                                          
+            Vector3 riseStartPosition = summonRise.transform.parent.InverseTransformPoint(summonPoint.position);
+            Vector3 riseCenterPosition = summonRise.transform.parent.InverseTransformPoint(summonPointCenter.position);
+            Vector3 flashCenterPosition = summonFlash.transform.parent.InverseTransformPoint(summonPointCenter.position);
 
             //카드                                                                                                             
             for (int i = 0; i < summon10Cards.Count; i++)
@@ -372,7 +385,7 @@ namespace AFKHero.UI
 
                 cardRect.DOKill();
 
-                cardRect.position = cardOriginPositions[i];
+                cardRect.anchoredPosition = cardOriginPositions[i];
                 cardRect.localScale = Vector3.zero;
             }
 
@@ -380,18 +393,18 @@ namespace AFKHero.UI
             summonRise.transform.DOKill();                                                                                     //이전 Tween 제거
             summonRise.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);                                            //이펙트 초기화
             summonRise.transform.localScale = riseOriginScale;                                                                 //원래 크기로 복구
-            summonRise.transform.position = summonPoint.position;                                                              //시작 위치는 제단
-                                                                                                                               
+            summonRise.transform.localPosition = riseStartPosition;                                                            //시작 위치는 제단
+
             //Flash                                                                                                            
             summonFlash.transform.DOKill();                                                                                    //이전 Tween 제거
             summonFlash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);                                           //이펙트 초기화
             summonFlash.transform.localScale = flashOriginScale;                                                               //원래 크기로 복구
-            summonFlash.transform.position = summonPointCenter.position;                                                       //시작 위치는 중앙
+            summonFlash.transform.localPosition = flashCenterPosition;                                                         //시작 위치는 중앙
 
 
             //1. Rise : 제단 -> 중앙 이동 후 잠깐 대기
             summonRise.Play(true); //Rise 이펙트 재생
-            summonRise.transform.DOMove(summonPointCenter.position, riseDuration).SetEase(Ease.InOutSine);                     //이동
+            summonRise.transform.DOLocalMove(riseCenterPosition, riseDuration).SetEase(Ease.InOutSine);                        //이동
             yield return new WaitForSeconds(riseDuration);                                                                     //다른 카드들 이동완료까지 대기
             yield return new WaitForSeconds(waitDuration);                                                                     //다같이 잠깐 대기
                                                                                                                                
@@ -406,7 +419,7 @@ namespace AFKHero.UI
             {
                 RectTransform cardRect = summon10Cards[i].GetComponent<RectTransform>();
 
-                Vector3 targetPosition = cardOriginPositions[i];                                                               //최종위치
+                Vector2 targetPosition = cardOriginPositions[i];                                                               //최종위치
                 Vector3 targetScale = cardOriginScales[i];                                                                     //최종크기
                                                                                                                                
                 cardRect.position = summonPointCenter.position;                                                                //모두 중앙에서 시작
@@ -414,7 +427,7 @@ namespace AFKHero.UI
                                                                                                                                
                 Sequence seq = DOTween.Sequence();                                                                             
                                                                                                                                
-                seq.Append(cardRect.DOMove(targetPosition, spreadDuration).SetEase(Ease.OutCubic));                            //중앙 -> 최종 위치로 이동
+                seq.Append(cardRect.DOAnchorPos(targetPosition, spreadDuration).SetEase(Ease.OutCubic));                       //중앙 -> 최종 위치로 이동
                 seq.Join(cardRect.DOScale(targetScale * 1.05f, spreadDuration).SetEase(Ease.OutBack));                         //이동하면서 기존크기보다 살짝 더 크게
                 seq.Append(cardRect.DOScale(targetScale, 0.08f).SetEase(Ease.OutQuad));                                        //최종크기 설정
                                                                                                                                
