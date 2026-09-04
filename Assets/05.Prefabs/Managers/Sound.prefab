@@ -74,7 +74,7 @@ MonoBehaviour:
   uiSounds:
   - Key: 8
     Clip: {fileID: 8300000, guid: 57e6a45092a44fd49a197c3bc110b036, type: 3}
-    Volume: 0
+    Volume: 0.397
   battleSfxSounds:
   - Key: 10
     Clip: {fileID: 8300000, guid: 2fce86f05977dc3498b88ab007c889f1, type: 3}
@@ -96,13 +96,13 @@ MonoBehaviour:
     Volume: 0.2
   - Key: 18
     Clip: {fileID: 8300000, guid: 23a05ee5868338c4ab014b65b5c89a99, type: 3}
-    Volume: 1
-  - Key: 15
-    Clip: {fileID: 8300000, guid: 1a87863a70b23dd45a29d74a36bad1f4, type: 3}
-    Volume: 1
+    Volume: 0.2
+  - Key: 19
+    Clip: {fileID: 8300000, guid: a54357d89d1e1e64a9942f10942ef2a6, type: 3}
+    Volume: 0.2
   - Key: 20
     Clip: {fileID: 8300000, guid: 705bba1a85a2d1a4c852f6a35cbe8303, type: 3}
-    Volume: 1
+    Volume: 0.2
   sfxPoolSize: 10
   masterVolume: 1
   bgmVolume: 1

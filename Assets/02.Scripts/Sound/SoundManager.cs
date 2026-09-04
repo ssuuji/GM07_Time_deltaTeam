@@ -98,7 +98,7 @@ namespace AFKHero.Sound
             {
                 if (soundData.ContainsKey(info.Key))
                 {
-                    Debug.LogError("<color=cyan>[SoundManager]</color> : 같은 Key로 사운드를 등록 시도하고 있습니다.");
+                    Debug.LogError($"<color=cyan>[SoundManager]</color> : 같은 Key로 사운드를 등록 시도하고 있습니다. {info.Key}");
                     continue;
                 }
 
