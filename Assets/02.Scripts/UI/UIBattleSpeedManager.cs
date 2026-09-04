@@ -12,7 +12,7 @@ namespace AFKHero.UI
         private bool isDoubleSpeed = false;
         private RectTransform effectRect;
         private int currentEdge = 0; // 0:위(우로이동), 1:오른쪽(아래로), 2:아래(좌로), 3:왼쪽(위로)
-
+        public bool isBattleActive = false;
         private void Start()
         {
             if (highlightEffect != null)
@@ -32,10 +32,15 @@ namespace AFKHero.UI
                 MoveAlongSquare(effectRect, ref currentEdge);
             }
 
-            // 게임이 일시정지(0)가 아닌데, 2배속 모드가 켜져있다면 무조건 2배속 유지
-            if (isDoubleSpeed && Time.timeScale > 0f && Time.timeScale != 2.0f)
+            // 전투 중(isBattleActive)일 때만 2배속 강제 유지
+            if (isBattleActive && isDoubleSpeed && Time.timeScale > 0f && Time.timeScale != 2.0f)
             {
                 Time.timeScale = 2.0f;
+            }
+            // 전투 중이 아닌데 2배속이 켜져있다면, 강제로 1배속으로 되돌림
+            else if (!isBattleActive && isDoubleSpeed && Time.timeScale == 2.0f)
+            {
+                Time.timeScale = 1.0f;
             }
         }
 
