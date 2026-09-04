@@ -119,7 +119,8 @@ public class StageBackgroundChanger : MonoBehaviour
         //1스테이지에서 패배나 비상탈출하면 0을 넣어버릴 수 있으므로 Mathf.Max 사용.
         int index = Mathf.Max(currentStageNumber, 2);
 
-        ChangeBackground(index);
+        //1스테이지를 제외하고, 지금 진행하고 있는 스테이지보다 1 낮은 스테이지로 배경 변경
+        ChangeBackground(index-1);
 
     }
 }

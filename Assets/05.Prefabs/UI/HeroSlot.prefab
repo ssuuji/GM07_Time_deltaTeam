@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7622765718133069405}
   - component: {fileID: 3900534395236449352}
   - component: {fileID: 8297572565331295310}
+  - component: {fileID: 8451493518783188903}
   m_Layer: 5
   m_Name: HeroSlot
   m_TagString: Untagged
@@ -150,6 +151,20 @@ MonoBehaviour:
   heroIcon: {fileID: 5862041896818466641}
   gradeImage: {fileID: 7622765718133069405}
   heroLevelText: {fileID: 6549857429981956450}
+--- !u!114 &8451493518783188903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889630579823765683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &1972383482885590988
 GameObject:
   m_ObjectHideFlags: 0
