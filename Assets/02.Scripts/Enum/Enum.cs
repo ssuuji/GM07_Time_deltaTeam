@@ -49,7 +49,11 @@ public enum SoundKey
     SFX_Ultimate_Archer,
     SFX_Ultimate_Healer,
     SFX_Ultimate_Attack,
-    SFX_Ultimate_Damaged
+    SFX_Ultimate_Damaged,
+
+    SFX_Attack_1,
+    SFX_Attack_2,
+    SFX_Attack_3
 }
 
 /////////////////////////////////
