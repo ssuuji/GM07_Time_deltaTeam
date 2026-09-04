@@ -23,7 +23,6 @@ namespace AFKHero.UI
         [SerializeField] private GameObject glowDot;
         private RectTransform glowDotRect;
         private int glowDotEdge = 0;
-        private bool isAutoUltimate = true;
 
         [Header("현재 스테이지 정보")]
         [SerializeField] private TMP_Text currentStageText;       //현재 진행 중인 스테이지 표시
@@ -101,6 +100,7 @@ namespace AFKHero.UI
                 
                 battleManager.StateChanged += OnBattleStateChanged;           //전투 상태 변경
                 battleManager.BattleTimeChanged += UpdateBattleTimeUI;        //전투 시간
+                battleManager.UltimateUseModeChanged += OnUltimateUseModeChanged;
 
                 UpdateBattleTimeUI(battleManager.RemainingBattleTime,battleManager.BattleTimeLimit);
             }
@@ -122,14 +122,18 @@ namespace AFKHero.UI
                     battleSpeedManager.ResetHighlightPosition(glowDotRect, ref glowDotEdge);
                 }
 
-                glowDot.SetActive(false);
+                if (battleManager != null)
+                {
+                    OnUltimateUseModeChanged(battleManager.UltimateMode);
+                }
             }
         }
 
         private void Update()
         {
             //궁극기 자동 사용 모드일 때 AUTO 버튼의 빛을 테두리 따라 이동
-            if (isAutoUltimate && battleSpeedManager != null && glowDotRect != null)
+            if (battleManager != null && battleManager.UltimateMode == UltimateUseMode.Auto &&
+                battleSpeedManager != null && glowDotRect != null)
             {
                 battleSpeedManager.MoveAlongSquare(glowDotRect, ref glowDotEdge);
             }
@@ -145,6 +149,7 @@ namespace AFKHero.UI
                 battleManager.UnitDied -= OnUnitDied;
                 battleManager.StateChanged -= OnBattleStateChanged;
                 battleManager.BattleTimeChanged -= UpdateBattleTimeUI;
+                battleManager.UltimateUseModeChanged -= OnUltimateUseModeChanged;
             }
 
             if (StageManager.Instance != null)
@@ -403,19 +408,21 @@ namespace AFKHero.UI
 
         #region 궁극기 모드
 
+        //궁극기 자동/수동 모드 UI 갱신
+        private void OnUltimateUseModeChanged(UltimateUseMode mode)
+        {
+            if (glowDot != null)
+            {
+                glowDot.SetActive(mode == UltimateUseMode.Auto);
+            }
+        }
+
         //Auto 버튼 클릭 시 궁극기 자동/수동 모드 전환
         public void OnClickedUltimateMode()
         {
             if (battleManager == null) return;
 
             battleManager.ToggleUltimateUseMode();
-
-            isAutoUltimate = !isAutoUltimate;
-
-            if (glowDot != null)
-            {
-                glowDot.SetActive(isAutoUltimate);
-            }
         }
 
         //영웅 카드 클릭을 통해 사용할 궁극기 선택
