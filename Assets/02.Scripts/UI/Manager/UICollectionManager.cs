@@ -46,6 +46,14 @@ namespace AFKHero.UI
         [SerializeField] private Button reward32Button;
         [SerializeField] private GameObject rewardGetImagePrefab; //보상 수령 체크 이미지
 
+        [Header("보상 획득 연출")]
+        [SerializeField] private RectTransform rewardEffectRoot; //최상위 Canvas 아래 연출 생성 위치
+        [SerializeField] private GameObject diaImage;            //날아갈 다이아 이미지
+        [SerializeField] private RectTransform diaTarget;        //상단 다이아 UI 위치
+        [SerializeField] private float diaSpreadDistance = 60f;
+        [SerializeField] private float diaSpreadDuration = 0.2f;
+        [SerializeField] private float diaMoveDuration = 0.45f;
+
         private readonly List<UICollectionHeroSlot> heroSlots = new List<UICollectionHeroSlot>();
         private JobType? currentJobType = null;
 
@@ -154,7 +162,19 @@ namespace AFKHero.UI
         public void OnClickedReward(int requiredCount)
         {
             SyncCollectedHeroes();
+
+            if (!CollectionManager.Instance.CanClaimReward(requiredCount))
+                return;
+
+            Button rewardButton = GetRewardButton(requiredCount);
+
             CollectionManager.Instance.ClaimReward(requiredCount);
+
+            if (rewardButton != null)
+            {
+                PlayDiaRewardEffect(rewardButton.transform.position);
+            }
+
             RefreshUI();
         }
 
@@ -306,6 +326,94 @@ namespace AFKHero.UI
             rectTransform.localScale = Vector3.one;
         }
 
+        //수집 개수에 해당하는 보상 버튼 반환
+        private Button GetRewardButton(int requiredCount)
+        {
+            switch (requiredCount)
+            {
+                case 4:
+                    return reward4Button;
+
+                case 8:
+                    return reward8Button;
+
+                case 12:
+                    return reward12Button;
+
+                case 16:
+                    return reward16Button;
+
+                case 24:
+                    return reward24Button;
+
+                case 32:
+                    return reward32Button;
+            }
+
+            return null;
+        }
+
+        #region 보상연출
+
+        //보상 상자에서 다이아가 퍼진 후 상단 다이아 UI로 이동
+        private void PlayDiaRewardEffect(Vector3 startPosition)
+        {
+            if (diaImage == null || rewardEffectRoot == null || diaTarget == null)
+            {
+                return;
+            }
+
+            int diaCount = Random.Range(3, 6);
+
+            Vector2 startLocalPosition = rewardEffectRoot.InverseTransformPoint(startPosition);
+            Vector2 targetLocalPosition = rewardEffectRoot.InverseTransformPoint(diaTarget.position);
+
+            for (int i = 0; i < diaCount; i++)
+            {
+                GameObject diaEffect = Instantiate(diaImage, rewardEffectRoot);
+                diaEffect.SetActive(true);
+
+                RectTransform diaRect = diaEffect.GetComponent<RectTransform>();
+
+                if (diaRect == null)
+                {
+                    Destroy(diaEffect);
+                    continue;
+                }
+
+                diaRect.anchoredPosition = startLocalPosition;
+                diaRect.localScale = Vector3.one;
+
+                Vector2 randomDirection = Random.insideUnitCircle.normalized;
+                float randomDistance = Random.Range(30f, 60f);
+
+                Vector2 spreadPosition = startLocalPosition + randomDirection * randomDistance;
+
+                bool isLastDia = i == diaCount - 1;
+
+                Sequence sequence = DOTween.Sequence();
+                sequence.SetUpdate(true);
+
+                sequence.Append(diaRect.DOAnchorPos(spreadPosition, diaSpreadDuration).SetEase(Ease.OutQuad));
+                sequence.AppendInterval(0.05f + i * 0.03f);
+                sequence.Append(diaRect.DOAnchorPos(targetLocalPosition, diaMoveDuration).SetEase(Ease.InQuad));
+                sequence.Join(diaRect.DOScale(0.3f, diaMoveDuration).SetEase(Ease.InQuad));
+
+                sequence.OnComplete(() =>
+                {
+                    if (isLastDia)
+                    {
+                        diaTarget.DOKill();
+
+                        diaTarget.DOPunchScale(Vector3.one * 0.15f, 0.2f, 5, 0.5f).SetUpdate(true);
+                    }
+
+                    Destroy(diaEffect);
+                });
+            }
+        }
+
+        #endregion
         #endregion
     }
 }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8130561326420598840}
   - component: {fileID: 8868093692464217036}
   - component: {fileID: 4236919019818302951}
+  - component: {fileID: 1722176015663772696}
   m_Layer: 5
   m_Name: ConfirmButton
   m_TagString: Untagged
@@ -133,6 +134,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1722176015663772696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797327235960997108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &817647470596549878
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,6 +297,7 @@ GameObject:
   - component: {fileID: 7108905793153851235}
   - component: {fileID: 1949878115162119345}
   - component: {fileID: 4913701485308902229}
+  - component: {fileID: 9222918826126210445}
   m_Layer: 5
   m_Name: CancelButton
   m_TagString: Untagged
@@ -403,6 +419,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &9222918826126210445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3317826151869355574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &5462132248876532262
 GameObject:
   m_ObjectHideFlags: 0

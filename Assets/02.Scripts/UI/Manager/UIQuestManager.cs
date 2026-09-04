@@ -13,6 +13,7 @@ namespace AFKHero.UI
         [Header("퀘스트 창")]
         [SerializeField] private GameObject questPanel; //퀘스트 전체 패널
         [SerializeField] private Button backButton;     //퀘스트창 닫기
+        [SerializeField] private Button claimAllButton; //보상 모두 받기
 
         [Header("퀘스트 탭")]
         [SerializeField] private RectTransform selector;                             //현재 선택된 탭 표시 이미지
@@ -39,6 +40,18 @@ namespace AFKHero.UI
         [SerializeField] private Sprite freeTicketSprite;
         private readonly Color progressingColor = new Color32(0, 0, 0, 100);       //진행중 배경 #000000
         private readonly Color completedColor = new Color32(0, 158, 255, 100);     //완료 배경 #009EFF
+
+        [Header("메인 퀘스트 보상 획득 연출")]
+        [SerializeField] private RectTransform rewardEffectRoot;
+        [SerializeField] private GameObject goldImage;
+        [SerializeField] private RectTransform goldTarget;
+        [SerializeField] private GameObject diaImage;
+        [SerializeField] private RectTransform diaTarget;
+        [SerializeField] private GameObject freeTicketImage;
+        [SerializeField] private RectTransform freeTicketTarget;
+        [SerializeField] private float rewardSpreadDistance = 60f;
+        [SerializeField] private float rewardSpreadDuration = 0.2f;
+        [SerializeField] private float rewardMoveDuration = 0.45f;
 
 
         private void Start()
@@ -116,6 +129,8 @@ namespace AFKHero.UI
                 int currentCount = QuestManager.Instance.GetCurrentCount(quest); //현재 퀘스트 진행도 가져오기
                 questSlot.SetQuest(quest, currentCount);                         //퀘스트 데이터와 진행도를 슬롯 UI에 적용
             }
+
+            RefreshClaimAllButton(questType);
         }
 
         //현재 생성되어 있는 퀘스트 슬롯 제거
@@ -207,6 +222,26 @@ namespace AFKHero.UI
             if (QuestManager.Instance == null) return;
 
             QuestManager.Instance.ClaimAllRewards(currentQuestType);
+
+            RefreshClaimAllButton(currentQuestType);
+        }
+
+        //모두 받기 버튼 상태 갱신
+        private void RefreshClaimAllButton(QuestType questType)
+        {
+            if (claimAllButton == null)
+                return;
+
+            if (QuestManager.Instance == null)
+            {
+                claimAllButton.interactable = false;
+                return;
+            }
+
+            List<QuestData> quests = QuestManager.Instance.GetQuestList(questType);
+
+            //현재 탭에서 받을 수 있는 보상이 하나라도 있으면 활성화
+            claimAllButton.interactable = quests.Any(quest => QuestManager.Instance.CanClaimReward(quest));
         }
         #endregion
 
@@ -283,7 +318,17 @@ namespace AFKHero.UI
 
             if (QuestManager.Instance.CanClaimReward(currentMainQuest))
             {
+                Vector3 startPosition = mainRewardImage.rectTransform.position;
+
+                QuestReward reward = currentMainQuest.Rewards != null && currentMainQuest.Rewards.Count > 0 ? currentMainQuest.Rewards[0] : null;
+
                 QuestManager.Instance.ClaimReward(currentMainQuest);
+
+                if (reward != null)
+                {
+                    PlayMainQuestRewardEffect(reward.RewardType, startPosition);
+                }
+
                 return;
             }
 
@@ -296,6 +341,92 @@ namespace AFKHero.UI
 
             GuideManager.Instance?.StartQuestGuide(currentMainQuest);
             UIManager.Instance?.OpenGuideTarget(currentMainQuest.GuideTarget);
+        }
+
+        //메인 퀘스트 보상 획득 연출
+        private void PlayMainQuestRewardEffect(RewardType rewardType, Vector3 startPosition)
+        {
+            GameObject rewardImage = null;
+            RectTransform rewardTarget = null;
+
+            switch (rewardType)
+            {
+                case RewardType.Gold:
+                    rewardImage = goldImage;
+                    rewardTarget = goldTarget;
+                    break;
+
+                case RewardType.Dia:
+                    rewardImage = diaImage;
+                    rewardTarget = diaTarget;
+                    break;
+
+                case RewardType.FreeTicket:
+                    rewardImage = freeTicketImage;
+                    rewardTarget = freeTicketTarget;
+                    break;
+            }
+
+            if (rewardImage == null || rewardTarget == null || rewardEffectRoot == null)
+            {
+                return;
+            }
+
+            PlayRewardEffect(rewardImage, rewardTarget, startPosition);
+        }
+
+        //보상 이미지가 퍼진 후 상단 재화 UI로 이동
+        private void PlayRewardEffect(GameObject rewardImage, RectTransform rewardTarget, Vector3 startPosition)
+        {
+            int rewardCount = Random.Range(3, 6);
+
+            Vector2 startLocalPosition = rewardEffectRoot.InverseTransformPoint(startPosition);
+            Vector2 targetLocalPosition = rewardEffectRoot.InverseTransformPoint(rewardTarget.position);
+
+            for (int i = 0; i < rewardCount; i++)
+            {
+                GameObject rewardEffect = Instantiate(rewardImage, rewardEffectRoot);
+
+                rewardEffect.SetActive(true);
+
+                RectTransform rewardRect = rewardEffect.GetComponent<RectTransform>();
+
+                if (rewardRect == null)
+                {
+                    Destroy(rewardEffect);
+                    continue;
+                }
+
+                rewardRect.anchoredPosition = startLocalPosition;
+                rewardRect.localScale = Vector3.one;
+
+                Vector2 randomDirection = Random.insideUnitCircle.normalized;
+
+                float randomDistance = Random.Range(rewardSpreadDistance * 0.5f, rewardSpreadDistance);
+
+                Vector2 spreadPosition = startLocalPosition + randomDirection * randomDistance;
+
+                bool isLastReward = i == rewardCount - 1;
+
+                Sequence sequence = DOTween.Sequence();
+
+                sequence.Append(rewardRect.DOAnchorPos(spreadPosition, rewardSpreadDuration).SetEase(Ease.OutQuad));
+                sequence.AppendInterval(0.05f + i * 0.03f);
+                sequence.Append(rewardRect.DOAnchorPos(targetLocalPosition, rewardMoveDuration).SetEase(Ease.InQuad));
+                sequence.Join(rewardRect.DOScale(0.3f, rewardMoveDuration).SetEase(Ease.InQuad));
+
+                sequence.OnComplete(() =>
+                {
+                    if (isLastReward)
+                    {
+                        rewardTarget.DOKill();
+
+                        rewardTarget.DOPunchScale(Vector3.one * 0.15f, 0.2f, 5, 0.5f).SetUpdate(true);
+                    }
+
+                    Destroy(rewardEffect);
+                });
+            }
         }
 
         //가이드 단계에 따라 메인 퀘스트 화살표 표시
