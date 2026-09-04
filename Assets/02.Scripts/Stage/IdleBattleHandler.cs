@@ -50,8 +50,22 @@ public class IdleBattleHandler : MonoBehaviour
     }
     void Start()
     {
-        StageManager.Instance.StageStateChanged += StartIdleBattle;
-        StageManager.Instance.StageStateChanged += ClearIdleBattle;
+
+        //0905 : Editor상에서는 문제없이 동작하나, 빌드 파일에서는 방치 전투가 실행되지 않는 문제가 있었습니다.
+        //StageManager의 Start가 먼저 실행되어 상태가 Idle로 전환되면, 이벤트 발행을 놓치게 되는 문제입니다.
+        //따라서 이미 Idle이라면 강제로 최초 1회 실행하도록 방어코드를 작성해야 합니다.
+        //Start에서 무언가 실행되어야 하는 경우는 이와 같이 작성합니다.
+        if (StageManager.Instance != null)
+        {
+            StageManager.Instance.StageStateChanged += StartIdleBattle;
+            StageManager.Instance.StageStateChanged += ClearIdleBattle;
+
+            // 게임 시작 시 이벤트 구독 전 이미 Idle 상태로 진입해버린 경우를 대비해 직접 실행
+            if (StageManager.Instance.CurrentState == StageState.Idle)
+            {
+                StartIdleBattle(StageState.Idle);
+            }
+        }
         PartyManager.Instance.partyChanged += OnPartyChanaged;
     }
 
