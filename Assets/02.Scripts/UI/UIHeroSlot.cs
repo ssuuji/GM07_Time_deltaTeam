@@ -15,7 +15,10 @@ namespace AFKHero.UI
 
         [Header("영웅 레벨")]
         [SerializeField] private TMP_Text heroLevelText;
-        
+
+        [Header("플러스 등급")]
+        [SerializeField] private GameObject plusImage;
+
         private UIHeroInfoPopup heroInfoPopup;      //영웅 정보 팝업
         private UIHeroSlotMode slotMode;            //현재 슬롯이 사용되고있는 화면모드
 
@@ -43,6 +46,12 @@ namespace AFKHero.UI
             heroIcon.sprite = Hero.data.HeroIcon;                           //아이콘
             gradeImage.color = HeroGradeColor.GetColor(Hero.currentGrade);  //등급(색) 설정
 
+            //Plus 등급이면 + 이미지 표시
+            if (plusImage != null)
+            {
+                bool isPlus = IsPlusGrade(Hero.currentGrade);
+                plusImage.SetActive(isPlus);
+            }
 
             //0826 추가된 부분 : 공명 활성화 시 영웅 레벨 텍스트의 색깔을 다르게 출력합니다.
             if (ResonanceManager.Instance.IsResonanceOn)
@@ -64,6 +73,12 @@ namespace AFKHero.UI
 
             heroLevelText.text = "Lv." + hero.level;
             
+        }
+
+        //Plus 등급인지 확인
+        private bool IsPlusGrade(HeroGrade grade)
+        {
+            return grade == HeroGrade.RarePlus || grade == HeroGrade.NormalPlus || grade == HeroGrade.EpicPlus;
         }
 
         //영웅슬롯 클릭버튼

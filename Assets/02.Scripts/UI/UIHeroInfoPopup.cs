@@ -111,7 +111,8 @@ namespace AFKHero.UI
                 case HeroGrade.RarePlus:
                 case HeroGrade.Epic:
                 case HeroGrade.EpicPlus:
-                    ultimateText.text = hero.data.UltimateSkillName; //일단 궁극기이름,,으로 표시
+                    //ultimateText.text = hero.data.UltimateSkillName; 
+                    ultimateText.text = hero.data.UltimateSkillName == "-" ? hero.data.GetJobStats().defaultSkillName : hero.data.UltimateSkillName;
                     break;
 
                 default:
