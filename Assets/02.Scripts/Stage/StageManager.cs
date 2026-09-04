@@ -114,7 +114,7 @@ public class StageManager : MonoBehaviour
 
         if(stageBackgroundChanger != null)
         {
-            stageBackgroundChanger.SetBackgroundOnStart(currentStageNumber, lastStageNumber, lastSectionNumber, currentStageInfo); ;
+            stageBackgroundChanger.SetBackgroundOnStart(lastStageNumber);
         }
 
         ChangeState(StageState.Idle);
@@ -287,7 +287,7 @@ public class StageManager : MonoBehaviour
         defeatPanel.gameObject.SetActive(false);       
 
         Debug.Log("패배 패널 닫음");
-
+        stageBackgroundChanger.RevertStageBackground(currentStageNumber, currentSectionNumber);
         ChangeState(StageState.Idle);
 
         // 0814 수정
@@ -330,6 +330,7 @@ public class StageManager : MonoBehaviour
         {
             battleManager.ClearRegisteredUnits();
             battleSpawner.ClearSpawnedUnits();
+            stageBackgroundChanger.RevertStageBackground(currentStageNumber, currentSectionNumber);
             ChangeState(StageState.Idle);
         }
     }

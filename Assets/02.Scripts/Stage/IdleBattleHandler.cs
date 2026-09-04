@@ -103,7 +103,20 @@ public class IdleBattleHandler : MonoBehaviour
         //이 메서드가 실행되는 시점에서 파티의 정보를 불러오고,
         //배치한 영웅 수나 영웅들 중 가장 낮거나 높은 레벨도 계산에 반영하도록 CalculateIdleBattleReward를 수정할 수도 있겠지.
 
-        int idleReward = StageCalculator.CaculateIdleBattleReward(StageManager.Instance.LastStageNumber, StageManager.Instance.LastSectionNumber);
+
+        //겁나 이상하긴 한데 이렇게 될걸?
+        int idleReward = StageCalculator.CaculateIdleBattleReward(StageManager.Instance.LastStageNumber, StageManager.Instance.LastSectionNumber)+
+
+      
+        PartyManager.Instance.partySlots.Length - CheckPartySlot();
+
+        //CheckPartySlot이 반대로 되어야 해.
+        //아예 int slotCount = PartManager.Instance.partySlots.Length 이렇게 하고
+        //slocCount--; 해야지.]
+        //그리고 위에서 == 0으로 검사하고.
+        //딸랑 얘만 쓰는 텍스트 필드니까... 솔직히 기능 클래스여도 텍스트 하나정돈 괜찮잖아?
+        //저거 "훈련중"을 얘가 처리하고, 스테이지 글씨는 스테이지 글씨만 하는게?
+
 
         UINoticePopup.Instance.ShowTime($"훈련을 시작합니다.\n 매 {rewardTime}초마다 {idleReward} Gold가 지급됩니다.");
            
@@ -115,6 +128,7 @@ public class IdleBattleHandler : MonoBehaviour
     {
         int slotCount = 0;
 
+        //이런 식으로 하지 말고, int currentPartyCount = PartyManger.Instance.partySlots.Length; 이렇게 하면 되잖아.
         HeroInstance[] heroes = PartyManager.Instance.partySlots;
 
         for (int i = 0; i < heroes.Length; i++)
@@ -133,8 +147,6 @@ public class IdleBattleHandler : MonoBehaviour
     {
         //현재 파티 슬롯의 배치 상태를 복사
         HeroInstance[] heroes = PartyManager.Instance.partySlots;
-
-        Debug.Log(heroes.Length);
 
         for (int i = 0; i < heroes.Length; i++)
         {
