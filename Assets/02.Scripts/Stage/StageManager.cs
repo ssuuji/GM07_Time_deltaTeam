@@ -39,6 +39,7 @@ public class StageManager : MonoBehaviour
     [Header("배경화면과 사운드 교체 담당")]
     [SerializeField] private StageBackgroundChanger stageBackgroundChanger;
     [SerializeField] private StageBGMChanger stageBGMChanger;
+    [SerializeField] private StageStartNotifier notifier;
 
     [Header("결과 패널")]
     [SerializeField] private RectTransform victoryPanel;
@@ -125,6 +126,7 @@ public class StageManager : MonoBehaviour
             stageBackgroundChanger.SetBackgroundOnStart(lastStageNumber);
         }
 
+
         ChangeState(StageState.Idle);
     }
 
@@ -210,6 +212,11 @@ public class StageManager : MonoBehaviour
             Debug.LogError("[StageManager] 현재 스테이지 전투 생성에 실패했습니다.", this);
             ChangeState(StageState.Idle);
             return;
+        }
+
+        if(notifier != null)
+        {
+            notifier.NotifyStart();
         }
 
         ChangeState(StageState.Working);
