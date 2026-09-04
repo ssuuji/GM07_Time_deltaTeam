@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8aaafb545298e4995b4766f79c26e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitHealth
-  deactivateOnDeath: 1
+  deactivateOnDeath: 0
   logDamage: 0
 --- !u!114 &1631831749867701458
 MonoBehaviour:
@@ -171,8 +171,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitBattleView
   animator: {fileID: 0}
+  battleAnimatorController: {fileID: 9100000, guid: 0a3ac9e719f241e4d9763feb27234875, type: 2}
   attackTrigger: 2_Attack
   hitTrigger: 3_Damaged
+  deathTrigger: 4_Death
+  victoryTrigger: 6_Other
+  deathStateBool: isDeath
+  deathFadeDelay: 1
+  deathFadeDuration: 0.5
   damageTextPrefab: {fileID: 3775185502458372682, guid: 5d053f06fdaa1f14f91b19ca69091822, type: 3}
   damageTextAnchor: {fileID: 8729615259221586495}
 --- !u!1 &4036438363417818286
