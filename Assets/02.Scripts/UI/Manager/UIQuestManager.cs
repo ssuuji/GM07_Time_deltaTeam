@@ -13,6 +13,7 @@ namespace AFKHero.UI
         [Header("퀘스트 창")]
         [SerializeField] private GameObject questPanel; //퀘스트 전체 패널
         [SerializeField] private Button backButton;     //퀘스트창 닫기
+        [SerializeField] private Button claimAllButton; //보상 모두 받기
 
         [Header("퀘스트 탭")]
         [SerializeField] private RectTransform selector;                             //현재 선택된 탭 표시 이미지
@@ -116,6 +117,8 @@ namespace AFKHero.UI
                 int currentCount = QuestManager.Instance.GetCurrentCount(quest); //현재 퀘스트 진행도 가져오기
                 questSlot.SetQuest(quest, currentCount);                         //퀘스트 데이터와 진행도를 슬롯 UI에 적용
             }
+
+            RefreshClaimAllButton(questType);
         }
 
         //현재 생성되어 있는 퀘스트 슬롯 제거
@@ -207,6 +210,26 @@ namespace AFKHero.UI
             if (QuestManager.Instance == null) return;
 
             QuestManager.Instance.ClaimAllRewards(currentQuestType);
+
+            RefreshClaimAllButton(currentQuestType);
+        }
+
+        //모두 받기 버튼 상태 갱신
+        private void RefreshClaimAllButton(QuestType questType)
+        {
+            if (claimAllButton == null)
+                return;
+
+            if (QuestManager.Instance == null)
+            {
+                claimAllButton.interactable = false;
+                return;
+            }
+
+            List<QuestData> quests = QuestManager.Instance.GetQuestList(questType);
+
+            //현재 탭에서 받을 수 있는 보상이 하나라도 있으면 활성화
+            claimAllButton.interactable = quests.Any(quest => QuestManager.Instance.CanClaimReward(quest));
         }
         #endregion
 
