@@ -92,7 +92,10 @@ namespace AFKHero.UI
             battleUnit = unit;
             if (battleUnit == null) return;
 
-            canUseUltimate = battleUnit.Data != null && battleUnit.Data.CanUseUltimate; //궁극기를 사용하는 영웅인지 판별
+            ultimateController = battleUnit.UltimateController;
+
+            canUseUltimate =
+                ultimateController != null && ultimateController.CheckCanUseUltimate(); //궁극기를 사용하는 영웅인지 판별
 
             ultimateController = battleUnit.GetComponent<UnitUltimateController>();
             if (ultimateController != null)

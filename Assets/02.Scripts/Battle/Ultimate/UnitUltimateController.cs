@@ -9,6 +9,9 @@ namespace AFKHero.Battle
     {
         private const float MinimumDuration = 0.01f;
 
+        // 레어 등급 이상일 때 궁극기 사용 가능
+        private const HeroGrade MinimumUltimateGrade = HeroGrade.Rare;
+
         [Header("궁극기 시작음 대기 시간")]
         [SerializeField, Min(0f)] private float startSoundDelay = 0.5f;
 
@@ -43,9 +46,21 @@ namespace AFKHero.Battle
 
         public bool CheckCanUseUltimate()
         {
-            return owner != null &&
-                   owner.Data != null &&
-                   owner.Data.CanUseUltimate;
+            if (owner == null ||
+                owner.Data == null ||
+                owner.HeroInstance == null)
+            {
+                return false;
+            }
+
+            // HeroData의 설정과 실제로 성장한 현재 등급을 모두 검사
+            bool isUltimateEnabled = owner.Data.CanUseUltimate;
+
+            bool isGradeUnlocked =
+                (int)owner.HeroInstance.currentGrade >=
+                (int)MinimumUltimateGrade;
+
+            return isUltimateEnabled && isGradeUnlocked;
         }
 
         public void LogUltimateDebug()
