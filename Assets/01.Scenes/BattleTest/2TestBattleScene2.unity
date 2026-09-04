@@ -15363,6 +15363,7 @@ MonoBehaviour:
   stageBGMChanger: {fileID: 627228124}
   victoryPanel: {fileID: 1001258946}
   defeatPanel: {fileID: 261222603}
+  victoryResultDelay: 1.5
   currentStageNumber: 1
   currentSectionNumber: 1
   currentStageInfo: {fileID: 11400000, guid: 1cd7548d8685740468f3b91eca632436, type: 2}
@@ -20395,7 +20396,8 @@ MonoBehaviour:
   heroSlotTransform: {fileID: 2100126229}
   heroSlotPrefab: {fileID: 7440588020737277944, guid: 350d36a6478a512479c1b28bb617200b, type: 3}
   battleManager: {fileID: 817451699}
-  ultimateModeText: {fileID: 558037485}
+  battleSpeedManager: {fileID: 0}
+  glowDot: {fileID: 0}
   currentStageText: {fileID: 961300150}
   stageTimer: {fileID: 1453866037}
   battleLimitTime: {fileID: 749956189}
@@ -20421,6 +20423,8 @@ MonoBehaviour:
   ultimateCameraOffset: {x: 0, y: 0}
   escapeButton: {fileID: 1211713597}
   escapePanel: {fileID: 576861174}
+  autoButton: {fileID: 0}
+  speedButton: {fileID: 0}
 --- !u!4 &817451697
 Transform:
   m_ObjectHideFlags: 0
@@ -28970,7 +28974,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2.830017, y: -319.32996}
+  m_AnchoredPosition: {x: 2.8300781, y: -319.32983}
   m_SizeDelta: {x: -24.24, y: -1003.55}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1224959156
@@ -38769,7 +38773,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -4.669983, y: -119.81006}
+  m_AnchoredPosition: {x: -4.669922, y: -119.81006}
   m_SizeDelta: {x: -130.78, y: -1657.84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1653254432

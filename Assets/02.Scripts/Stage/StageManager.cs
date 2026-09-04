@@ -44,6 +44,13 @@ public class StageManager : MonoBehaviour
     [SerializeField] private RectTransform victoryPanel;
     [SerializeField] private RectTransform defeatPanel;
 
+    [Header("전투 결과 연출 시간")]
+    [Tooltip("승리 또는 사망 애니메이션을 보여준 뒤 결과 패널을 표시할 때까지의 시간")]
+    [SerializeField, Min(0f)] private float battleResultAnimationDelay = 1.5f;
+
+    [Header("승리 패널 표시 시간")]
+    [SerializeField, Min(0f)] private float victoryPanelDuration = 3f;
+
     [Header("현재 진행 정보")]
     [SerializeField] private int currentStageNumber = 1;
     [SerializeField] private int currentSectionNumber = 1;
@@ -76,7 +83,8 @@ public class StageManager : MonoBehaviour
     //승리 패널을 자동으로 닫히게 할 코루틴
     private Coroutine autoClosePanelCoroutine;
 
-
+    // 전투 결과 연출 코루틴
+    private Coroutine battleResultDelayCoroutine;
 
     //프로퍼티
     public StageInfo CurrentStageInfo => currentStageInfo;
@@ -112,7 +120,7 @@ public class StageManager : MonoBehaviour
         //켰을 때 유저가 "전투시작" 버튼을 눌러야만 처음 스테이지 진행이 된다고 한다면, 여기서의 호출을 삭제해야 할 것.
         //StartStage();
 
-        if(stageBackgroundChanger != null)
+        if (stageBackgroundChanger != null)
         {
             stageBackgroundChanger.SetBackgroundOnStart(lastStageNumber);
         }
@@ -129,10 +137,17 @@ public class StageManager : MonoBehaviour
     //그리고, 이게 "재도전" 버튼에도 연결될 수 있을 것 같은데?
     public void StartStage() // 스테이지 구간을 시작
     {
+        // 결과 중 전투 재시작 방지
+        if (battleResultDelayCoroutine != null)
+        {
+            Debug.Log("전투 결과 애니메이션이 진행 중입니다.");
+            return;
+        }
+
         //전투가 실행 중일 때 실행하지 않게 할 방법 : BattleManager의 현재 상태에서 전투가 실행되선 안 되는 상태를 알아야 함.       
         //BattleManager의 현 상태가 Victory, Defeat인 상태로 바뀐 뒤, 다시 preparing으로 전환되는지 확인해야 함.        
         //BattleManager의 상태에 종속되지 않고, StageManage가 Working 상태일 때 실행을 제한하는 방식도 괜찮지 않을까.
-        if(battleManager.CurrentState == BattleState.Fighting || battleManager.CurrentState == BattleState.UltimateSequence)
+        if (battleManager.CurrentState == BattleState.Fighting || battleManager.CurrentState == BattleState.UltimateSequence)
         {
             Debug.Log("전투가 이미 실행중입니다.");
             return;
@@ -167,15 +182,15 @@ public class StageManager : MonoBehaviour
         // [수정한 부분: 적 목록(Enemies)과 방금 계산한 레벨(enemyLevel)을 같이 넘겨줍니다]
         //StageInfo의 리스트가 StageEnemyInfo가 아니라 UnitData로 변경되어 주석처리함. BattleSpawner 기반으로 변경하기
         //enemySpawner.SpawnEnemies(currentStageInfo.Enemies, enemyLevel);
-        
+
         // 0814 수정 부분 - 파티와 스테이지 데이터를 BattleSpawner에 연결
-        if(PartyManager.Instance == null)
+        if (PartyManager.Instance == null)
         {
             Debug.LogError("[StageManager] PartyManager를 찾을 수 없습니다.", this);
-            return; 
+            return;
         }
 
-        if(battleManager == null)
+        if (battleManager == null)
         {
             Debug.LogError("[StageManger] BattleSpawner가 연결되지 않았습니다.", this);
             return;
@@ -203,16 +218,46 @@ public class StageManager : MonoBehaviour
     //전투상태가 변경되었을 때 이벤트로 호출되며, 승리 / 패배에 따라 다른 코드들을 실행하게 할 메서드
     public void HandleBattleResult(AFKHero.Battle.BattleState state)
     {
-        switch(state)
+        bool isVictory = state == AFKHero.Battle.BattleState.Victory;
+        bool isDefeat = state == AFKHero.Battle.BattleState.Defeat;
+
+        if ((!isVictory && !isDefeat) || battleResultDelayCoroutine != null)
         {
-            case AFKHero.Battle.BattleState.Victory:
-                HandleVictory();
-                break;
-            case AFKHero.Battle.BattleState.Defeat:
-                HandleDefeat();
-                break;
-            default:
-                break;
+            return;
+        }
+
+
+
+        ChangeState(StageState.Result);
+
+        battleResultDelayCoroutine = StartCoroutine(ShowBattleResultAfterAnimation(state));
+    }
+
+    private IEnumerator ShowBattleResultAfterAnimation(AFKHero.Battle.BattleState state)
+    {
+        yield return new WaitForSeconds(Mathf.Max(0f, battleResultAnimationDelay));
+
+        battleResultDelayCoroutine = null;
+
+        //switch (state)
+        //{
+        //    case AFKHero.Battle.BattleState.Victory:
+        //        HandleVictory();
+        //        break;
+        //    case AFKHero.Battle.BattleState.Defeat:
+        //        HandleDefeat();
+        //        break;
+        //    default:
+        //        break;
+        //}
+
+        if (state == AFKHero.Battle.BattleState.Victory)
+        {
+            HandleVictory();
+        }
+        else
+        {
+            HandleDefeat();
         }
     }
 
@@ -262,8 +307,10 @@ public class StageManager : MonoBehaviour
     {
         ChangeState(StageState.Result);
         defeatPanel.gameObject.SetActive(true);
+
         battleManager.ClearRegisteredUnits();
         battleSpawner.ClearSpawnedUnits();
+
         GameSaveManager.Instance.SaveGame();
     }
 
@@ -272,7 +319,7 @@ public class StageManager : MonoBehaviour
     {
         //3초 대기.
         //필요시 사전에 캐싱하여 리소스 확보한다. 추가로, 패널이 닫히는 시간을 표시하고 싶다면 필드가 있어야 한다.
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSeconds(Mathf.Max(0f, victoryPanelDuration));
 
         autoClosePanelCoroutine = null;
 
@@ -283,8 +330,8 @@ public class StageManager : MonoBehaviour
 
     //패배 시, '확인' 버튼을 눌러 패널을 닫게 할 메서드
     public void CloseDefeatPanel()
-    {               
-        defeatPanel.gameObject.SetActive(false);       
+    {
+        defeatPanel.gameObject.SetActive(false);
 
         Debug.Log("패배 패널 닫음");
         stageBackgroundChanger.RevertStageBackground(currentStageNumber, currentSectionNumber);
@@ -311,7 +358,7 @@ public class StageManager : MonoBehaviour
     //전투 승리 시, 다음 스테이지로 진행하지 않고 전투를 종료할 메서드
     public void StopStageProgress()
     {
-        if(autoClosePanelCoroutine != null)
+        if (autoClosePanelCoroutine != null)
         {
             StopCoroutine(autoClosePanelCoroutine);
             autoClosePanelCoroutine = null;
@@ -326,7 +373,7 @@ public class StageManager : MonoBehaviour
     //전투 진행 도중에 실행되면, 현재 전투 상태를 모두 초기화하고 StageManager를 Idle로 바꾸는 메서드
     public void EscapeStage()
     {
-        if(currentState == StageState.Working)
+        if (currentState == StageState.Working)
         {
             battleManager.ClearRegisteredUnits();
             battleSpawner.ClearSpawnedUnits();
@@ -354,18 +401,27 @@ public class StageManager : MonoBehaviour
             // 드롭할 장비 리스트가 비어있지 않은지 확인
             if (possibleEquipmentDrops != null && possibleEquipmentDrops.Count > 0)
             {
-                // 리스트 안에서 랜덤으로 장비 하나 고르기
-                int randomIndex = UnityEngine.Random.Range(0, possibleEquipmentDrops.Count);
-                EquipmentData droppedItem = possibleEquipmentDrops[randomIndex];
+                // 고정으로 3개를 주고 싶다면 int dropCount = 3; 으로 변경하시면 됩니다.
+                int dropCount = UnityEngine.Random.Range(1, 4);
 
-                // 주사위를 굴려 랜덤 스탯의 진짜 장비를 생성
-                EquipmentInstance newEquip = new EquipmentInstance(droppedItem);
+                Debug.Log($"총 {dropCount}개의 장비가 드롭됩니다!");
 
-                // 플레이어의 가방에 지급
-                EquipmentManager.Instance.AddEquipment(newEquip);
-                Debug.Log($"장비 드롭 성공! 획득한 장비: {droppedItem.equipmentName} (등급: {newEquip.Grade})");
+                // 정해진 개수(dropCount)만큼 반복해서 장비를 지급
+                for (int i = 0; i < dropCount; i++)
+                {
+                    // 리스트 안에서 랜덤으로 장비 하나 고르기
+                    int randomIndex = UnityEngine.Random.Range(0, possibleEquipmentDrops.Count);
+                    EquipmentData droppedItem = possibleEquipmentDrops[randomIndex];
 
-                UIBattleManager.Instance.ShowDroppedEquipmentUI(droppedItem);
+                    // 주사위를 굴려 랜덤 스탯의 장비를 생성
+                    EquipmentInstance newEquip = new EquipmentInstance(droppedItem);
+
+                    // 플레이어의 가방에 지급
+                    EquipmentManager.Instance.AddEquipment(newEquip);
+                    Debug.Log($"장비 드롭 성공! 획득한 장비: {droppedItem.equipmentName} (등급: {newEquip.Grade})");
+
+                    UIBattleManager.Instance.ShowDroppedEquipmentUI(droppedItem);
+                }
             }
         }
         else
@@ -382,7 +438,7 @@ public class StageManager : MonoBehaviour
         currentState = nextState;
 
 
-        if(stageBGMChanger != null )
+        if (stageBGMChanger != null)
         {
             stageBGMChanger.ChangeStageBGM(currentState, currentStageNumber);
         }
@@ -441,7 +497,7 @@ public class StageManager : MonoBehaviour
         //3-1클리어까지 해보고, 이 부분에서 문제 생기는지 확인해보기.
         currentStageInfo = StageData.GetStage(currentStageNumber, currentSectionNumber);
 
-        
+
     }
 
     #endregion
