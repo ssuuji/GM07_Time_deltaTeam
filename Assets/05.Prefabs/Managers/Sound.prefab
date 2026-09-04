@@ -78,19 +78,19 @@ MonoBehaviour:
     Volume: 1
   - Key: 11
     Clip: {fileID: 8300000, guid: e350561a0b7600f4daa115c6f4f87c18, type: 3}
-    Volume: 1
+    Volume: 0.2
   - Key: 12
     Clip: {fileID: 8300000, guid: ba758b07a07724a4f80563f22f895183, type: 3}
-    Volume: 1
+    Volume: 0.2
   - Key: 13
     Clip: {fileID: 8300000, guid: 54e281612728ae6488945844c94fb6f5, type: 3}
-    Volume: 1
+    Volume: 0.2
   - Key: 14
     Clip: {fileID: 8300000, guid: d4d4b70593add954fbe578b1215f0127, type: 3}
-    Volume: 1
+    Volume: 0.2
   - Key: 15
     Clip: {fileID: 8300000, guid: 1a87863a70b23dd45a29d74a36bad1f4, type: 3}
-    Volume: 1
+    Volume: 0.2
   - Key: 18
     Clip: {fileID: 8300000, guid: 23a05ee5868338c4ab014b65b5c89a99, type: 3}
     Volume: 1

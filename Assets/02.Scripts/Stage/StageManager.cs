@@ -4,6 +4,7 @@ using AFKHero.Sound;
 using AFKHero.UI;
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 //StageDB를 들고있으면서, 특정 조건에 따라서 현재 스테이지를 다음 스테이지로 넘기게 할 관리자 클래스
@@ -44,6 +45,7 @@ public class StageManager : MonoBehaviour
     [Header("결과 패널")]
     [SerializeField] private RectTransform victoryPanel;
     [SerializeField] private RectTransform defeatPanel;
+    [SerializeField] private TMP_Text autoNextStageText; //다음 스테이지 자동 진행 안내
 
     [Header("전투 결과 연출 시간")]
     [Tooltip("승리 또는 사망 애니메이션을 보여준 뒤 결과 패널을 표시할 때까지의 시간")]
@@ -324,9 +326,22 @@ public class StageManager : MonoBehaviour
     //승리 시, 3초 후 패널이 자동으로 닫히게 할 메서드
     private IEnumerator AutoClosePanelCo()
     {
-        //3초 대기.
-        //필요시 사전에 캐싱하여 리소스 확보한다. 추가로, 패널이 닫히는 시간을 표시하고 싶다면 필드가 있어야 한다.
-        yield return new WaitForSeconds(Mathf.Max(0f, victoryPanelDuration));
+        ////3초 대기.
+        ////필요시 사전에 캐싱하여 리소스 확보한다. 추가로, 패널이 닫히는 시간을 표시하고 싶다면 필드가 있어야 한다.
+        //yield return new WaitForSeconds(Mathf.Max(0f, victoryPanelDuration));
+        int remainingTime = (int)victoryPanelDuration;
+
+        while (remainingTime > 0)
+        {
+            if (autoNextStageText != null)
+            {
+                autoNextStageText.text = $"{remainingTime}초 후 다음 스테이지로 자동 진행됩니다.";
+            }
+
+            yield return new WaitForSecondsRealtime(1f);
+
+            remainingTime--;
+        }
 
         autoClosePanelCoroutine = null;
 
@@ -358,6 +373,11 @@ public class StageManager : MonoBehaviour
             autoClosePanelCoroutine = null; //값을 비운다.
         }
 
+        if (autoNextStageText != null)
+        {
+            autoNextStageText.text = "";
+        }
+
         victoryPanel.gameObject.SetActive(false); //버튼이 눌렸을 때 패널이 닫히게 된다.
         StartStage();
     }
@@ -369,6 +389,11 @@ public class StageManager : MonoBehaviour
         {
             StopCoroutine(autoClosePanelCoroutine);
             autoClosePanelCoroutine = null;
+        }
+
+        if (autoNextStageText != null)
+        {
+            autoNextStageText.text = "";
         }
 
         victoryPanel.gameObject.SetActive(false);
