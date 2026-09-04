@@ -31,6 +31,12 @@ namespace AFKHero.UI
             {
                 MoveAlongSquare(effectRect, ref currentEdge);
             }
+
+            // 게임이 일시정지(0)가 아닌데, 2배속 모드가 켜져있다면 무조건 2배속 유지
+            if (isDoubleSpeed && Time.timeScale > 0f && Time.timeScale != 2.0f)
+            {
+                Time.timeScale = 2.0f;
+            }
         }
 
         // 사각형 테두리를 따라 이동하는 함수
@@ -94,11 +100,10 @@ namespace AFKHero.UI
         }
 
 
-        //배속 상태 초기화
         public void ResetSpeed()
         {
-            isDoubleSpeed = false;
-            SetNormalSpeed();
+            // isDoubleSpeed = false;
+            // SetNormalSpeed();
         }
 
         private void OnDestroy()
