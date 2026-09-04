@@ -1,11 +1,11 @@
-using System;
+ï»¿using System;
 using UnityEngine;
 
 namespace AFKHero.Battle
 {
     public class UnitEnergy : MonoBehaviour
     {
-        [Header("µğ¹ö±× Å×½ºÆ® ¿ë")]
+        [Header("ë””ë²„ê·¸ í…ŒìŠ¤íŠ¸ ìš©")]
         [SerializeField] private bool logEnergyChanges;
 
         private BattleUnit owner;
@@ -16,10 +16,10 @@ namespace AFKHero.Battle
         public float NormalizedEnergy => MaxEnergy > 0 ? (float)CurrentEnergy / MaxEnergy : 0;
         public bool IsUltimateReady => MaxEnergy > 0  && CurrentEnergy >= MaxEnergy;
 
-        // À¯´Ö, ÇöÀç ¿¡³ÊÁö, ÃÖ´ë ¿¡³ÊÁö, Àü´Ş
+        // ìœ ë‹›, í˜„ì¬ ì—ë„ˆì§€, ìµœëŒ€ ì—ë„ˆì§€, ì „ë‹¬
         public event Action<BattleUnit, int, int> EnergyChanged;
 
-        // ÃÖ´ë ¿¡³ÊÁö¿¡ µµ´ŞÇÏ¸é ¹ß»ı
+        // ìµœëŒ€ ì—ë„ˆì§€ì— ë„ë‹¬í•˜ë©´ ë°œìƒ
         public event Action<BattleUnit> UltimateReady;
 
         public void Initialize(BattleUnit unitOwner, BattleManager manager)
@@ -33,13 +33,13 @@ namespace AFKHero.Battle
 
             if(owner == null || owner.Stats == null)
             {
-                Debug.LogError("BattleUnit ¶Ç´Â UnitStats°¡ ºñ¾î ÀÖ½À´Ï´Ù.",this);
+                Debug.LogError("BattleUnit ë˜ëŠ” UnitStatsê°€ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤.",this);
                 return;
             }
 
             if(manager == null)
             {
-                Debug.LogError("BattleManager°¡ ºñ¾î ÀÖ½À´Ï´Ù.", this);
+                Debug.LogError("BattleManagerê°€ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤.", this);
                 return;
             }
 
@@ -64,8 +64,13 @@ namespace AFKHero.Battle
         }
         public int GainEnergy(int amount)
         {
-            if(owner == null || owner.Stats == null || 
-                !owner.Stats.IsAlive || amount <= 0 || IsUltimateReady)
+            if (owner == null ||
+               owner.Stats == null ||
+               owner.UltimateController == null ||
+               !owner.Stats.IsAlive ||
+               !owner.UltimateController.CheckCanUseUltimate() ||
+               amount <= 0 ||
+               IsUltimateReady)
             {
                 return 0;
             }
@@ -87,7 +92,7 @@ namespace AFKHero.Battle
 
             if (logEnergyChanges)
             {
-                Debug.Log($"¿¡³ÊÁö È¹µæ - [{owner.name}] +{gainedEnergy} | " +
+                Debug.Log($"ì—ë„ˆì§€ íšë“ - [{owner.name}] +{gainedEnergy} | " +
                     $"[{CurrentEnergy}]/[{MaxEnergy}]",owner);
             }
             return gainedEnergy;
@@ -108,7 +113,7 @@ namespace AFKHero.Battle
 
             if (logEnergyChanges)
             {
-                Debug.Log($"¿¡³ÊÁö ¼Òºñ - [{owner.name}] | [{CurrentEnergy}]/[{MaxEnergy}]", owner);
+                Debug.Log($"ì—ë„ˆì§€ ì†Œë¹„ - [{owner.name}] | [{CurrentEnergy}]/[{MaxEnergy}]", owner);
             }
 
             return true;
