@@ -37,7 +37,7 @@ public class IdleBattleHandler : MonoBehaviour
 
     [Header("장비드랍확률")]
     [Tooltip("장비가 드롭될 확률 (0 ~ 100%)")]
-    [Range(0f, 1f)]
+    [Range(0f, 100f)]
     [SerializeField] private float equipmentRate = 0.3f;
 
     private Coroutine idleBattleCoroutine;
@@ -209,11 +209,11 @@ public class IdleBattleHandler : MonoBehaviour
         }
 
         //설정한 확률을 통과했다면 장비지급 메서드를 호출합니다.
-        if(UnityEngine.Random.value <= equipmentRate)
+        if (UnityEngine.Random.Range(0f, 100f) <= equipmentRate)
         {
             Debug.Log($"<color=cyan>[IdleBattleHandler]</color> 방치 전투로 장비를 획득했습니다.");
             EquipmentManager.Instance.GiveRandomEquipment();
-        }     
+        }
     }
 
 

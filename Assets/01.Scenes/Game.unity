@@ -36857,7 +36857,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1979643119221827991, guid: 847c28e6cbf713946b744d31b1932249, type: 3}
       propertyPath: equipmentRate
-      value: 0.003
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 4682969756330229363, guid: 847c28e6cbf713946b744d31b1932249, type: 3}
       propertyPath: m_Name
