@@ -4466,6 +4466,7 @@ GameObject:
   - component: {fileID: 198570731}
   - component: {fileID: 198570730}
   - component: {fileID: 198570729}
+  - component: {fileID: 198570732}
   m_Layer: 5
   m_Name: Setting_SaveDel_Button
   m_TagString: Untagged
@@ -4587,6 +4588,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 198570727}
   m_CullTransparentMesh: 1
+--- !u!114 &198570732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198570727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &201598429
 GameObject:
   m_ObjectHideFlags: 0
@@ -5026,6 +5041,7 @@ MonoBehaviour:
   highlightEffect: {fileID: 2054643172}
   moveSpeed: 500
   pathSize: 45
+  isBattleActive: 0
 --- !u!114 &243453279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5495,6 +5511,7 @@ GameObject:
   - component: {fileID: 254678350}
   - component: {fileID: 254678349}
   - component: {fileID: 254678348}
+  - component: {fileID: 254678351}
   m_Layer: 5
   m_Name: Hero_LevelUp_btn
   m_TagString: Untagged
@@ -5618,6 +5635,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 254678346}
   m_CullTransparentMesh: 1
+--- !u!114 &254678351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 254678346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &255763170
 GameObject:
   m_ObjectHideFlags: 0
@@ -7190,6 +7221,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -70
       objectReference: {fileID: 0}
+    - target: {fileID: 2774166307748021356, guid: eaff732265160d744b34c8ce18d26a78, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 584118163}
+    - target: {fileID: 2774166307748021356, guid: eaff732265160d744b34c8ce18d26a78, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ConfirmEscape
+      objectReference: {fileID: 0}
+    - target: {fileID: 2774166307748021356, guid: eaff732265160d744b34c8ce18d26a78, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AFKHero.UI.UIBattleManager, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 4236919019818302951, guid: eaff732265160d744b34c8ce18d26a78, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -7225,6 +7268,18 @@ PrefabInstance:
     - target: {fileID: 5381705019440431662, guid: eaff732265160d744b34c8ce18d26a78, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5677615701673722064, guid: eaff732265160d744b34c8ce18d26a78, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 584118163}
+    - target: {fileID: 5677615701673722064, guid: eaff732265160d744b34c8ce18d26a78, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: CancelEscape
+      objectReference: {fileID: 0}
+    - target: {fileID: 5677615701673722064, guid: eaff732265160d744b34c8ce18d26a78, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AFKHero.UI.UIBattleManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5761589501433647746, guid: eaff732265160d744b34c8ce18d26a78, type: 3}
       propertyPath: m_SizeDelta.x
@@ -17705,6 +17760,7 @@ GameObject:
   - component: {fileID: 845755779}
   - component: {fileID: 845755778}
   - component: {fileID: 845755780}
+  - component: {fileID: 845755781}
   m_Layer: 5
   m_Name: INFO_btn
   m_TagString: Untagged
@@ -17825,6 +17881,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+--- !u!114 &845755781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 845755776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &848065842
 GameObject:
   m_ObjectHideFlags: 0
@@ -18368,6 +18438,7 @@ GameObject:
   - component: {fileID: 885519365}
   - component: {fileID: 885519364}
   - component: {fileID: 885519366}
+  - component: {fileID: 885519367}
   m_Layer: 5
   m_Name: left
   m_TagString: Untagged
@@ -18488,6 +18559,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &885519367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885519362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &886549746
 GameObject:
   m_ObjectHideFlags: 0
@@ -26513,6 +26598,7 @@ GameObject:
   - component: {fileID: 1227462194}
   - component: {fileID: 1227462193}
   - component: {fileID: 1227462192}
+  - component: {fileID: 1227462195}
   m_Layer: 5
   m_Name: 'Hero_Upgrade_btn '
   m_TagString: Untagged
@@ -26636,6 +26722,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1227462190}
   m_CullTransparentMesh: 1
+--- !u!114 &1227462195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1227462190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!224 &1229711811 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8704350538295191189, guid: e245e431b7ec4c64ab93b7315f9b654b, type: 3}
@@ -26922,6 +27022,7 @@ GameObject:
   - component: {fileID: 1233689532}
   - component: {fileID: 1233689531}
   - component: {fileID: 1233689530}
+  - component: {fileID: 1233689533}
   m_Layer: 5
   m_Name: Get_btn
   m_TagString: Untagged
@@ -27043,6 +27144,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1233689528}
   m_CullTransparentMesh: 1
+--- !u!114 &1233689533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1233689528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &1244177890
 GameObject:
   m_ObjectHideFlags: 0
@@ -29685,6 +29800,7 @@ GameObject:
   - component: {fileID: 1360103805}
   - component: {fileID: 1360103804}
   - component: {fileID: 1360103806}
+  - component: {fileID: 1360103807}
   m_Layer: 5
   m_Name: AutoEquipButton
   m_TagString: Untagged
@@ -29806,6 +29922,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1360103807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360103801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &1360215107
 GameObject:
   m_ObjectHideFlags: 0
@@ -33610,6 +33740,7 @@ GameObject:
   - component: {fileID: 1532685627}
   - component: {fileID: 1532685626}
   - component: {fileID: 1532685625}
+  - component: {fileID: 1532685628}
   m_Layer: 5
   m_Name: Hero_place_btn
   m_TagString: Untagged
@@ -33731,6 +33862,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1532685623}
   m_CullTransparentMesh: 1
+--- !u!114 &1532685628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1532685623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1001 &1543592725
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35008,6 +35153,7 @@ GameObject:
   - component: {fileID: 1583525980}
   - component: {fileID: 1583525979}
   - component: {fileID: 1583525978}
+  - component: {fileID: 1583525981}
   m_Layer: 5
   m_Name: Close_Bts
   m_TagString: Untagged
@@ -35141,6 +35287,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1583525976}
   m_CullTransparentMesh: 1
+--- !u!114 &1583525981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1583525976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!114 &1590163539 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3146766564839469637, guid: 1e63ed6b8bf4b8a49ac6d7449533a973, type: 3}
@@ -36175,6 +36335,7 @@ GameObject:
   - component: {fileID: 1637763346}
   - component: {fileID: 1637763345}
   - component: {fileID: 1637763344}
+  - component: {fileID: 1637763347}
   m_Layer: 5
   m_Name: SaveDel_NO
   m_TagString: Untagged
@@ -36296,6 +36457,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1637763342}
   m_CullTransparentMesh: 1
+--- !u!114 &1637763347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1637763342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &1642536680
 GameObject:
   m_ObjectHideFlags: 0
@@ -39229,6 +39404,7 @@ GameObject:
   - component: {fileID: 1766850497}
   - component: {fileID: 1766850496}
   - component: {fileID: 1766850495}
+  - component: {fileID: 1766850498}
   m_Layer: 5
   m_Name: ToggleSellMode_Btn (1)
   m_TagString: Untagged
@@ -39338,6 +39514,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1766850493}
   m_CullTransparentMesh: 1
+--- !u!114 &1766850498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766850493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &1768294937
 GameObject:
   m_ObjectHideFlags: 0
@@ -43720,6 +43910,7 @@ GameObject:
   - component: {fileID: 1973839368}
   - component: {fileID: 1973839367}
   - component: {fileID: 1973839366}
+  - component: {fileID: 1973839369}
   m_Layer: 5
   m_Name: Sell_Bts
   m_TagString: Untagged
@@ -43829,6 +44020,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1973839364}
   m_CullTransparentMesh: 1
+--- !u!114 &1973839369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1973839364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &1977022305
 GameObject:
   m_ObjectHideFlags: 0
@@ -44875,6 +45080,7 @@ GameObject:
   - component: {fileID: 2014242536}
   - component: {fileID: 2014242535}
   - component: {fileID: 2014242534}
+  - component: {fileID: 2014242537}
   m_Layer: 5
   m_Name: SaveDel_OK
   m_TagString: Untagged
@@ -44996,6 +45202,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2014242532}
   m_CullTransparentMesh: 1
+--- !u!114 &2014242537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2014242532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &2038817166
 GameObject:
   m_ObjectHideFlags: 0
@@ -47826,6 +48046,7 @@ GameObject:
   - component: {fileID: 2130306711}
   - component: {fileID: 2130306710}
   - component: {fileID: 2130306712}
+  - component: {fileID: 2130306713}
   m_Layer: 5
   m_Name: right
   m_TagString: Untagged
@@ -47946,6 +48167,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &2130306713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2130306708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &2132786434
 GameObject:
   m_ObjectHideFlags: 0
@@ -47958,6 +48193,7 @@ GameObject:
   - component: {fileID: 2132786438}
   - component: {fileID: 2132786437}
   - component: {fileID: 2132786436}
+  - component: {fileID: 2132786439}
   m_Layer: 5
   m_Name: SellSelected_Btn (1)
   m_TagString: Untagged
@@ -48067,6 +48303,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2132786434}
   m_CullTransparentMesh: 1
+--- !u!114 &2132786439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2132786434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &2140593000
 GameObject:
   m_ObjectHideFlags: 0

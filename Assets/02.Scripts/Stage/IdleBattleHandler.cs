@@ -66,7 +66,11 @@ public class IdleBattleHandler : MonoBehaviour
                 StartIdleBattle(StageState.Idle);
             }
         }
-        PartyManager.Instance.partyChanged += OnPartyChanaged;
+
+        if (StageManager.Instance != null)
+        {
+            PartyManager.Instance.partyChanged += OnPartyChanaged;
+        }
     }
 
     //이벤트를 구독해제하는 과정에서(게임 종료 시점에서) NullReferenceException이 발생하고,
@@ -129,12 +133,36 @@ public class IdleBattleHandler : MonoBehaviour
         //slocCount--; 해야지.]
         //그리고 위에서 == 0으로 검사하고.
         //딸랑 얘만 쓰는 텍스트 필드니까... 솔직히 기능 클래스여도 텍스트 하나정돈 괜찮잖아?
-        //저거 "훈련중"을 얘가 처리하고, 스테이지 글씨는 스테이지 글씨만 하는게?
+
+
+        //이거... UINoticePopup쓰지 말고, 그렇게 하자.
+        //어차피 "훈련중" 텍스트 뜨잖아? 그니까 그 아래 정도에 매 초마다 몇 골드 지급 이것만 띄우고
+        //저 위의 return 상황 있잖아? 거기에다가 text.text ==""; 이거 넣으면 될 듯.
 
 
         UINoticePopup.Instance.ShowTime($"훈련을 시작합니다.\n 매 {rewardTime}초마다 {idleReward} Gold가 지급됩니다.");
            
         idleBattleCoroutine = StartCoroutine(HandleIdleBattleCo(idleReward));
+    }
+
+    //IdleBattle이 실행되지 않는 상태에선 텍스트를 ""로 전환하고, 실행되는 상태에서는 현황을 표시할 메서드
+    //StartIdleBattle에서 return하는 부분에는 false 넣고, UINoticePopup 부분에는 true 넣으면 됨
+    private void ChangeText(bool toggle)
+    {
+        //TODO : 텍스트 필드 추가, 패널도 추가(켜고 끌 수 있게), idleReward를 지역변수가 아니라 필드로 전환
+
+        //idleBattlePanel.SetActive(toggle);
+
+        switch (toggle)
+        {
+            case true:
+                //idleBattleText.text = $"매 {rewardTime}초마다 {idleReward} Gold 지급";
+                break;
+            case false:
+                //idleBattleText.text = "";
+                break;
+        }
+
     }
 
     //파티슬롯이 전부 비어있는지 체크할 메서드
