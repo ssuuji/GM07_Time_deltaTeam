@@ -32,7 +32,7 @@ namespace AFKHero.Sound
         [Header("Battle SFX")]
         [SerializeField] private List<SoundInfo> battleSfxSounds = new();
 
-        private readonly Dictionary<SoundKey, AudioClip> soundData = new();
+        private readonly Dictionary<SoundKey, SoundInfo> soundData = new();
         private float currentBGMVolume = 1f;
 
 
@@ -102,7 +102,7 @@ namespace AFKHero.Sound
                     continue;
                 }
 
-                soundData[info.Key] = info.Clip;
+                soundData[info.Key] = info;
             }
         }
 
@@ -174,7 +174,7 @@ namespace AFKHero.Sound
 
         public void PlaySFX(SoundKey key)
         {
-            if (!soundData.TryGetValue(key, out AudioClip clip))
+            if (!soundData.TryGetValue(key, out SoundInfo soundInfo))
             {
                 Debug.LogError($"<color=cyan>[SoundManager]</color> : 재생할 효과음 {key}가 올바르게 설정되지 않았습니다.");
                 return;
@@ -182,9 +182,9 @@ namespace AFKHero.Sound
 
             AudioSource source = GetSFXSource();
 
-            source.volume = masterVolume * sfxVolume;
+            source.volume = masterVolume * sfxVolume * soundInfo.Volume;
 
-            source.clip = clip;
+            source.clip = soundInfo.Clip;
             source.Play();
 
             StartCoroutine(ReturnToPool(source));
@@ -200,8 +200,8 @@ namespace AFKHero.Sound
                 if (source != null &&
                     source.isPlaying &&
                     source.clip != null &&
-                    soundData.TryGetValue(key, out AudioClip clip) &&
-                    source.clip == clip)
+                    soundData.TryGetValue(key, out SoundInfo clip) &&
+                    source.clip == clip.Clip)
                 {
                     return true;
                 }
@@ -216,21 +216,20 @@ namespace AFKHero.Sound
 
         public void PlayBGM(SoundKey key)
         {
-            if (!soundData.TryGetValue(key, out AudioClip clip))
+            if (!soundData.TryGetValue(key, out SoundInfo soundInfo))
             {
                 Debug.LogError($"<color=cyan>[SoundManager]</color> : 재생할 배경음 {key}가 올바르게 설정되지 않았습니다.");
                 return;
             }
 
-            if (bgmSource.clip == clip && bgmSource.isPlaying)
+            if (bgmSource.clip == soundInfo.Clip && bgmSource.isPlaying)
                 return;
 
-            SoundInfo soundInfo = bgmSounds.Find(x => x.Key == key);
             currentBGMVolume = soundInfo.Volume;
 
             float finalBGMVolume = masterVolume * bgmVolume * currentBGMVolume;
 
-            bgmSource.clip = clip;
+            bgmSource.clip = soundInfo.Clip;
             bgmSource.loop = true;
             bgmSource.volume = finalBGMVolume;
             bgmSource.Play();
