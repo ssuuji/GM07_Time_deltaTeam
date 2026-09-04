@@ -1719,7 +1719,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB2EB\uAE30\n"
+  m_text: "\uC790\uB3D9\uC9C4\uD589 \uC885\uB8CC"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 070ab15c93373a843805c6b19d32c1e9, type: 2}
   m_sharedMaterial: {fileID: -326889617151137700, guid: 070ab15c93373a843805c6b19d32c1e9, type: 2}
@@ -24002,7 +24002,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 1.8377985, y: -407}
-  m_SizeDelta: {x: 168.82, y: 82.09}
+  m_SizeDelta: {x: 200, y: 82.09}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1080612222
 MonoBehaviour:
