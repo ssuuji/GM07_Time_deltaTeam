@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
+using AFKHero.Sound;
 using UnityEngine;
 
 namespace AFKHero.Battle
@@ -35,6 +35,17 @@ namespace AFKHero.Battle
         [SerializeField] private DamageTextView damageTextPrefab;
 
         [SerializeField] private Transform damageTextAnchor;
+
+        [Header("기본 공격 효과음")]
+        [SerializeField]
+        private SoundKey[] basicAttackSoundKeys =
+        {
+            SoundKey.SFX_Attack_1,
+            SoundKey.SFX_Attack_2,
+            SoundKey.SFX_Attack_3
+        };
+
+        private int lastBasicAttackSoundIndex = -1;
 
         private BattleUnit owner;
         private UnitHealth unitHealth;
@@ -164,12 +175,36 @@ namespace AFKHero.Battle
         // 기본 공격 시 실행
         private void HandleBasicAttackStarted(BattleUnit target)
         {
+            PlayRandomBasicAttackSFX();
+
             if (animator == null || string.IsNullOrWhiteSpace(attackTrigger))
             {
                 return;
             }
 
             animator.SetTrigger(attackTrigger);
+        }
+
+        private void PlayRandomBasicAttackSFX()
+        {
+            if (SoundManager.Instance == null ||
+                basicAttackSoundKeys == null ||
+                basicAttackSoundKeys.Length == 0)
+            {
+                return;
+            }
+
+            int soundIndex = Random.Range(0, basicAttackSoundKeys.Length);
+
+            // 소리가 두 개 이상이면 직전에 재생한 소리는 다시 선택하지 않습니다.
+            if (basicAttackSoundKeys.Length > 1 && soundIndex == lastBasicAttackSoundIndex)
+            {
+                int randomOffset = Random.Range(1, basicAttackSoundKeys.Length);
+                soundIndex = (soundIndex + randomOffset) % basicAttackSoundKeys.Length;
+            }
+
+            lastBasicAttackSoundIndex = soundIndex;
+            SoundManager.Instance.PlaySFX(basicAttackSoundKeys[soundIndex]);
         }
 
         // 실제 피해량으로 피격 연출과 텍스트 표시

@@ -1,0 +1,819 @@
+fileFormatVersion: 2
+guid: 6de6aaa874df07c4985378824b5c4c69
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8830873879422868274
+    second: Status_Stun_0
+  - first:
+      213: -4159064151782807725
+    second: Status_Stun_1
+  - first:
+      213: 2968969807342607392
+    second: Status_Stun_2
+  - first:
+      213: 4457914301925180208
+    second: Status_Stun_3
+  - first:
+      213: -8238176389087741814
+    second: Status_Stun_4
+  - first:
+      213: 4000433147812960358
+    second: Status_Stun_5
+  - first:
+      213: -1730812922043828375
+    second: Status_Stun_6
+  - first:
+      213: -3434096977024757120
+    second: Status_Stun_7
+  - first:
+      213: -3235794503011305030
+    second: Status_Stun_8
+  - first:
+      213: -3437168838795869275
+    second: Status_Stun_9
+  - first:
+      213: 1821234868224377858
+    second: Status_Stun_10
+  - first:
+      213: -1375440195277120677
+    second: Status_Stun_11
+  - first:
+      213: 1961980772637241597
+    second: Status_Stun_12
+  - first:
+      213: 8726845056194743816
+    second: Status_Stun_13
+  - first:
+      213: -5111614636877189480
+    second: Status_Stun_14
+  - first:
+      213: 4950523595760068982
+    second: Status_Stun_15
+  - first:
+      213: 7318381807184188692
+    second: Status_Stun_16
+  - first:
+      213: 7220649224104702418
+    second: Status_Stun_17
+  - first:
+      213: 3174027138046306532
+    second: Status_Stun_18
+  - first:
+      213: -8000666571867636440
+    second: Status_Stun_19
+  - first:
+      213: 7151493382249006170
+    second: Status_Stun_20
+  - first:
+      213: 1947717514790207560
+    second: Status_Stun_21
+  - first:
+      213: 6852496704912086657
+    second: Status_Stun_22
+  - first:
+      213: 8130535547016005032
+    second: Status_Stun_23
+  - first:
+      213: 4964462280634881501
+    second: Status_Stun_24
+  - first:
+      213: 5352660977254728071
+    second: Status_Stun_25
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Status_Stun_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 65
+        width: 966
+        height: 1085
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec469b0aefe627580800000000000000
+      internalID: -8830873879422868274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_1
+      rect:
+        serializedVersion: 2
+        x: 481
+        y: 25
+        width: 752
+        height: 914
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 357acea80390846c0800000000000000
+      internalID: -4159064151782807725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_2
+      rect:
+        serializedVersion: 2
+        x: 1188
+        y: 755
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02c148b3f46e33920800000000000000
+      internalID: 2968969807342607392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_3
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 534
+        width: 27
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03342654071bddd30800000000000000
+      internalID: 4457914301925180208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_4
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 530
+        width: 7
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a883a6bc83e1cad80800000000000000
+      internalID: -8238176389087741814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_5
+      rect:
+        serializedVersion: 2
+        x: 1163
+        y: 317
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 668d613b0c4648730800000000000000
+      internalID: 4000433147812960358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_6
+      rect:
+        serializedVersion: 2
+        x: 1165
+        y: 325
+        width: 6
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 967fbe051daeaf7e0800000000000000
+      internalID: -1730812922043828375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_7
+      rect:
+        serializedVersion: 2
+        x: 1170
+        y: 313
+        width: 19
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08252387ef2a750d0800000000000000
+      internalID: -3434096977024757120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_8
+      rect:
+        serializedVersion: 2
+        x: 1188
+        y: 308
+        width: 17
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab979d12b062813d0800000000000000
+      internalID: -3235794503011305030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_9
+      rect:
+        serializedVersion: 2
+        x: 1160
+        y: 309
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a3c78ae629bc40d0800000000000000
+      internalID: -3437168838795869275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_10
+      rect:
+        serializedVersion: 2
+        x: 1163
+        y: 296
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 204c11d9673564910800000000000000
+      internalID: 1821234868224377858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_11
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 278
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5b96b60e6479ece0800000000000000
+      internalID: -1375440195277120677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_12
+      rect:
+        serializedVersion: 2
+        x: 1141
+        y: 278
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df070312e1b5a3b10800000000000000
+      internalID: 1961980772637241597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_13
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 261
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80e8c50875bfb1970800000000000000
+      internalID: 8726845056194743816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_14
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 259
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89e6f3cf195ef09b0800000000000000
+      internalID: -5111614636877189480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_15
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 263
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 679e7793bfac3b440800000000000000
+      internalID: 4950523595760068982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_16
+      rect:
+        serializedVersion: 2
+        x: 1133
+        y: 250
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41515ebaa7d109560800000000000000
+      internalID: 7318381807184188692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_17
+      rect:
+        serializedVersion: 2
+        x: 261
+        y: 143
+        width: 49
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d1f5727636e43460800000000000000
+      internalID: 7220649224104702418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_18
+      rect:
+        serializedVersion: 2
+        x: 309
+        y: 148
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e823b68dd86c0c20800000000000000
+      internalID: 3174027138046306532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_19
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 141
+        width: 166
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82dbc79642ce7f090800000000000000
+      internalID: -8000666571867636440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_20
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 49
+        width: 15
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a54428647553f3360800000000000000
+      internalID: 7151493382249006170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_21
+      rect:
+        serializedVersion: 2
+        x: 876
+        y: 49
+        width: 7
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84080ef92cea70b10800000000000000
+      internalID: 1947717514790207560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_22
+      rect:
+        serializedVersion: 2
+        x: 894
+        y: 49
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 186d1d07275f81f50800000000000000
+      internalID: 6852496704912086657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_23
+      rect:
+        serializedVersion: 2
+        x: 952
+        y: 63
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a54399a00775d070800000000000000
+      internalID: 8130535547016005032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_24
+      rect:
+        serializedVersion: 2
+        x: 924
+        y: 42
+        width: 7
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd55112342055e440800000000000000
+      internalID: 4964462280634881501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Status_Stun_25
+      rect:
+        serializedVersion: 2
+        x: 932
+        y: 47
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7810d589cc8784a40800000000000000
+      internalID: 5352660977254728071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Status_Stun_0: -8830873879422868274
+      Status_Stun_1: -4159064151782807725
+      Status_Stun_10: 1821234868224377858
+      Status_Stun_11: -1375440195277120677
+      Status_Stun_12: 1961980772637241597
+      Status_Stun_13: 8726845056194743816
+      Status_Stun_14: -5111614636877189480
+      Status_Stun_15: 4950523595760068982
+      Status_Stun_16: 7318381807184188692
+      Status_Stun_17: 7220649224104702418
+      Status_Stun_18: 3174027138046306532
+      Status_Stun_19: -8000666571867636440
+      Status_Stun_2: 2968969807342607392
+      Status_Stun_20: 7151493382249006170
+      Status_Stun_21: 1947717514790207560
+      Status_Stun_22: 6852496704912086657
+      Status_Stun_23: 8130535547016005032
+      Status_Stun_24: 4964462280634881501
+      Status_Stun_25: 5352660977254728071
+      Status_Stun_3: 4457914301925180208
+      Status_Stun_4: -8238176389087741814
+      Status_Stun_5: 4000433147812960358
+      Status_Stun_6: -1730812922043828375
+      Status_Stun_7: -3434096977024757120
+      Status_Stun_8: -3235794503011305030
+      Status_Stun_9: -3437168838795869275
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
