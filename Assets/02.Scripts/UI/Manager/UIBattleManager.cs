@@ -274,9 +274,16 @@ namespace AFKHero.UI
             bool isWorking = state == StageState.Working;
 
             //스테이지 종료 시 배속 초기화
-            if (!isWorking && battleSpeedManager != null)
+            if (battleSpeedManager != null)
             {
-                battleSpeedManager.ResetSpeed();
+                // 전투 중이면 true, 아니면 false로 스위치 켜고 끄기
+                battleSpeedManager.isBattleActive = isWorking;
+
+                // 스테이지 종료 시 배속 초기화
+                if (!isWorking)
+                {
+                    battleSpeedManager.ResetSpeed();
+                }
             }
 
             //스테이지 진행 중일 때만 Auto / 배속 버튼 활성화
