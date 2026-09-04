@@ -97,7 +97,6 @@ namespace AFKHero.UI
             canUseUltimate =
                 ultimateController != null && ultimateController.CheckCanUseUltimate(); //궁극기를 사용하는 영웅인지 판별
 
-            ultimateController = battleUnit.GetComponent<UnitUltimateController>();
             if (ultimateController != null)
             {
                 ultimateController.ExecutionStarted += OnUltimateStarted;     //궁극기 실행 이벤트 구독
