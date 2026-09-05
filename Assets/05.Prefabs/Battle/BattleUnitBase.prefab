@@ -292,11 +292,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9772f191ca896004ab81a9acc0897089, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.UnitUltimateController
-  startSoundDelay: 0.7
-  ultimateDuration: 2
+  startSoundDelay: 0.5
+  ultimateDuration: 1.7
   animator: {fileID: 0}
   animationTrigger: Ultimate
-  effectDelay: 0.6
+  effectDelay: 0.3
   showUltimateDebugLog: 0
 --- !u!114 &1936199993569178431
 MonoBehaviour:
