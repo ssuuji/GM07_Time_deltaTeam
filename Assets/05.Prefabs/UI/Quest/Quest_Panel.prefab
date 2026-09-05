@@ -164,6 +164,7 @@ GameObject:
   - component: {fileID: 6500676618389944006}
   - component: {fileID: 7249767303325459855}
   - component: {fileID: 8103758737021401772}
+  - component: {fileID: 5781802924608931718}
   m_Layer: 5
   m_Name: GetAll_btn
   m_TagString: Untagged
@@ -273,6 +274,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5781802924608931718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284022796655678724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 900b7249ca527bd4fb49366b832860d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHoverEffector
+  hoverScale: 1.09
+  soundkey: 8
 --- !u!1 &1701714751458167474
 GameObject:
   m_ObjectHideFlags: 0

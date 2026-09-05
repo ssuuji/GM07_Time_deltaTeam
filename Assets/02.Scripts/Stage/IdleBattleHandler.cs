@@ -1,9 +1,12 @@
 ﻿using AFKHero.Battle;
-using System.Collections.Generic;
-using System.Collections;
-using UnityEngine;
-using System.Linq;
+using AFKHero.Quest;
+using AFKHero.Sound;
 using AFKHero.UI;
+using DG.Tweening;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 
 
 /*
@@ -18,6 +21,11 @@ using AFKHero.UI;
 //StageManager의 상태를 확인하고, Idle상태로 전환됐을 때 방치 전투의 흐름을 시작하게 하는 클래스
 //또한, StageManager가 Working 상태로 전환됐을 때, 기존의 흐름을 모두 정리해야 한다.
 
+//그러니까, 하드코딩이란 게 약간 이런 거지.
+//이걸 그대로 뜯어가서 바로 쓸 수 없잖아. 이걸 위해서 텍스트 출력 오브젝트도 만들어야 하니까.
+//뭐랄까... 근데 얘가 UI적으로 하는 일이 딱 하나밖에 없어서 얘를 위한 클래스를 파는 것도 좀 애매하고.
+//바란스를 잘 잡아지.
+
 public class IdleBattleHandler : MonoBehaviour
 {
     [Header("배치")]
@@ -31,9 +39,13 @@ public class IdleBattleHandler : MonoBehaviour
     [Header("더미")]
     [SerializeField] private Transform dummyTarget;
 
+    [Header("방치전투 현황 출력")]
+    [SerializeField] private TMP_Text idleBattleText;
+
     [Header("보상 지급 및 애니메이션 실행 주기")]
     [SerializeField] private float rewardTime = 1.0f;
     private WaitForSeconds wait;
+    private int idleReward;     
 
     [Header("장비드랍확률")]
     [Tooltip("장비가 드롭될 확률 (0 ~ 100%)")]
@@ -50,9 +62,27 @@ public class IdleBattleHandler : MonoBehaviour
     }
     void Start()
     {
-        StageManager.Instance.StageStateChanged += StartIdleBattle;
-        StageManager.Instance.StageStateChanged += ClearIdleBattle;
-        PartyManager.Instance.partyChanged += OnPartyChanaged;
+
+        //0905 : Editor상에서는 문제없이 동작하나, 빌드 파일에서는 방치 전투가 실행되지 않는 문제가 있었습니다.
+        //StageManager의 Start가 먼저 실행되어 상태가 Idle로 전환되면, 이벤트 발행을 놓치게 되는 문제입니다.
+        //따라서 이미 Idle이라면 강제로 최초 1회 실행하도록 방어코드를 작성해야 합니다.
+        //Start에서 무언가 실행되어야 하는 경우는 이와 같이 작성합니다.
+        if (StageManager.Instance != null)
+        {
+            StageManager.Instance.StageStateChanged += StartIdleBattle;
+            StageManager.Instance.StageStateChanged += ClearIdleBattle;
+
+            // 게임 시작 시 이벤트 구독 전 이미 Idle 상태로 진입해버린 경우를 대비해 직접 실행
+            if (StageManager.Instance.CurrentState == StageState.Idle)
+            {
+                StartIdleBattle(StageState.Idle);
+            }
+        }
+
+        if (StageManager.Instance != null)
+        {
+            PartyManager.Instance.partyChanged += OnPartyChanaged;
+        }
     }
 
     //이벤트를 구독해제하는 과정에서(게임 종료 시점에서) NullReferenceException이 발생하고,
@@ -75,16 +105,28 @@ public class IdleBattleHandler : MonoBehaviour
     //StageManager의 이벤트 발행에 의해, Idle 상태로 전환되었을 때만 방치 전투가 실행됩니다.
     public void StartIdleBattle(StageState state)
     {
+        //실행방지 코드가 너무 긴데, 저 조건들을 다 검사해서 bool로 반환하는 거 써도 되긴 할 듯.
+        //각자마다 디버그로그 다르게 찍고 싶으면 상관없지만.
+
         //StageManager가 Idle이 아니거나, 올바르지 않은 스테이지 번호가 클리어 기록으로 들어있다면 실행하지 않습니다.
-        if (state != StageState.Idle) return;
+        if (state != StageState.Idle)
+        {
+            RefreshRewardText(false);
+            return;
+        }
 
         StageInfo baseStage = StageManager.Instance.StageData.GetStage(StageManager.Instance.LastStageNumber, StageManager.Instance.LastSectionNumber);
-        if (baseStage == null) return;
+        if (baseStage == null)
+        {
+            RefreshRewardText(false);
+            return;
+        }
 
         //파티슬롯길이만큼 내부 요소가 null인 것을 찾았다 = 파티가 전부 비어있다.
         if (CheckPartySlot() == PartyManager.Instance.partySlots.Length)
         {
             Debug.Log("파티가 없어서 실행 안 됨");
+            RefreshRewardText(false);
             return;
         }
 
@@ -105,7 +147,7 @@ public class IdleBattleHandler : MonoBehaviour
 
 
         //겁나 이상하긴 한데 이렇게 될걸?
-        int idleReward = StageCalculator.CaculateIdleBattleReward(StageManager.Instance.LastStageNumber, StageManager.Instance.LastSectionNumber)+
+        idleReward = StageCalculator.CaculateIdleBattleReward(StageManager.Instance.LastStageNumber, StageManager.Instance.LastSectionNumber)+
 
       
         PartyManager.Instance.partySlots.Length - CheckPartySlot();
@@ -115,12 +157,40 @@ public class IdleBattleHandler : MonoBehaviour
         //slocCount--; 해야지.]
         //그리고 위에서 == 0으로 검사하고.
         //딸랑 얘만 쓰는 텍스트 필드니까... 솔직히 기능 클래스여도 텍스트 하나정돈 괜찮잖아?
-        //저거 "훈련중"을 얘가 처리하고, 스테이지 글씨는 스테이지 글씨만 하는게?
 
 
-        UINoticePopup.Instance.ShowTime($"훈련을 시작합니다.\n 매 {rewardTime}초마다 {idleReward} Gold가 지급됩니다.");
+        //이거... UINoticePopup쓰지 말고, 그렇게 하자.
+        //어차피 "훈련중" 텍스트 뜨잖아? 그니까 그 아래 정도에 매 초마다 몇 골드 지급 이것만 띄우고
+        //저 위의 return 상황 있잖아? 거기에다가 text.text ==""; 이거 넣으면 될 듯.
+        RefreshRewardText(true);    
            
-        idleBattleCoroutine = StartCoroutine(HandleIdleBattleCo(idleReward));
+        idleBattleCoroutine = StartCoroutine(HandleIdleBattleCo());
+    }
+
+    //IdleBattle이 실행되지 않는 상태에선 텍스트를 ""로 전환하고, 실행되는 상태에서는 현황을 표시할 메서드
+    //StartIdleBattle에서 return하는 부분에는 false 넣고, UINoticePopup 부분에는 true 넣으면 됨
+    private void RefreshRewardText(bool toggle)
+    {
+        if(idleBattleText == null)
+        {
+            Debug.Log("[IdleBattleHandler] : 방치전투 현황을 출력할 텍스트 필드가 설정되지 않았습니다");
+            return;
+        }
+
+        //TODO : 텍스트 필드 추가, 패널도 추가(켜고 끌 수 있게?), idleReward를 지역변수가 아니라 필드로 전환
+
+        //idleBattlePanel.SetActive(toggle);
+
+        switch (toggle)
+        {
+            case true:
+                idleBattleText.text = $"매 {rewardTime}초마다 {idleReward} Gold 획득!";
+                break;
+            case false:
+                idleBattleText.text = "";
+                break;
+        }
+
     }
 
     //파티슬롯이 전부 비어있는지 체크할 메서드
@@ -158,6 +228,21 @@ public class IdleBattleHandler : MonoBehaviour
             if (heroes[i] != null && heroes[i].data != null)
             {
                 GameObject copiedPrefab = Instantiate(heroes[i].data.HeroPrefab, spawnPosition, Quaternion.identity, unitContainer);
+                
+                //임시로, 0번과 1번만 Flip
+                if(i == 0 || i == 1)
+                {
+                    //SpriteRenderer prefabRenderer;
+
+                    //if(copiedPrefab.TryGetComponent<SpriteRenderer>(out prefabRenderer))
+                    //{
+                    //    prefabRenderer.flipX = true;
+                    //}                
+
+                    //각각 다른 파츠들이 조합되어 만들어지는 에셋이므로 이런 식으로 flip하여 사용할 수 없다.
+                    copiedPrefab.transform.localScale = new Vector3(-1f, 1f, 1f);
+
+                }
 
                 copiedPrefabs.Add(copiedPrefab);
             }
@@ -171,7 +256,7 @@ public class IdleBattleHandler : MonoBehaviour
         }
     }
 
-    private IEnumerator HandleIdleBattleCo(int IdleReward)
+    private IEnumerator HandleIdleBattleCo()
     {
         while (true)
         {
@@ -179,6 +264,7 @@ public class IdleBattleHandler : MonoBehaviour
             for (int i = 0; i < copiedPrefabs.Count; i++)
             {
                 //여기서 NullReferenceException이 우연히도 일어나지 않는데, 안정적이지 않은 방식으로 for문 돌리고 있음.
+                SoundManager.Instance.PlaySFX(SoundKey.SFX_Attack_1);
                 Animator anim = copiedPrefabs[i].GetComponentInChildren<Animator>();
                 anim.SetTrigger("2_Attack");
             }
@@ -188,11 +274,11 @@ public class IdleBattleHandler : MonoBehaviour
             //AFKHero.Player.PlayerManager.Instance.AddGold(IdleReward);
             //Debug.Log($"[IdleBattleHandler] : {IdleReward} 지급함");
 
-            GiveIdleBattleReward(IdleReward);
+            GiveIdleBattleReward();
         }
     }
 
-    private void GiveIdleBattleReward(int IdleReward)
+    private void GiveIdleBattleReward()
     {
         if(AFKHero.Player.PlayerManager.Instance == null)
         {
@@ -200,7 +286,7 @@ public class IdleBattleHandler : MonoBehaviour
             return;
         }    
 
-        AFKHero.Player.PlayerManager.Instance.AddGold(IdleReward);
+        AFKHero.Player.PlayerManager.Instance.AddGold(idleReward);
 
         if (EquipmentManager.Instance == null)
         {
@@ -263,4 +349,98 @@ public class IdleBattleHandler : MonoBehaviour
         StartIdleBattle(StageManager.Instance.CurrentState);
 
     }
+
+    #region 보상지급 연출(미구현)
+
+    //UIQuestManager에서 뜯어왔는데, 이거 좀 더 좋게? 하려면
+    //아예 UIRewardGiver 이런 클래스를 싱글톤으로 만들고
+    //보상 주는 애들이 해당 클래스를 호출해서 연출 시작하게 하면 좋을 듯?
+    //내가 만들 수 있으면 좋겟는데... 지금 이 시점에선 무리
+
+    //private void PlayMainQuestRewardEffect(RewardType rewardType, Vector3 startPosition)
+    //{
+    //    GameObject rewardImage = null;
+    //    RectTransform rewardTarget = null;
+
+    //    switch (rewardType)
+    //    {
+    //        case RewardType.Gold:
+    //            rewardImage = goldImage;
+    //            rewardTarget = goldTarget;
+    //            break;
+
+    //        case RewardType.Dia:
+    //            rewardImage = diaImage;
+    //            rewardTarget = diaTarget;
+    //            break;
+
+    //        case RewardType.FreeTicket:
+    //            rewardImage = freeTicketImage;
+    //            rewardTarget = freeTicketTarget;
+    //            break;
+    //    }
+
+    //    if (rewardImage == null || rewardTarget == null || rewardEffectRoot == null)
+    //    {
+    //        return;
+    //    }
+
+    //    PlayRewardEffect(rewardImage, rewardTarget, startPosition);
+    //}
+
+    ////보상 이미지가 퍼진 후 상단 재화 UI로 이동
+    //private void PlayRewardEffect(GameObject rewardImage, RectTransform rewardTarget, Vector3 startPosition)
+    //{
+    //    int rewardCount = Random.Range(3, 6);
+
+    //    Vector2 startLocalPosition = rewardEffectRoot.InverseTransformPoint(startPosition);
+    //    Vector2 targetLocalPosition = rewardEffectRoot.InverseTransformPoint(rewardTarget.position);
+
+    //    for (int i = 0; i < rewardCount; i++)
+    //    {
+    //        GameObject rewardEffect = Instantiate(rewardImage, rewardEffectRoot);
+
+    //        rewardEffect.SetActive(true);
+
+    //        RectTransform rewardRect = rewardEffect.GetComponent<RectTransform>();
+
+    //        if (rewardRect == null)
+    //        {
+    //            Destroy(rewardEffect);
+    //            continue;
+    //        }
+
+    //        rewardRect.anchoredPosition = startLocalPosition;
+    //        rewardRect.localScale = Vector3.one;
+
+    //        Vector2 randomDirection = Random.insideUnitCircle.normalized;
+
+    //        float randomDistance = Random.Range(rewardSpreadDistance * 0.5f, rewardSpreadDistance);
+
+    //        Vector2 spreadPosition = startLocalPosition + randomDirection * randomDistance;
+
+    //        bool isLastReward = i == rewardCount - 1;
+
+    //        Sequence sequence = DOTween.Sequence();
+
+    //        sequence.Append(rewardRect.DOAnchorPos(spreadPosition, rewardSpreadDuration).SetEase(Ease.OutQuad));
+    //        sequence.AppendInterval(0.05f + i * 0.03f);
+    //        sequence.Append(rewardRect.DOAnchorPos(targetLocalPosition, rewardMoveDuration).SetEase(Ease.InQuad));
+    //        sequence.Join(rewardRect.DOScale(0.3f, rewardMoveDuration).SetEase(Ease.InQuad));
+
+    //        sequence.OnComplete(() =>
+    //        {
+    //            if (isLastReward)
+    //            {
+    //                rewardTarget.DOKill();
+
+    //                rewardTarget.DOPunchScale(Vector3.one * 0.15f, 0.2f, 5, 0.5f).SetUpdate(true);
+    //            }
+
+    //            Destroy(rewardEffect);
+    //        });
+    //    }
+    //}
+    #endregion
+
 }
