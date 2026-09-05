@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 828a2c3abd56130468fc60e9495bbb82, type: 3}
-  m_Name: TestFormationData
+  m_Name: FormationData
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.FormationData
   allyPositions:
-  - {x: -0.8, y: 0}
-  - {x: 0.8, y: 0}
-  - {x: -1.6, y: -1}
+  - {x: -0.8, y: 0.2}
+  - {x: 0.8, y: 0.2}
+  - {x: -1.4, y: -1}
   - {x: 0, y: -1}
-  - {x: 1.6, y: -1}
+  - {x: 1.4, y: -1}
   enemyPositions:
-  - {x: 0.8, y: 2}
-  - {x: -0.8, y: 2}
-  - {x: 1.6, y: 3}
+  - {x: 0.8, y: 1.8}
+  - {x: -0.8, y: 1.8}
+  - {x: 1.4, y: 3}
   - {x: 0, y: 3}
-  - {x: -1.6, y: 3}
+  - {x: -1.4, y: 3}

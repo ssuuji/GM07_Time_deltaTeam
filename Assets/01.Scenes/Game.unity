@@ -11812,6 +11812,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.BattleManager
   battleTimeLimit: 30
+  battleStartDelay: 2
   ultimateUseMode: 0
   ultimateStartInvincibilityDuration: 0.2
   isBattleResultConfirmed: 0
@@ -11848,7 +11849,7 @@ MonoBehaviour:
   ultimateDim: {fileID: 1838591376}
   dimAlpha: 0.6
   dimDuration: 0.15
-  ultimateSortingOrder: 10000
+  ultimateSortingOrder: 10001
   battleCamera: {fileID: 1940185525}
   cameraArea: {fileID: 1503258407}
   ultimateZoomSize: 4.5
