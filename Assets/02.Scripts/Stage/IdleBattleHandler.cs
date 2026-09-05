@@ -1,5 +1,6 @@
 ﻿using AFKHero.Battle;
 using AFKHero.Quest;
+using AFKHero.Sound;
 using AFKHero.UI;
 using DG.Tweening;
 using System.Collections;
@@ -263,6 +264,7 @@ public class IdleBattleHandler : MonoBehaviour
             for (int i = 0; i < copiedPrefabs.Count; i++)
             {
                 //여기서 NullReferenceException이 우연히도 일어나지 않는데, 안정적이지 않은 방식으로 for문 돌리고 있음.
+                SoundManager.Instance.PlaySFX(SoundKey.SFX_Attack_1);
                 Animator anim = copiedPrefabs[i].GetComponentInChildren<Animator>();
                 anim.SetTrigger("2_Attack");
             }
