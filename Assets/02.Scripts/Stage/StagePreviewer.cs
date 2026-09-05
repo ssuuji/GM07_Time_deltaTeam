@@ -222,8 +222,14 @@ public class StagePreviewer : MonoBehaviour
         //표시하기 전에 한 번 클리어한 상태로 사용
         ClearStageInfo();
 
-        stageInfo.text = $"STAGE {StageManager.Instance.CurrentStageNumber}-{StageManager.Instance.CurrentSectionNumber}";
-               
+        if(!currentStage.IsBossStage)
+        {
+            stageInfo.text = $"STAGE {StageManager.Instance.CurrentStageNumber}-{StageManager.Instance.CurrentSectionNumber}";
+        }
+        else if(currentStage.IsBossStage)
+        {
+            stageInfo.text = $"<color=red>BOSS STAGE {StageManager.Instance.CurrentStageNumber}-{StageManager.Instance.CurrentSectionNumber}</color>";
+        }               
 
         //골드
         bool hasGold = currentStage.ClearGold > 0;
