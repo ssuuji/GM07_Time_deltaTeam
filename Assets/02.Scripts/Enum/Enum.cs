@@ -40,6 +40,7 @@ public enum SoundKey
     //UI
     UI_ButtonSelect,
     UI_ButtonClose,
+    
 
     //Battle
     SFX_Ultimate_Start,
@@ -53,7 +54,10 @@ public enum SoundKey
 
     SFX_Attack_1,
     SFX_Attack_2,
-    SFX_Attack_3
+    SFX_Attack_3,
+
+    UI_CardDraw
+
 }
 
 /////////////////////////////////

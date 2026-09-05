@@ -92,6 +92,11 @@ namespace AFKHero.UI
         {
             isFlip = true; //뒤집기 시작
 
+            if (AFKHero.Sound.SoundManager.Instance != null)
+            {
+                AFKHero.Sound.SoundManager.Instance.PlaySFX(SoundKey.UI_CardDraw);
+            }
+
             float timer = 0;
 
             //1. 카드의 x의 크기를 먼저 0으로 줄이기
