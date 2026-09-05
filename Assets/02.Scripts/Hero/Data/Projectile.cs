@@ -18,6 +18,9 @@ public class Projectile : MonoBehaviour
     // 기본 공격과 궁극기 투사체를 구분하기 위한 변수
     private float ultimateSpeedMultiplier = 1.5f;
 
+    [Header("투사체 레이어")]
+    [SerializeField] private int normalProjectileSortingOrder = 2000;
+
     private Action<BattleUnit, Vector3> ultimateHitCallback;
     private SortingGroup sortingGroup;
     private int defaultSortingLayerId;
@@ -51,7 +54,9 @@ public class Projectile : MonoBehaviour
 
         ultimateHitCallback = null;
         currentSpeed = speed;
-        RestoreDefaultSorting();
+
+        // 일반 투사체는 유닛보다 앞에 표시
+        ApplyNormalSorting(projectileOwner);
 
         battleManager =
         projectileOwner != null
@@ -187,25 +192,66 @@ public class Projectile : MonoBehaviour
                battleManager.IsUltimatePlaying;
     }
 
-    private void ApplyUltimateSorting(BattleUnit projectileOwner)
+    // 일반 투사체를 유닛보다 앞에 표시합니다.
+    private void ApplyNormalSorting(BattleUnit projectileOwner)
     {
-        if (sortingGroup == null || projectileOwner == null)
+        if (sortingGroup == null)
         {
             return;
         }
 
-        SortingGroup ownerSortingGroup =
-            projectileOwner.GetComponent<SortingGroup>();
+        SortingGroup ownerSortingGroup = FindOwnerSortingGroup(projectileOwner);
+
+        // 투사체와 시전자가 서로 다른 Sorting Layer를 사용하면
+        // Sorting Order 비교가 적용되지 않으므로 같은 레이어로 맞춤
+        if (ownerSortingGroup != null)
+        {
+            sortingGroup.sortingLayerID = ownerSortingGroup.sortingLayerID;
+        }
+
+        sortingGroup.sortingOrder = normalProjectileSortingOrder;
+    }
+
+    // 궁극기 투사체는 암전 배경보다 위에 표시하지만
+    // 궁극기를 사용하는 시전자보다는 한 단계 아래에 표시
+    private void ApplyUltimateSorting(BattleUnit projectileOwner)
+    {
+        if (sortingGroup == null)
+        {
+            return;
+        }
+
+        SortingGroup ownerSortingGroup = FindOwnerSortingGroup(projectileOwner);
 
         if (ownerSortingGroup == null)
         {
-            RestoreDefaultSorting();
-
+            // 궁극기 강조용 SortingGroup을 찾지 못한 테스트 환경에서는
+            // 최소한 일반 유닛보다 앞에 표시되도록 처리
+            ApplyNormalSorting(projectileOwner);
             return;
         }
 
         sortingGroup.sortingLayerID = ownerSortingGroup.sortingLayerID;
-        sortingGroup.sortingOrder = ownerSortingGroup.sortingOrder + 1;
+        sortingGroup.sortingOrder = ownerSortingGroup.sortingOrder - 1;
+    }
+
+    // 실제 게임 씬에서는 궁극기 강조용 SortingGroup이 루트에 추가
+    // 테스트 씬처럼 루트에 없는 경우에는 자식에 연결된 SortingGroup을 사용
+    private static SortingGroup FindOwnerSortingGroup(BattleUnit projectileOwner)
+    {
+        if (projectileOwner == null)
+        {
+            return null;
+        }
+
+        SortingGroup ownerSortingGroup = projectileOwner.GetComponent<SortingGroup>();
+
+        if (ownerSortingGroup != null)
+        {
+            return ownerSortingGroup;
+        }
+
+        return projectileOwner.GetComponentInChildren<SortingGroup>(true);
     }
 
     private void RestoreDefaultSorting()

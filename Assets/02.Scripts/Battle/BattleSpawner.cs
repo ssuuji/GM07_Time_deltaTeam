@@ -59,9 +59,7 @@ namespace AFKHero.Battle
                 return false;
             }
 
-            battleManager.StartBattle();
-
-            return battleManager.CurrentState == BattleState.Fighting;
+            return battleManager.StartBattle();
         }
 
         private int SpawnAllyParty(IReadOnlyList<HeroInstance> party)

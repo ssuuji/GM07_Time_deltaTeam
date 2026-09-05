@@ -148,6 +148,13 @@ public class StageManager : MonoBehaviour
             return;
         }
 
+        // BattleManager가 기다리는 동안에도 전투 재실행을 막음.
+        if (currentState == StageState.Working)
+        {
+            Debug.Log("스테이지 전투가 이미 진행 중이거나 시작 대기 중입니다.");
+            return;
+        }
+
         //전투가 실행 중일 때 실행하지 않게 할 방법 : BattleManager의 현재 상태에서 전투가 실행되선 안 되는 상태를 알아야 함.       
         //BattleManager의 현 상태가 Victory, Defeat인 상태로 바뀐 뒤, 다시 preparing으로 전환되는지 확인해야 함.        
         //BattleManager의 상태에 종속되지 않고, StageManage가 Working 상태일 때 실행을 제한하는 방식도 괜찮지 않을까.
