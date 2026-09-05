@@ -31715,8 +31715,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Player.PlayerManager
   playerIcon: {fileID: -7738821923396472471, guid: d3e93807b7e78124fb9811a2dc3469d9, type: 3}
   playerName: "\uD50C\uB808\uC774\uC5B4 1"
-  gold: 2147483647
-  dia: 2147483647
+  gold: 0
+  dia: 0
   freeTicket: 0
   partyPower: 0
 --- !u!114 &1430627240
