@@ -75,10 +75,13 @@ MonoBehaviour:
   - Key: 8
     Clip: {fileID: 8300000, guid: 57e6a45092a44fd49a197c3bc110b036, type: 3}
     Volume: 0.397
+  - Key: 21
+    Clip: {fileID: 8300000, guid: 6bb37fb13ce62414cbcf2633ce45a143, type: 3}
+    Volume: 0.2
   battleSfxSounds:
   - Key: 10
     Clip: {fileID: 8300000, guid: 2fce86f05977dc3498b88ab007c889f1, type: 3}
-    Volume: 1
+    Volume: 0.4
   - Key: 11
     Clip: {fileID: 8300000, guid: e350561a0b7600f4daa115c6f4f87c18, type: 3}
     Volume: 0.2
