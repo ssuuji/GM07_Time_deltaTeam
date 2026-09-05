@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 
 /*
@@ -79,7 +80,7 @@ public class IdleBattleHandler : MonoBehaviour
             }
         }
 
-        if (StageManager.Instance != null)
+        if (PartyManager.Instance != null)
         {
             PartyManager.Instance.partyChanged += OnPartyChanaged;
         }
@@ -146,11 +147,16 @@ public class IdleBattleHandler : MonoBehaviour
         //배치한 영웅 수나 영웅들 중 가장 낮거나 높은 레벨도 계산에 반영하도록 CalculateIdleBattleReward를 수정할 수도 있겠지.
 
 
+
+
         //겁나 이상하긴 한데 이렇게 될걸?
         idleReward = StageCalculator.CaculateIdleBattleReward(StageManager.Instance.LastStageNumber, StageManager.Instance.LastSectionNumber)+
 
       
         PartyManager.Instance.partySlots.Length - CheckPartySlot();
+
+        Debug.Log($"<color=cyan>[IdleBattleHandler]</color> : 스테이지 계산값 {StageCalculator.CaculateIdleBattleReward(StageManager.Instance.LastStageNumber, StageManager.Instance.LastSectionNumber)} 에서 파티슬롯 {PartyManager.Instance.partySlots.Length} 을 더하고 {CheckPartySlot()}을 빼서 보상을 설정했습니다.");
+
 
         //CheckPartySlot이 반대로 되어야 해.
         //아예 int slotCount = PartManager.Instance.partySlots.Length 이렇게 하고
@@ -196,21 +202,43 @@ public class IdleBattleHandler : MonoBehaviour
     //파티슬롯이 전부 비어있는지 체크할 메서드
     private int CheckPartySlot()
     {
-        int slotCount = 0;
-
-        //이런 식으로 하지 말고, int currentPartyCount = PartyManger.Instance.partySlots.Length; 이렇게 하면 되잖아.
+        int emptySlotCount = 0;
+            
+        //내부 참조가 필요하기 때문에 int[]형으로 받지 말고 이렇게 받는 게 맞긴 함.
         HeroInstance[] heroes = PartyManager.Instance.partySlots;
-
+              
         for (int i = 0; i < heroes.Length; i++)
         {
-            if (heroes[i] == null)
+            //왠진 모르겠는데, 이런 거 검사할 때는 영웅의 data도 null인지 같이 검사해야 함.
+            //그 말은, 처음 시작할 땐 파티에 있는 인스턴스가 전부 null이 아니라는 건데?
+            //처음에는 슬롯 내부의 인스턴스가 다 있다고 인식하고, 재시작 시에는 아니라는 건데 이게 대체 무슨 현상이지
+            //애초에 이 메서드 자체가 반대로 설계되어있어서 알아보기 어렵네.
+            if (heroes[i] == null || heroes[i].data == null)
             {
-                slotCount++;
+                Debug.Log("[IdleBattleHandler] : 방치전투 보상 지급을 위해 슬롯을 검사중입니다.");
+                emptySlotCount++;
             }
         }
 
-        return slotCount;
+        return emptySlotCount;
 
+    }
+
+    //비어있는 파티슬롯 수만큼 빼서, 최종적으로는 현재 파티에 있는 인수가 몇 명인지 반환하는 메서드
+    private int CheckPartySlot1()
+    {
+        int slotLength = PartyManager.Instance.partySlots.Length;
+
+        //이러면 근데... 그렇잖아? slotLength 값이 줄어들잖아.
+        for (int i = 0; i < slotLength; i++)
+        {
+            if(PartyManager.Instance.partySlots[i] == null)
+            {
+                slotLength--;
+            }
+        }
+
+        return slotLength;
     }
 
     private void SpawnParty()
