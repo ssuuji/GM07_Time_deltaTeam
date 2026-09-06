@@ -100,6 +100,12 @@ namespace AFKHero.UI
 
         private void Start()
         {
+            //실제 전투 시작 전까지 타이머 및 적 체력 UI 숨김
+            if (stageTimer != null)
+            {
+                stageTimer.SetActive(false);
+            }
+
             if (battleManager != null)
             {
                 battleManager.UltimateStarted += OnUltimateStarted;           //궁극기 연출 시작
@@ -288,6 +294,11 @@ namespace AFKHero.UI
             else
             {
                 ResetStageText();
+
+                if (stageTimer != null)
+                {
+                    stageTimer.SetActive(false);
+                }
             }
 
             //스테이지 종료 시 배속 초기화
@@ -314,12 +325,6 @@ namespace AFKHero.UI
                 speedButton.SetActive(isWorking);
             }
 
-            //스테이지 전투 중일 때만 타이머 표시
-            if (stageTimer != null)
-            {
-                stageTimer.SetActive(state == StageState.Working);
-            }
-
             //실제 전투가 끝나고 방치전투 상태로 돌아왔을 때
             if (state != StageState.Idle) return;
 
@@ -340,7 +345,13 @@ namespace AFKHero.UI
             if (state != BattleState.Fighting) return;
 
             SubscribeEnemyHealth();
-            UpdateEnemyAllHpUI();
+            UpdateEnemyAllHpUI(true);
+
+            //갱신된 이후 UI 표시
+            if (stageTimer != null)
+            {
+                stageTimer.SetActive(true);
+            }
         }
 
         //적 체력 변경 이벤트 구독
@@ -363,7 +374,7 @@ namespace AFKHero.UI
         }
 
         //적 전체 체력 갱신
-        private void UpdateEnemyAllHpUI()
+        private void UpdateEnemyAllHpUI(bool isFirstHP = false)
         {
             if (battleManager == null || enemyUnitAllHp == null) return;
 
@@ -382,7 +393,17 @@ namespace AFKHero.UI
             enemyUnitAllHp.maxValue = 1f;
             float targetValue = maxHealth > 0 ? (float)currentHealth / maxHealth : 0f;
             enemyUnitAllHp.DOKill();
-            enemyUnitAllHp.DOValue(targetValue, 0.25f).SetEase(Ease.OutQuad);
+
+            //전투 시작 시에는 이전 체력바 값이 보이지 않도록 즉시 적용
+            if (isFirstHP)
+            {
+                enemyUnitAllHp.value = targetValue;
+            }
+            else
+            {
+                enemyUnitAllHp.DOValue(targetValue, 0.25f).SetEase(Ease.OutQuad);
+            }
+
             enemyUnitAllHpText.text = $"{currentHealth} / {maxHealth}";
         }
 
