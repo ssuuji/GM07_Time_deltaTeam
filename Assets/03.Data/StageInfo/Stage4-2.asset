@@ -21,6 +21,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 11400000, guid: 2b12c57f31ae1b540acfa7e0a64acdd8, type: 2}
   - {fileID: 11400000, guid: cb1e7890cf0e1be49b2bd38349bde56e, type: 2}
+  - {fileID: 11400000, guid: dd91f9df2ef134840bb854913b228896, type: 2}
   clearGold: 3500
   clearDia: 0
   clearTicket: 0
