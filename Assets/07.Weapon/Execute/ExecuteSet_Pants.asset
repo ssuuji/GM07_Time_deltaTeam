@@ -19,6 +19,6 @@ MonoBehaviour:
   minAttack: 0
   maxAttack: 0
   minHP: 100
-  maxHP: 400
+  maxHP: 200
   minDefense: 10
-  maxDefense: 80
+  maxDefense: 30

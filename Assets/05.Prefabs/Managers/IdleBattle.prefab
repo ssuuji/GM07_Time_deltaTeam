@@ -50,7 +50,9 @@ MonoBehaviour:
   unitContainer: {fileID: 4813620042043211974}
   copiedPrefabs: []
   dummyTarget: {fileID: 5169572248830784446}
+  idleBattleText: {fileID: 0}
   rewardTime: 1
+  equipmentRate: 3
 --- !u!1001 &4339385229491242519
 PrefabInstance:
   m_ObjectHideFlags: 0

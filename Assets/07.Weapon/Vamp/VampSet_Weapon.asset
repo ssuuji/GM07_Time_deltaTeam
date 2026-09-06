@@ -17,7 +17,7 @@ MonoBehaviour:
   type: 0
   equipmentIcon: {fileID: 21300000, guid: 920510d3994f1469f8f88fd76b9f7277, type: 3}
   minAttack: 10
-  maxAttack: 100
+  maxAttack: 50
   minHP: 0
   maxHP: 0
   minDefense: 0
