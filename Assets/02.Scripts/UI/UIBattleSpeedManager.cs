@@ -107,8 +107,8 @@ namespace AFKHero.UI
 
         public void ResetSpeed()
         {
-            // isDoubleSpeed = false;
-            // SetNormalSpeed();
+            isDoubleSpeed = false;
+            SetNormalSpeed();
         }
 
         private void OnDestroy()
