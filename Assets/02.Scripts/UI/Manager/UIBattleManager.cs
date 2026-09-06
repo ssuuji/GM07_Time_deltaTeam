@@ -26,6 +26,8 @@ namespace AFKHero.UI
 
         [Header("현재 스테이지 정보")]
         [SerializeField] private TMP_Text currentStageText;       //현재 진행 중인 스테이지 표시
+        private float defaultStageFontSize;
+        private float defaultStagePosY;
 
         [Header("타이머 및 적 체력")]
         [SerializeField] private GameObject stageTimer;
@@ -78,7 +80,13 @@ namespace AFKHero.UI
         private void Awake()
         {
             Instance = this;
-            
+
+            if (currentStageText != null)
+            {
+                defaultStageFontSize = currentStageText.fontSize;
+                defaultStagePosY = currentStageText.rectTransform.anchoredPosition.y;
+            }
+
             CreateHeroSlots(); //게임 시작 시 하단 영웅 슬롯 5개 생성
 
             if (battleCamera != null)
@@ -273,6 +281,15 @@ namespace AFKHero.UI
 
             bool isWorking = state == StageState.Working;
 
+            if (isWorking)
+            {
+                MoveStageTextForBattle();
+            }
+            else
+            {
+                ResetStageText();
+            }
+
             //스테이지 종료 시 배속 초기화
             if (battleSpeedManager != null)
             {
@@ -367,6 +384,30 @@ namespace AFKHero.UI
             enemyUnitAllHp.DOKill();
             enemyUnitAllHp.DOValue(targetValue, 0.25f).SetEase(Ease.OutQuad);
             enemyUnitAllHpText.text = $"{currentHealth} / {maxHealth}";
+        }
+
+        //스테이지 시작 시 스테이지 문구 축소 및 위로 이동
+        private void MoveStageTextForBattle()
+        {
+            if (currentStageText == null) return;
+
+            currentStageText.fontSize = 40f;
+
+            Vector2 pos = currentStageText.rectTransform.anchoredPosition;
+            pos.y = 795f;
+            currentStageText.rectTransform.anchoredPosition = pos;
+        }
+
+        //스테이지 문구 원래 상태로 복구
+        private void ResetStageText()
+        {
+            if (currentStageText == null) return;
+
+            currentStageText.fontSize = defaultStageFontSize;
+
+            Vector2 pos = currentStageText.rectTransform.anchoredPosition;
+            pos.y = defaultStagePosY;
+            currentStageText.rectTransform.anchoredPosition = pos;
         }
 
         #endregion
