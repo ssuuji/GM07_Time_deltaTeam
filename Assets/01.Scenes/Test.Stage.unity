@@ -1519,6 +1519,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.BattleManager
   battleTimeLimit: 30
+  battleStartDelay: 2
   ultimateUseMode: 0
   ultimateStartInvincibilityDuration: 0.2
   isBattleResultConfirmed: 0
@@ -66729,6 +66730,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Battle.BattleManager
   battleTimeLimit: 30
+  battleStartDelay: 2
   ultimateUseMode: 0
   ultimateStartInvincibilityDuration: 0.2
   isBattleResultConfirmed: 0
@@ -77170,6 +77172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.BattleManager
   battleTimeLimit: 30
+  battleStartDelay: 2
   ultimateUseMode: 0
   ultimateStartInvincibilityDuration: 0.2
   isBattleResultConfirmed: 0
