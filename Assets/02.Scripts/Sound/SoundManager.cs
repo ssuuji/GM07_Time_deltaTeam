@@ -261,6 +261,16 @@ namespace AFKHero.Sound
             sfxVolume = Mathf.Clamp01(volume);
         }
 
+        //사운드 설정 초기화
+        public void ResetSoundSettings()
+        {
+            masterVolume = 1f;
+            bgmVolume = 1f;
+            sfxVolume = 1f;
+
+            UpdateBGMVolume();
+        }
+
         #endregion
 
         #region 저장 데이터

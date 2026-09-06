@@ -176,7 +176,7 @@ namespace AFKHero.Battle
         {
             return caster != null &&
                    caster.HeroInstance != null &&
-                   caster.HeroInstance.level >=
+                   caster.BattleLevel >=
                    EnhancedLevel;
         }
 
@@ -185,7 +185,7 @@ namespace AFKHero.Battle
         {
             return caster != null &&
                    caster.HeroInstance != null &&
-                   (int)caster.HeroInstance.currentGrade >=
+                   (int)caster.BattleGrade >=
                    (int)BonusGrade;
         }
 

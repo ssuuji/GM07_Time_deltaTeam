@@ -337,6 +337,7 @@ public class GameSaveManager : MonoBehaviour
         }
 
         loadedSaveData = null;                                            //메모리에 남아있는 저장 데이터도 초기화
+        SoundManager.Instance?.ResetSoundSettings();                      //사운드 값 초기화
         SceneManager.LoadScene(SceneNames.GetSceneName(SceneType.Title)); //타이틀씬 부터 다시 로드
     }
 

@@ -57,7 +57,7 @@ namespace AFKHero.Battle
             bool isUltimateEnabled = owner.Data.CanUseUltimate;
 
             bool isGradeUnlocked =
-                (int)owner.HeroInstance.currentGrade >=
+                (int)owner.BattleGrade >=
                 (int)MinimumUltimateGrade;
 
             return isUltimateEnabled && isGradeUnlocked;
@@ -77,12 +77,12 @@ namespace AFKHero.Battle
 
             int heroLevel =
                 heroInstance != null
-                    ? heroInstance.level
+                    ? owner.BattleLevel
                     : 0;
 
             string heroGrade =
                 heroInstance != null
-                    ? heroInstance.currentGrade.ToString()
+                    ? owner.BattleGrade.ToString()
                     : "없음";
 
             float levelMultiplierBonus =
@@ -91,7 +91,7 @@ namespace AFKHero.Battle
 
             bool gradeEffectActive =
                 heroInstance != null &&
-                (int)heroInstance.currentGrade >=
+                (int)owner.BattleGrade >=
                 (int)HeroGrade.Epic;
 
             string ultimateDescription =

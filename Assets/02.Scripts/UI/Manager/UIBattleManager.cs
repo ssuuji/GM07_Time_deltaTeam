@@ -26,6 +26,8 @@ namespace AFKHero.UI
 
         [Header("현재 스테이지 정보")]
         [SerializeField] private TMP_Text currentStageText;       //현재 진행 중인 스테이지 표시
+        private float defaultStageFontSize;
+        private float defaultStagePosY;
 
         [Header("타이머 및 적 체력")]
         [SerializeField] private GameObject stageTimer;
@@ -78,7 +80,13 @@ namespace AFKHero.UI
         private void Awake()
         {
             Instance = this;
-            
+
+            if (currentStageText != null)
+            {
+                defaultStageFontSize = currentStageText.fontSize;
+                defaultStagePosY = currentStageText.rectTransform.anchoredPosition.y;
+            }
+
             CreateHeroSlots(); //게임 시작 시 하단 영웅 슬롯 5개 생성
 
             if (battleCamera != null)
@@ -92,6 +100,12 @@ namespace AFKHero.UI
 
         private void Start()
         {
+            //실제 전투 시작 전까지 타이머 및 적 체력 UI 숨김
+            if (stageTimer != null)
+            {
+                stageTimer.SetActive(false);
+            }
+
             if (battleManager != null)
             {
                 battleManager.UltimateStarted += OnUltimateStarted;           //궁극기 연출 시작
@@ -273,6 +287,20 @@ namespace AFKHero.UI
 
             bool isWorking = state == StageState.Working;
 
+            if (isWorking)
+            {
+                MoveStageTextForBattle();
+            }
+            else
+            {
+                ResetStageText();
+
+                if (stageTimer != null)
+                {
+                    stageTimer.SetActive(false);
+                }
+            }
+
             //스테이지 종료 시 배속 초기화
             if (battleSpeedManager != null)
             {
@@ -297,12 +325,6 @@ namespace AFKHero.UI
                 speedButton.SetActive(isWorking);
             }
 
-            //스테이지 전투 중일 때만 타이머 표시
-            if (stageTimer != null)
-            {
-                stageTimer.SetActive(state == StageState.Working);
-            }
-
             //실제 전투가 끝나고 방치전투 상태로 돌아왔을 때
             if (state != StageState.Idle) return;
 
@@ -323,7 +345,13 @@ namespace AFKHero.UI
             if (state != BattleState.Fighting) return;
 
             SubscribeEnemyHealth();
-            UpdateEnemyAllHpUI();
+            UpdateEnemyAllHpUI(true);
+
+            //갱신된 이후 UI 표시
+            if (stageTimer != null)
+            {
+                stageTimer.SetActive(true);
+            }
         }
 
         //적 체력 변경 이벤트 구독
@@ -346,7 +374,7 @@ namespace AFKHero.UI
         }
 
         //적 전체 체력 갱신
-        private void UpdateEnemyAllHpUI()
+        private void UpdateEnemyAllHpUI(bool isFirstHP = false)
         {
             if (battleManager == null || enemyUnitAllHp == null) return;
 
@@ -365,8 +393,42 @@ namespace AFKHero.UI
             enemyUnitAllHp.maxValue = 1f;
             float targetValue = maxHealth > 0 ? (float)currentHealth / maxHealth : 0f;
             enemyUnitAllHp.DOKill();
-            enemyUnitAllHp.DOValue(targetValue, 0.25f).SetEase(Ease.OutQuad);
+
+            //전투 시작 시에는 이전 체력바 값이 보이지 않도록 즉시 적용
+            if (isFirstHP)
+            {
+                enemyUnitAllHp.value = targetValue;
+            }
+            else
+            {
+                enemyUnitAllHp.DOValue(targetValue, 0.25f).SetEase(Ease.OutQuad);
+            }
+
             enemyUnitAllHpText.text = $"{currentHealth} / {maxHealth}";
+        }
+
+        //스테이지 시작 시 스테이지 문구 축소 및 위로 이동
+        private void MoveStageTextForBattle()
+        {
+            if (currentStageText == null) return;
+
+            currentStageText.fontSize = 40f;
+
+            Vector2 pos = currentStageText.rectTransform.anchoredPosition;
+            pos.y = 795f;
+            currentStageText.rectTransform.anchoredPosition = pos;
+        }
+
+        //스테이지 문구 원래 상태로 복구
+        private void ResetStageText()
+        {
+            if (currentStageText == null) return;
+
+            currentStageText.fontSize = defaultStageFontSize;
+
+            Vector2 pos = currentStageText.rectTransform.anchoredPosition;
+            pos.y = defaultStagePosY;
+            currentStageText.rectTransform.anchoredPosition = pos;
         }
 
         #endregion

@@ -41,6 +41,10 @@ namespace AFKHero.Battle
         public int FormationSlotIndex { get; private set; }
         // 초기화 됐는지
         public bool IsInitialized { get; private set; }
+        // 전투 시작 시점 영웅 등급
+        public HeroGrade BattleGrade { get; private set; }
+        // 전투 시작 시점 영웅 레벨
+        public int BattleLevel { get; private set; }
 
 
         public UnitTargetFinder TargetFinder => targetFinder;
@@ -75,6 +79,9 @@ namespace AFKHero.Battle
             Data = heroInstance.data;
             Team = team;
             FormationSlotIndex = formationSlotIndex;
+
+            BattleGrade = heroInstance.currentGrade; //전투 시작 시점의 등급 저장
+            BattleLevel = heroInstance.level;        //전투 시작 시점의 레벨 저장
 
             Stats = new UnitStats(heroInstance);
 
