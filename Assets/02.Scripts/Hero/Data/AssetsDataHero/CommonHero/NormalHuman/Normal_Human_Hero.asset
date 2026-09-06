@@ -21,9 +21,9 @@ MonoBehaviour:
   ultimateEffectPrefab: {fileID: 955624766283195606, guid: 95432b6e8b83e1b47848db18b04dffb2, type: 3}
   projectilePrefab: {fileID: 0}
   moveSpeed: 2
-  maxUltimateEnergy: 100
-  basicAttackEnergyGain: 10
-  damageTakenEnergyGain: 5
+  maxUltimateEnergy: 200
+  basicAttackEnergyGain: 5
+  damageTakenEnergyGain: 10
   heroImage: {fileID: 5393471033288067613, guid: 1f98d1a0f3b339c429f42b142fa21098, type: 3}
   heroPrefab: {fileID: 2703825961466239724, guid: 419597ca876d0914e837ea80cb64d13b, type: 3}
   battleUnitPrefab: {fileID: 5405934589750331299, guid: 66c0c5d47bf8fb043ad1193f7aef93b6, type: 3}

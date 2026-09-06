@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: FormationData
   m_EditorClassIdentifier: Assembly-CSharp::AFKHero.Battle.FormationData
   allyPositions:
-  - {x: -0.8, y: 0.2}
-  - {x: 0.8, y: 0.2}
+  - {x: -0.8, y: 0}
+  - {x: 0.8, y: 0}
   - {x: -1.4, y: -1}
   - {x: 0, y: -1}
   - {x: 1.4, y: -1}
   enemyPositions:
   - {x: 0.8, y: 1.8}
   - {x: -0.8, y: 1.8}
-  - {x: 1.4, y: 3}
-  - {x: 0, y: 3}
-  - {x: -1.4, y: 3}
+  - {x: 1.4, y: 2.8}
+  - {x: 0, y: 2.8}
+  - {x: -1.4, y: 2.8}
