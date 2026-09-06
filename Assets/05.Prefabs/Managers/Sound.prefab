@@ -106,6 +106,12 @@ MonoBehaviour:
   - Key: 20
     Clip: {fileID: 8300000, guid: 705bba1a85a2d1a4c852f6a35cbe8303, type: 3}
     Volume: 0.2
+  - Key: 22
+    Clip: {fileID: 8300000, guid: f34d30c74afb14d7cba68e12498ad2e5, type: 3}
+    Volume: 0.698
+  - Key: 23
+    Clip: {fileID: 8300000, guid: d949bf49028214718bef17aed6907bce, type: 3}
+    Volume: 0.2
   sfxPoolSize: 10
   masterVolume: 1
   bgmVolume: 1

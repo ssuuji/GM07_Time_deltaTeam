@@ -56,7 +56,10 @@ public enum SoundKey
     SFX_Attack_2,
     SFX_Attack_3,
 
-    UI_CardDraw
+    UI_CardDraw,
+    SFX_Victory,
+    SFX_Defeat
+
 
 }
 

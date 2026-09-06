@@ -18,7 +18,7 @@ public static class StageCalculator
 
     public static int CaculateIdleBattleReward(int lastStageNumber, int lastSectionNumber)
     {
-        int IdleBattleRewardPerSecond = (lastStageNumber - 1) * 10 + lastSectionNumber * 5;
+        int IdleBattleRewardPerSecond = (lastStageNumber - 1) * 25 + lastSectionNumber * 5;
 
         return IdleBattleRewardPerSecond;
     }
