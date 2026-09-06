@@ -328,11 +328,13 @@ MonoBehaviour:
   hitTrigger: 3_Damaged
   moveBool: 1_Move
   movementAnimationThreshold: 0.0001
+  visualRoot: {fileID: 6190237233806407294}
+  facingDirectionThreshold: 0.05
   deathTrigger: 4_Death
   victoryTrigger: 6_Other
   deathStateBool: isDeath
   deathFadeDelay: 1
-  deathFadeDuration: 0.5
+  deathFadeDuration: 0.1
   damageTextPrefab: {fileID: 3775185502458372682, guid: 5d053f06fdaa1f14f91b19ca69091822, type: 3}
   damageTextAnchor: {fileID: 8729615259221586495}
   basicAttackSoundKeys: 120000001300000014000000

@@ -21,6 +21,14 @@ namespace AFKHero.Battle
         // 위치가 미세하게 흔들리는 것만으로 이동 애니메이션이 실행되지 않도록 함
         [SerializeField, Min(0f)] private float movementAnimationThreshold = 0.0001f;
 
+        [Header("캐릭터 방향 전환")]
+        [SerializeField] private Transform visualRoot;
+
+        // 타겟과 X 좌표가 거의 비슷할 때 방향이 반복해서 바뀌는 것 방지
+        [SerializeField, Min(0f)] private float facingDirectionThreshold = 0.05f;
+
+        private Vector3 originalVisualScale;
+
         [SerializeField] private string deathTrigger = "4_Death";
         [SerializeField] private string victoryTrigger = "6_Other";
 
@@ -88,6 +96,25 @@ namespace AFKHero.Battle
                 defaultAnimatorSpeed = animator.speed;
             }
 
+            if (visualRoot == null)
+            {
+                visualRoot = transform.Find("VisualRoot");
+            }
+
+            if (visualRoot == null && animator != null)
+            {
+                visualRoot = animator.transform;
+            }
+
+            if (visualRoot != null)
+            {
+                originalVisualScale = visualRoot.localScale;
+            }
+            else
+            {
+                Debug.LogWarning($"[{name}] 방향을 전환할 캐릭터 외형을 찾지 못했습니다.", this);
+            }
+
             previousPosition = transform.position;
 
             unitSpriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
@@ -130,10 +157,50 @@ namespace AFKHero.Battle
 
         private void LateUpdate()
         {
+            // 모든 Update가 끝난 뒤 확정된 타깃 위치를 기준으로 외형 방향을 변경
+            UpdateFacingDirection();
             UpdateMoveAnimation();
 
-            // 다음 프레임의 이동 거리를 계산할 수 있도록 현재 위치를 저장합니다.
+            // 다음 프레임에서 이동 거리를 계산할 수 있도록 현재 위치를 저장
             previousPosition = transform.position;
+        }
+
+        private void UpdateFacingDirection()
+        {
+            if (visualRoot == null ||
+                owner == null ||
+                owner.Stats == null ||
+                !owner.Stats.IsAlive ||
+                owner.TargetFinder == null ||
+                !owner.TargetFinder.HasValidTarget)
+            {
+                return;
+            }
+
+            // 준비/승리/패배 시 마지막으로 바라보던 방향 유지
+            if (battleManager == null ||
+                (battleManager.CurrentState != BattleState.Fighting &&
+                 battleManager.CurrentState != BattleState.UltimateSequence))
+            {
+                return;
+            }
+
+            BattleUnit target = owner.TargetFinder.CurrentTarget;
+            float horizontalDifference = target.transform.position.x - owner.transform.position.x;
+
+            // X 좌표가 거의 같을 때 좌우로 떨리는 현상을 방지
+            if (Mathf.Abs(horizontalDifference) <= facingDirectionThreshold)
+            {
+                return;
+            }
+
+            Vector3 currentScale = visualRoot.localScale;
+            float scaleX = Mathf.Abs(originalVisualScale.x);
+
+            // 현재 SPUM 외형은 기본적으로 왼쪽을 바라보므로 타깃이 오른쪽에 있을 때만 X Scale을 음수로 변경합니다.
+            currentScale.x = horizontalDifference > 0f ? -scaleX : scaleX;
+
+            visualRoot.localScale = currentScale;
         }
 
         private void UpdateMoveAnimation()
