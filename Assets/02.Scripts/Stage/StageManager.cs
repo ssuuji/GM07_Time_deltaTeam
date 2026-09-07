@@ -141,6 +141,12 @@ public class StageManager : MonoBehaviour
     //그리고, 이게 "재도전" 버튼에도 연결될 수 있을 것 같은데?
     public void StartStage() // 스테이지 구간을 시작
     {
+        if (CheckPartySlot1() == 0)
+        {
+            UINoticePopup.Instance.ShowTime("파티를 배치해주세요.");
+            return;
+        }
+
         // 결과 중 전투 재시작 방지
         if (battleResultDelayCoroutine != null)
         {
@@ -505,6 +511,26 @@ public class StageManager : MonoBehaviour
 
         //현재 스테이지 UI 갱신
         UIBattleManager.Instance?.UpdateStageUI();
+    }
+
+    private int CheckPartySlot1()
+    {
+        HeroInstance[] heroes = PartyManager.Instance.partySlots;
+
+        int slotLength = PartyManager.Instance.partySlots.Length;
+
+        //이러면 근데... 그렇잖아? slotLength 값이 줄어들잖아.
+        for (int i = 0; i < heroes.Length; i++)
+        {
+            if (heroes[i] == null || heroes[i].data == null)
+            {
+
+                slotLength--;
+            }
+        }
+
+
+        return slotLength;
     }
 
     #region 세이브/ 로드
