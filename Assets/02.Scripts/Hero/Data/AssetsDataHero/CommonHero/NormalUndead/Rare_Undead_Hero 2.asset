@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e48ee36aedb041449b36316992decba, type: 3}
-  m_Name: Normal_Undead_Hero 2
+  m_Name: Rare_Undead_Hero 2
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
   heroID: 8303
-  heroName: "\uB178\uB9D0\uC5B8\uB370\uB4DC\uAD81\uC218"
+  heroName: "\uB808\uC5B4\uC5B8\uB370\uB4DC\uAD81\uC218"
   heroGrade: 2
   raceType: 3
   jobType: 3
@@ -21,8 +21,8 @@ MonoBehaviour:
   ultimateEffectPrefab: {fileID: 6685527472769624293, guid: abe7df053e9584842880817330598d15, type: 3}
   projectilePrefab: {fileID: 1242348002347848851, guid: 21e0df954f1f58f4e8eaf2523bce4de0, type: 3}
   moveSpeed: 2
-  maxUltimateEnergy: 100
-  basicAttackEnergyGain: 150
+  maxUltimateEnergy: 150
+  basicAttackEnergyGain: 10
   damageTakenEnergyGain: 5
   heroImage: {fileID: -7946190749211981217, guid: b1bafe575a7564345a6123ed27290e78, type: 3}
   heroPrefab: {fileID: 8084269438983887290, guid: 81bb6f216403263469b5a0a45a3cf24c, type: 3}
