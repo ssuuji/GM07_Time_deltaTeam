@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e48ee36aedb041449b36316992decba, type: 3}
-  m_Name: Normal_Undead_Hero 2
+  m_Name: Rare_Undead_Hero 2
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
   heroID: 8303
-  heroName: "\uB178\uB9D0\uC5B8\uB370\uB4DC\uAD81\uC218"
+  heroName: "\uB808\uC5B4\uC5B8\uB370\uB4DC\uAD81\uC218"
   heroGrade: 2
   raceType: 3
   jobType: 3
