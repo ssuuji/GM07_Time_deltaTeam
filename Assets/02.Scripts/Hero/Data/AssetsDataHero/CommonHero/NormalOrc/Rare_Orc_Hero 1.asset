@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e48ee36aedb041449b36316992decba, type: 3}
-  m_Name: Normal_Orc_Hero 1
+  m_Name: Rare_Orc_Hero 1
   m_EditorClassIdentifier: Assembly-CSharp::HeroData
   heroID: 8202
-  heroName: "\uB178\uB9D0\uC624\uD06C\uD0F1\uCEE4"
+  heroName: "\uB808\uC5B4\uC624\uD06C\uD0F1\uCEE4"
   heroGrade: 2
   raceType: 2
   jobType: 1
