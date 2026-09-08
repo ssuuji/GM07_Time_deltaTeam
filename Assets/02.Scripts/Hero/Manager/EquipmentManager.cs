@@ -271,29 +271,29 @@ public class EquipmentManager : MonoBehaviour
     {
         float score = 0;
 
-        // 1순위 : 장비의 순수 등급 점수
-        if (equip.Grade == EquipmentGrade.Epic) score += 50000;
-        else if (equip.Grade == EquipmentGrade.Rare) score += 20000;
-        else score += 5000;
-
-        // 2순위 : 세트 효과 점수
+        // 1순위 : 세트 효과 점수 (등급 차이 30,000점을 가볍게 넘을 수 있도록 기본 배점 대폭 상향)
         if (maxPossibleSetCount >= 2)
         {
             string equipName = equip.BaseData.equipmentID;
             float setBonus = 0;
 
-            if (equipName.Contains("VampSet")) setBonus = 5000;
-            else if (equipName.Contains("ComboSet")) setBonus = 4000;
-            else if (equipName.Contains("EvadeSet")) setBonus = 3000;
-            else if (equipName.Contains("ExecuteSet")) setBonus = 2000;
-            else if (equipName.Contains("ReviveSet")) setBonus = 1000;
-            else if (equipName.Contains("ImmortalSet")) setBonus = 1500;
+            if (equipName.Contains("VampSet")) setBonus = 35000;
+            else if (equipName.Contains("ComboSet")) setBonus = 34000;
+            else if (equipName.Contains("EvadeSet")) setBonus = 33000;
+            else if (equipName.Contains("ExecuteSet")) setBonus = 32000;
+            else if (equipName.Contains("ReviveSet")) setBonus = 31000;
+            else if (equipName.Contains("ImmortalSet")) setBonus = 31500;
 
-            // 만약 4세트 풀셋이 가능하다면? 세트 가중치를 2배로 줘서 풀셋을 우선적으로 장착하도록 유도
+            // 4세트 풀셋이 가능하다면 가중치를 2배로 주어 (약 6만~7만 점 추가) 압도적인 우선순위 부여
             if (maxPossibleSetCount >= 4) setBonus *= 2;
 
             score += setBonus;
         }
+
+        // 2순위 : 장비의 순수 등급 점수
+        if (equip.Grade == EquipmentGrade.Epic) score += 50000;
+        else if (equip.Grade == EquipmentGrade.Rare) score += 20000;
+        else score += 5000;
 
         // 3순위 : 깡스탯 점수
         score += equip.HP * 1f;
